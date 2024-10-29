@@ -199,7 +199,7 @@ private fun getChildBitMap(isLeft: Boolean, scaleX: Float, picBitMap: Bitmap): B
     paint.isAntiAlias = true
     var bgBmp = BitmapFactory.decodeResource(
         UtilsContextManager.getInstance().application.resources,
-        R.mipmap.img
+        R.mipmap.imgnew
     )
     bgBmp = Bitmap.createScaledBitmap(bgBmp, width, height, true)
     canvas.drawBitmap(bgBmp, 0f, 0f, paint)

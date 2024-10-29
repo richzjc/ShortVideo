@@ -11,7 +11,7 @@ class TestView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var upperImage = BitmapFactory.decodeResource(resources, R.mipmap.test)
-    private var lowerImage = BitmapFactory.decodeResource(resources, R.mipmap.img)
+    private var lowerImage = BitmapFactory.decodeResource(resources, R.mipmap.imgnew)
     private val featherRadius = 30f // 羽化半径，可以根据需求调整
 
     init {

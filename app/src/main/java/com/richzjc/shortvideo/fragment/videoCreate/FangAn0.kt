@@ -24,6 +24,7 @@ import com.richzjc.shortvideo.util.requestData
 import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.math.max
 
 
 fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: TextView?) {
@@ -86,7 +87,7 @@ fun processImage(
     if (file0 != null) {
         val listFiles = file0.listFiles()
         val size = listFiles.size
-        var bgBmp = BitmapFactory.decodeResource(context.resources, R.mipmap.img)
+        var bgBmp = BitmapFactory.decodeResource(context.resources, R.mipmap.imgnew)
         bgBmp = Bitmap.createScaledBitmap(bgBmp, 1920, 1920, true)
 
         val paint = Paint()
@@ -122,13 +123,15 @@ fun processImage(
         var startX = 0
         var gap = (1920 - 1080) / 150f
         var isIncrease = true
+        var startIndex = max(listFiles.size - 90, 0)
+
         listFiles?.forEachIndexed { index, it ->
             try {
                 updateStatusText(
                     "开始处理第${index + 1}张图片； totalCount = ${size}",
                     statusTV
                 )
-                val outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+                var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(outputBitmap)
 
 
@@ -183,8 +186,9 @@ fun processImage(
                     paint
                 )
 
-                if (index > 60) {
-                    if (index < 90) {
+
+                if (index > startIndex) {
+                    if (index < startIndex + 30) {
                         var value = index % 30
                         canvas.drawBitmap(
                             commentBg,
@@ -202,8 +206,8 @@ fun processImage(
                     }
                 }
 
-                if (index > 30) {
-                    if (index < 60) {
+                if (index > startIndex) {
+                    if (index < startIndex + 30) {
                         var value = index % 30
                         canvas.drawBitmap(
                             followHintDrawable,
@@ -222,7 +226,16 @@ fun processImage(
                 }
 
 
+                if(index <= startIndex){
+                    var widthScale = (1080 * 1.0)/inputBitmapWidth
+                    var heightScale = (1920 * 1.0)/inputBitmapHeight
+                    var bitmap = Bitmap.createScaledBitmap(outputBitmap, (1080 * widthScale).toInt(), (1920 * heightScale).toInt(), true)
+                    var startX = ((1080 - inputBitmap.width) / 2f) * widthScale
+                    var startY = ScreenUtils.dip2px(70f).toFloat() * heightScale
+                    outputBitmap = Bitmap.createBitmap(bitmap, startX.toInt(), startY.toInt(), 1080, 1920, null, false)
+                }else if(index > startIndex && index < startIndex + 30){
 
+                }
 
                 if (index == 0) {
                     setHandlePic(originPic, inputBitmap)
