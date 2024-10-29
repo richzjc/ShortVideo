@@ -1,0 +1,56 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+
+        Properties properties = new Properties()
+        properties.load(new File(rootDir.getAbsolutePath() + "/local.properties").newDataInputStream())
+        maven {
+            credentials {
+                username properties.getProperty("mavenUser")
+                password properties.getProperty("mavenPwd")
+            }
+            url 'https://maven.wallstcn.com/repository/mobile-public/'
+        }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    Properties properties = new Properties()
+    properties.load(new File(rootDir.getAbsolutePath() + "/local.properties").newDataInputStream())
+
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven { url "https://repo1.maven.org/maven2/" }
+        maven { url 'https://developer.huawei.com/repo/' }
+        maven { url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo' }
+        maven { url 'https://maven.aliyun.com/nexus/content/repositories/releases/' }
+        maven {
+            url 'https://developer.hihonor.com/repo'
+        }
+        maven {
+            credentials {
+                username properties.getProperty("mavenUser")
+                password properties.getProperty("mavenPwd")
+            }
+            url 'https://maven.wallstcn.com/repository/mobile-public/'
+        }
+    }
+}
+
+rootProject.name = "ShortVideo"
+include ':app'
+include ':opencv'
+//include ':RxPermissions'
+
+include ':RouterLib'
+project(':RouterLib').projectDir = new File(rootProject.projectDir, 'Router/RouterLib')
+
+include ':RouterCompiler'
+project(':RouterCompiler').projectDir = new File(rootProject.projectDir, 'Router/compiler')
+
+include ':RouterAnnotation'
+project(':RouterAnnotation').projectDir = new File(rootProject.projectDir, 'Router/RouterAnnotation')

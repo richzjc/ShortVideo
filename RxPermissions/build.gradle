@@ -1,0 +1,37 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdk 34
+    namespace 'com.tbruyelle.rxpermissions3'
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation  'androidx.fragment:fragment:1.2.5'
+    implementation  'androidx.annotation:annotation:1.1.0'
+    implementation  'androidx.appcompat:appcompat:1.1.0'
+    implementation  "com.github.richzjc:dialogLib:1.0.2"
+    api project(':RouterLib')
+}
+
+
+

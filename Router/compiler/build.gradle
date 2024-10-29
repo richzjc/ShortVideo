@@ -1,0 +1,16 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    implementation 'com.google.auto.service:auto-service:1.0-rc4'
+    implementation 'com.squareup:javapoet:1.10.0'
+    implementation 'com.github.richzjc:router_annotation:1.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20"
+    kapt "com.google.auto.service:auto-service:1.0-rc7"
+}
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+

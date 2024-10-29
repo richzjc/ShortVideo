@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="day_mode_text_color1_333333">#cccccc</color>
+    <color name="day_mode_text_color2_666666">#a6a6a6</color>
+    <color name="day_mode_text_color3_999999">#808080</color>
+    <color name="day_mode_text_color4_999999">#808080</color>
+    <color name="day_mode_has_read_808080">#999999</color>
+    <color name="day_mode_search_bg_f0f0f0">#262626</color>
+    <color name="day_mode_theme_color_1478f0">#328dfa</color>
+    <color name="day_mode_fall_down_color_2ab168">#36a98a</color>
+    <color name="day_mode_fall_down_color_2ab168_transparent">#3336a98a</color>
+    <color name="day_mode_rise_up_red_color_ff5959">#e84545</color>
+    <color name="day_mode_rise_up_red_color_ff5959_transparent">#33e84545</color>
+    <color name="day_mode_divide_line_color_e6e6e6">#262626</color>
+    <color name="day_mode_divide_block_color_f8f8f8">#000000</color>
+    <color name="day_mode_press_color_f8f8f8">#0b0b0b</color>
+    <color name="day_mode_second_btn_bg_color_f6f6f6">#262626</color>
+    <color name="day_mode_background_color1_ffffff">#121212</color>
+    <color name="day_mode_background_color2_f6f6f6">#262626</color>
+    <color name="day_mode_background_color_dddddd">#4c4c4c</color>
+    <color name="day_mode_backgroud_color_cccccc">#262626</color>
+    <color name="day_mode_shadow_color_0d000000">#00000033</color>
+    <color name="day_mode_dialog_bg_color_ffffff">#1c1c1c</color>
+    <color name="day_mode_bg_f6f6f6_to_121212">#121212</color>
+    <color name="day_mode_bg_fffff_to_262626">#262626</color>
+</resources>

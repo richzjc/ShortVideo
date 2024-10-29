@@ -1,0 +1,48 @@
+<com.richzjc.shortvideo.widget.FragmentTabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tabhost"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/day_mode_background_color1_ffffff">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_dp52">
+
+            <com.richzjc.shortvideo.widget.MainTabHostContentView
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/space_0.5"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/margin_dp52"
+            android:background="@color/day_mode_divide_line_color_e6e6e6"
+            android:visibility="visible" />
+
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_dp52"
+            android:layout_alignParentBottom="true"
+            android:background="@color/day_mode_background_color2_f6f6f6"
+            android:clipChildren="false"
+            android:divider="@android:color/transparent"
+            android:gravity="bottom"
+            android:showDividers="none" />
+
+    </RelativeLayout>
+</com.richzjc.shortvideo.widget.FragmentTabHost>

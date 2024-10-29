@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">图片编辑</string>
+    <string name="discuss_post_permission">需要相关权限,请允许!</string>
+</resources>

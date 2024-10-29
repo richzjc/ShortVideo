@@ -1,0 +1,84 @@
+
+apply plugin: 'com.android.library'
+//apply plugin: 'com.jakewharton.butterknife'
+//apply from: '../basic_ktx.gradle'
+
+android {
+    compileSdkVersion COMPILE_SDK_VERSION as int
+    buildToolsVersion BUILD_TOOL_VERSION
+    namespace 'org.opencv'
+    defaultConfig {
+        minSdkVersion ANDROID_MIN_VERSION  as int
+        targetSdkVersion ANDROID_TARGET_VERSION  as int
+        versionCode 1
+        versionName "1.0"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+                targets "opencv_jni_shared"
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+    buildTypes {
+        release {
+            packagingOptions {
+                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
+            }
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+
+        debug {
+            packagingOptions {
+                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
+            }
+        }
+    }
+
+    buildFeatures {
+        prefabPublishing true
+        buildConfig true
+    }
+    prefab {
+        opencv_jni_shared {
+            headers "native/jni/include"
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['native/libs']
+            java.srcDirs = ['java/src']
+            res.srcDirs = ['java/res']
+            manifest.srcFile 'java/AndroidManifest.xml'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+
+    externalNativeBuild {
+        cmake {
+            path (project.projectDir.toString() + '/libcxx_helper/CMakeLists.txt')
+        }
+    }
+}
+
+
+dependencies {
+    api libs.androidx.appcompat
+}
