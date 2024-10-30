@@ -62,7 +62,7 @@ dependencies {
     implementation 'com.github.richzjc:rxPermissionNew:1.1.4'
     implementation 'com.github.richzjc:dialogLib:1.0.2'
 //    implementation 'com.rmtheis:tess-two:9.1.0'
-    api 'com.arthenica:ffmpeg-kit-full:4.4'
+    api 'com.arthenica:mobile-ffmpeg-full:4.4'
     implementation 'com.github.yalantis:ucrop:2.2.6'
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'

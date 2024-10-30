@@ -15,6 +15,8 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.graphics.set
+import com.arthenica.mobileffmpeg.Config
+import com.arthenica.mobileffmpeg.FFmpeg
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.util.QDUtil
 import com.richzjc.shortvideo.util.ScreenUtils
@@ -44,17 +46,17 @@ fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: Te
             delay(1000L)
 
             val command = "-i ${file1.absolutePath} ${file0.absolutePath}/%d.png"
-//            val returnCode = FFmpeg.execute(command)
-//            if (returnCode == 0) {
-//                // 命令执行成功
-//                updateStatusText("提取帧图片完成", statusTV)
-//            } else {
-//                // 命令执行失败
-//                updateStatusText("提取帧图片失败", statusTV)
-//                // 获取错误日志
-//                val output = Config.getLastCommandOutput()
-//                Log.e("FFmpeg Error", output)
-//            }
+            val returnCode = FFmpeg.execute(command)
+            if (returnCode == 0) {
+                // 命令执行成功
+                updateStatusText("提取帧图片完成", statusTV)
+            } else {
+                // 命令执行失败
+                updateStatusText("提取帧图片失败", statusTV)
+                // 获取错误日志
+                val output = Config.getLastCommandOutput()
+                Log.e("FFmpeg Error", output)
+            }
         }
     }
 }
