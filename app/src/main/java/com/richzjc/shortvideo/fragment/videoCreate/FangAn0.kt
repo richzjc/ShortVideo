@@ -234,7 +234,16 @@ fun processImage(
                     var startY = ScreenUtils.dip2px(70f).toFloat() * heightScale
                     outputBitmap = Bitmap.createBitmap(bitmap, startX.toInt(), startY.toInt(), 1080, 1920, null, false)
                 }else if(index > startIndex && index < startIndex + 30){
-
+                    var widthScale = (1080 * 1.0)/inputBitmapWidth
+                    var heightScale = (1920 * 1.0)/inputBitmapHeight
+                    var widthScaleGap = widthScale/30
+                    var heightScaleGap = heightScale/30
+                    var realWidthScale = widthScale - (index - startIndex) * widthScaleGap
+                    var realHeightScale = heightScale - (index - startIndex) * heightScaleGap
+                    var bitmap = Bitmap.createScaledBitmap(outputBitmap, (1080 * realWidthScale).toInt(), (1920 * realHeightScale).toInt(), true)
+                    var startX = ((1080 * realWidthScale).toInt() - 1080)/2
+                    var startY = ScreenUtils.dip2px(70f).toFloat() * realHeightScale
+                    outputBitmap = Bitmap.createBitmap(bitmap, startX, startY.toInt(), 1080, 1920, null, false)
                 }
 
                 if (index == 0) {
