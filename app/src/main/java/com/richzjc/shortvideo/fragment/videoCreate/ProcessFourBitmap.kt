@@ -1,23 +1,19 @@
 package com.richzjc.shortvideo.fragment.videoCreate
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.media.MediaMetadataRetriever
+import android.os.Environment
 import android.widget.TextView
 import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.ExecuteCallback
 import com.arthenica.mobileffmpeg.FFmpeg
+import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.util.QDUtil
-import com.richzjc.shortvideo.util.ScreenUtils
-import com.richzjc.shortvideo.util.requestData
-import kotlinx.coroutines.delay
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.IOException
+import java.io.InputStream
 import java.util.Arrays
 
 
@@ -142,8 +138,45 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     var returnCode = FFmpeg.execute(command)
     if (returnCode == 0) {
         updateStatusText("合成第${index}个视频成功", statusTV)
+        pinJiePianTou(outputVideoPath, context, statusTV)
     } else {
         updateStatusText("合成第${index}个视频失败", statusTV)
+    }
+}
+
+fun pinJiePianTou(outputVideoPath : String, requireContext: Context, statusTV: TextView?) {
+    updateStatusText("开始拼接片头视频", statusTV)
+    val realOutputFile = File(
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+        "realOutVideo.mp4"
+    ).absolutePath
+
+    val pianTouFile = File(
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+        "pianTou.mp4"
+    )
+    if(!pianTouFile.exists())
+        copyRawToFile(requireContext, R.raw.piantou, pianTouFile)
+
+
+    // FFmpeg 命令
+    val command = "-i ${pianTouFile.absolutePath} -i $outputVideoPath -filter_complex \"[0:v][1:v]concat=n=2:v=1:a=0[outv]\" -map \"[outv]\" $realOutputFile"
+    var returnCode = FFmpeg.execute(command)
+    if (returnCode == 0) {
+        updateStatusText("拼接片头成功", statusTV)
+    } else {
+        updateStatusText("拼接片头失败", statusTV)
+    }
+}
+
+fun copyRawToFile(context: Context, rawResId: Int, outputFile: File) {
+    val inputStream: InputStream = context.resources.openRawResource(rawResId)
+    val outputStream = FileOutputStream(outputFile)
+
+    inputStream.use { input ->
+        outputStream.use { output ->
+            input.copyTo(output)
+        }
     }
 }
 

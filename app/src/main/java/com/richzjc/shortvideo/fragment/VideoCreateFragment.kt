@@ -14,6 +14,7 @@ import com.huantansheng.easyphotos.models.album.entity.Photo
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.dialog.selectPicFromCameraOrPic
 import com.richzjc.shortvideo.fragment.videoCreate.gennerateVideoNoAudio
+import com.richzjc.shortvideo.fragment.videoCreate.pinJiePianTou
 import com.richzjc.shortvideo.fragment.videoCreate.processImage
 import com.richzjc.shortvideo.fragment.videoCreate.responseHeChengNBA
 import com.richzjc.shortvideo.util.MToastHelper
@@ -81,7 +82,7 @@ class VideoCreateFragment : Fragment() {
         process.setOnClickListener {
             MToastHelper.showToast("需要先删除本地文件")
             thread {
-                processImage(requireContext(), status, selectPicPath,  handlePic, originPic)
+                processImage(requireContext(), status, selectPicPath, handlePic, originPic)
             }
         }
 

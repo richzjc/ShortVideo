@@ -115,7 +115,6 @@
                 android:paddingBottom="@dimen/margin_dp10"
                 android:text="合并视频"
                 android:textColor="@color/white" />
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
