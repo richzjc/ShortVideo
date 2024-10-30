@@ -4,8 +4,7 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.os.Environment
 import android.widget.TextView
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.ffmpegkit.FFmpegKit
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.util.QDUtil
 import java.io.BufferedWriter
@@ -81,14 +80,15 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
             "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
 
         // 执行FFmpeg命令
-        val returnCode = FFmpeg.execute(cmd)
-        if (returnCode == Config.RETURN_CODE_SUCCESS) {
-            updateStatusText("生成${index}个视频成功", statusTV)
-            heChengVideo(statusTV, context, originPath, index)
-        } else if (returnCode == Config.RETURN_CODE_CANCEL) {
-            updateStatusText("生成${index}个视频取消", statusTV)
-        } else {
-            updateStatusText("生成${index}个视频失败", statusTV)
+       FFmpegKit.executeAsync(cmd){session->
+            val returnCode = session.returnCode
+            if (returnCode.isSuccess) {
+                updateStatusText("生成${index}个视频成功", statusTV)
+                heChengVideo(statusTV, context, originPath, index)
+            } else {
+                val log = session.logs.joinToString("\n") { it.getMessage() }
+                updateStatusText(log, statusTV)
+            }
         }
     } catch (e: Exception) {
         e.printStackTrace()
@@ -135,13 +135,19 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
         outputVideoPath // 输出合成后的视频文件路径
     )
 
-    var returnCode = FFmpeg.execute(command)
-    if (returnCode == 0) {
-        updateStatusText("合成第${index}个视频成功", statusTV)
-        pinJiePianTou(outputVideoPath, context, statusTV)
-    } else {
-        updateStatusText("合成第${index}个视频失败", statusTV)
+    // 执行合成命令
+    FFmpegKit.executeAsync(command) { session ->
+        val returnCode = session.returnCode
+        if (returnCode.isSuccess) {
+            updateStatusText("合成第${index}个视频成功", statusTV)
+            pinJiePianTou(outputVideoPath, context, statusTV)
+        } else {
+            val log = session.logs.joinToString("\n") { it.getMessage() }
+            updateStatusText(log, statusTV)
+        }
     }
+
+
 }
 
 fun pinJiePianTou(outputVideoPath : String, requireContext: Context, statusTV: TextView?) {
@@ -160,12 +166,30 @@ fun pinJiePianTou(outputVideoPath : String, requireContext: Context, statusTV: T
 
 
     // FFmpeg 命令
-    val command = "-i ${pianTouFile.absolutePath} -i $outputVideoPath -filter_complex \"[0:v][1:v]concat=n=2:v=1:a=0[outv]\" -map \"[outv]\" $realOutputFile"
-    var returnCode = FFmpeg.execute(command)
-    if (returnCode == 0) {
-        updateStatusText("拼接片头成功", statusTV)
-    } else {
-        updateStatusText("拼接片头失败", statusTV)
+
+
+//    val command = arrayOf<String>(
+//        "-i", pianTouFile.absolutePath,  // 第一个视频，音频来源
+//        "-i", outputVideoPath,  // 第二个视频，视频来源
+//        "-filter_complex", "[0:0] [0:1] [1:0] [1:1] [2:0] [2:1] concat=n=3:v=1:a=1 [v] [a]",
+//        "-map", "[v]", "-map", "[a]",
+//        realOutputFile // 输出合成后的视频文件路径
+//    )
+
+    // FFmpeg 合成命令
+    val command = "-i ${pianTouFile.absolutePath} -i ${outputVideoPath} " +
+            "-filter_complex \"[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[outv][outa]\" " +
+            "-map \"[outv]\" -map \"[outa]\" ${realOutputFile}"
+
+
+    var returnCode = FFmpegKit.executeAsync(command){session->
+        val returnCode = session.returnCode
+        if (returnCode.isSuccess) {
+            updateStatusText("拼接片头成功", statusTV)
+        } else {
+            val log = session.logs.joinToString("\n") { it.getMessage() }
+            updateStatusText(log, statusTV)
+        }
     }
 }
 

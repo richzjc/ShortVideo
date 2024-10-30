@@ -15,8 +15,6 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
 import android.widget.TextView
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.UtilsContextManager
 import com.richzjc.shortvideo.fragment.videoCreate.updateStatusText
@@ -362,16 +360,16 @@ fun genPicVideo(context: Context, statusTv: TextView?, pairList: List<Pair<Strin
     val frameRate = fps
     val cmd =
         "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 8000k ${realOutputFile.absolutePath}"
-
-    // 执行FFmpeg命令
-    val returnCode = FFmpeg.execute(cmd)
-    if (returnCode == Config.RETURN_CODE_SUCCESS) {
-        updateStatusText("生成视频成功", statusTv)
-    } else if (returnCode == Config.RETURN_CODE_CANCEL) {
-        updateStatusText("生成视频取消", statusTv)
-    } else {
-        updateStatusText("生成失败", statusTv)
-    }
+//
+//    // 执行FFmpeg命令
+//    val returnCode = FFmpeg.execute(cmd)
+//    if (returnCode == Config.RETURN_CODE_SUCCESS) {
+//        updateStatusText("生成视频成功", statusTv)
+//    } else if (returnCode == Config.RETURN_CODE_CANCEL) {
+//        updateStatusText("生成视频取消", statusTv)
+//    } else {
+//        updateStatusText("生成失败", statusTv)
+//    }
 }
 
 
