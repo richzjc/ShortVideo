@@ -109,7 +109,6 @@ fun processImage(
         var gap = (1920 - 1080) / 150f
         var isIncrease = true
         var startIndex = max(listFiles.size - 90, 0)
-
         listFiles?.forEachIndexed { index, it ->
             try {
                 updateStatusText(
