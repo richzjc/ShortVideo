@@ -156,7 +156,7 @@ fun processImage(
                         startY,
                         paint
                     )
-                } else if(index <= startIndex + 30) {
+                } else if(index < startIndex + 30) {
                     val inputWidth = 1080 * 0.98f
                     val inputHeight = 1920 * 0.98f
                     var value = (index - startIndex)%30
@@ -199,7 +199,7 @@ fun processImage(
                 }
 
 
-                if (index > startIndex && index <= startIndex + 30) {
+                if (index > startIndex && index < startIndex + 30) {
                     var value = (index - startIndex)%30
                     canvas.drawBitmap(
                         commentBg,
@@ -207,7 +207,7 @@ fun processImage(
                         (1920 - value * commentBgGap).toFloat(),
                         paint
                     )
-                }else if(index > startIndex + 30){
+                }else if(index >= startIndex + 30){
                     canvas.drawBitmap(
                         commentBg,
                         (1080 - commentBg.width) / 2f,
