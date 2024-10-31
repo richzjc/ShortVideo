@@ -3,6 +3,7 @@ package com.richzjc.shortvideo.fragment.videoCreate
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.os.Environment
+import android.util.Log
 import android.widget.TextView
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
@@ -112,11 +113,11 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
         outputFile.mkdirs()
 
     var fileName = ""
-    if(index == 0)
+    if (index == 0)
         fileName = "2"
-    else if(index == 1)
+    else if (index == 1)
         fileName = "4";
-    else if(index == 2)
+    else if (index == 2)
         fileName = "6"
     else
         fileName = "8"
@@ -144,7 +145,7 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     }
 }
 
-fun pinJiePianTou(outputVideoPath : String, requireContext: Context, statusTV: TextView?) {
+fun pinJiePianTou(outputVideoPath: String, requireContext: Context, statusTV: TextView?) {
     updateStatusText("开始拼接片头视频", statusTV)
     val realOutputFile = File(
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
@@ -155,32 +156,36 @@ fun pinJiePianTou(outputVideoPath : String, requireContext: Context, statusTV: T
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
         "pianTou.mp4"
     )
-    if(!pianTouFile.exists())
+    if (!pianTouFile.exists())
         copyRawToFile(requireContext, R.raw.piantou, pianTouFile)
 
+    val inputFile = File(requireContext.cacheDir, "videoPath.txt")
+    if (inputFile.exists())
+        inputFile.delete()
 
+    inputFile.createNewFile()
     // FFmpeg 命令
+    inputFile.writeText(
+        "file '${pianTouFile.absolutePath}'\n" +
+                "file '${outputVideoPath}'"
+    )
+
+    val command =
+        "-f concat -safe 0 -i '${inputFile.absolutePath}' -c copy '${realOutputFile}'"
 
 
-//    val command = arrayOf<String>(
-//        "-i", pianTouFile.absolutePath,  // 第一个视频，音频来源
-//        "-i", outputVideoPath,  // 第二个视频，视频来源
-//        "-filter_complex", "[0:0] [0:1] [1:0] [1:1] [2:0] [2:1] concat=n=3:v=1:a=1 [v] [a]",
-//        "-map", "[v]", "-map", "[a]",
-//        realOutputFile // 输出合成后的视频文件路径
-//    )
+    // 构建concat命令
+//    val command = java.lang.String.format("-i concat:%s|%s -c copy %s", pianTouFile.absolutePath, outputVideoPath, realOutputFile)
 
-    // FFmpeg 合成命令
-    val command = "-i ${pianTouFile.absolutePath} -i ${outputVideoPath} " +
-            "-filter_complex \"[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[outv][outa]\" " +
-            "-map \"[outv]\" -map \"[outa]\" ${realOutputFile}"
-
-
+    Log.e("ffmpeg", command)
+    // 执行命令
     var returnCode = FFmpeg.execute(command)
     if (returnCode == 0) {
         updateStatusText("拼接片头成功", statusTV)
     } else {
-        updateStatusText("拼接片头失败", statusTV)
+        val msg = Config.getLastCommandOutput()
+        Log.e("ffmpeg", msg)
+        updateStatusText("拼接片头失败:" + msg, statusTV)
     }
 }
 

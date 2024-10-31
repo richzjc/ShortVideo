@@ -97,28 +97,13 @@ fun processImage(
         paint.alpha = 255
 
 
-        var phoneBg = BitmapFactory.decodeResource(context.resources, R.mipmap.phone_bg)
-        phoneBg = Bitmap.createScaledBitmap(phoneBg, phoneBg.width * 2, phoneBg.height * 2, false)
-        phoneBg = getRoundedCornerBitmap(phoneBg, ScreenUtils.dip2px(47f).toFloat())
-
         var commentBg = BitmapFactory.decodeFile(selectPicPath)
         var commentBgWidth = 1080 - ScreenUtils.dip2px(40f)
         var commentBgHeight = (commentBg.height * commentBgWidth) / (commentBg.width * 1.0f)
         commentBg =
             Bitmap.createScaledBitmap(commentBg, commentBgWidth, commentBgHeight.toInt(), false)
-        var commentBgGap =
-            ((1920 - phoneBg.height - ScreenUtils.dip2px(5f) + ScreenUtils.dip2px(80f)) / (30 * 1.0f)).toInt()
+        var commentBgGap = ((commentBgHeight + ScreenUtils.dip2px(10f)) / (30 * 1.0f)).toInt()
         commentBg = getRoundedCornerBitmap(commentBg, ScreenUtils.dip2px(20f).toFloat())
-
-        var followHintDrawable = BitmapFactory.decodeResource(context.resources, R.mipmap.follow_hint)
-        var followWidth = 1080 - ScreenUtils.dip2px(40f)
-        var followHeight = (followHintDrawable.height * followWidth) / (followHintDrawable.width * 1.0f)
-        followHintDrawable =
-            Bitmap.createScaledBitmap(followHintDrawable, followWidth, followHeight.toInt(), false)
-        var followGap =
-            ((ScreenUtils.dip2px(5f) + ScreenUtils.dip2px(20f)) / (30 * 1.0f)).toInt()
-        followHintDrawable = getRoundedCornerBitmap(followHintDrawable, ScreenUtils.dip2px(20f).toFloat())
-
 
         var startX = 0
         var gap = (1920 - 1080) / 150f
@@ -133,7 +118,6 @@ fun processImage(
                 )
                 var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(outputBitmap)
-
 
                 var resultBitmap: Bitmap? = null
                 if (isIncrease) {
@@ -153,98 +137,86 @@ fun processImage(
                 }
 
                 canvas.drawBitmap(resultBitmap, 0f, 0f, paint)
-                canvas.drawBitmap(
-                    phoneBg,
-                    (1080 - phoneBg.width) / 2 * 1.0f,
-                    ScreenUtils.dip2px(5f).toFloat(),
-                    paint
-                )
 
+                //绘制图片
                 var inputBitmap = BitmapFactory.decodeFile(it.absolutePath)
-                inputBitmap = Bitmap.createBitmap(
-                    inputBitmap,
-                    0,
-                    0,
-                    inputBitmap.width,
-                    inputBitmap.height - ScreenUtils.dip2px(100f),
-                    null,
-                    false
-                )
-                val inputBitmapWidth = phoneBg.width - ScreenUtils.dip2px(20f)
-                val inputBitmapHeight = phoneBg.height - ScreenUtils.dip2px(130f)
-
-                inputBitmap = Bitmap.createScaledBitmap(
-                    inputBitmap,
-                    inputBitmapWidth,
-                    inputBitmapHeight,
-                    false
-                )
-                canvas.drawBitmap(
-                    inputBitmap,
-                    (1080 - inputBitmap.width) / 2 * 1.0f,
-                    ScreenUtils.dip2px(70f).toFloat(),
-                    paint
-                )
-
-
-                if (index > startIndex) {
-                    if (index < startIndex + 30) {
-                        var value = index % 30
-                        canvas.drawBitmap(
-                            commentBg,
-                            (1080 - commentBg.width) / 2f,
-                            (1920 - value * commentBgGap).toFloat(),
-                            paint
-                        )
-                    } else {
-                        canvas.drawBitmap(
-                            commentBg,
-                            (1080 - commentBg.width) / 2f,
-                            (1920 - 30 * commentBgGap).toFloat(),
-                            paint
-                        )
-                    }
-                }
-
-                if (index > startIndex) {
-                    if (index < startIndex + 30) {
-                        var value = index % 30
-                        canvas.drawBitmap(
-                            followHintDrawable,
-                            (1080 - followHintDrawable.width) / 2f,
-                            (value * followGap).toFloat(),
-                            paint
-                        )
-                    } else {
-                        canvas.drawBitmap(
-                            followHintDrawable,
-                            (1080 - followHintDrawable.width) / 2f,
-                            (30 * followGap).toFloat(),
-                            paint
-                        )
-                    }
+                if (index <= startIndex) {
+                    val inputWidth = 1080 * 0.98f
+                    val inputHeight = 1920 * 0.98f
+                    inputBitmap = Bitmap.createScaledBitmap(
+                        inputBitmap,
+                        inputWidth.toInt(),
+                        inputHeight.toInt(),
+                        false
+                    )
+                    val startX = (1080 - inputWidth)/2f
+                    val startY = (1920 - inputHeight)/2
+                    canvas.drawBitmap(
+                        inputBitmap,
+                        startX,
+                        startY,
+                        paint
+                    )
+                } else if(index <= startIndex + 30) {
+                    val inputWidth = 1080 * 0.98f
+                    val inputHeight = 1920 * 0.98f
+                    var value = (index - startIndex)%30
+                    var realInputHeight = inputHeight - value * commentBgGap
+                    var realInputWidth = (inputWidth * realInputHeight)/inputHeight
+                    inputBitmap = Bitmap.createScaledBitmap(
+                        inputBitmap,
+                        realInputWidth.toInt(),
+                        realInputHeight.toInt(),
+                        false
+                    )
+                    val startX = (1080 - realInputWidth)/2f
+                    val startY = 1920 * 0.01f
+                    canvas.drawBitmap(
+                        inputBitmap,
+                        startX,
+                        startY,
+                        paint
+                    )
+                }else{
+                    val inputWidth = 1080 * 0.98f
+                    val inputHeight = 1920 * 0.98f
+                    var value = 30
+                    var realInputHeight = inputHeight - value * commentBgGap
+                    var realInputWidth = (inputWidth * realInputHeight)/inputHeight
+                    inputBitmap = Bitmap.createScaledBitmap(
+                        inputBitmap,
+                        realInputWidth.toInt(),
+                        realInputHeight.toInt(),
+                        false
+                    )
+                    val startX = (1080 - realInputWidth)/2f
+                    val startY = 1920 * 0.01f
+                    canvas.drawBitmap(
+                        inputBitmap,
+                        startX,
+                        startY,
+                        paint
+                    )
                 }
 
 
-                if(index <= startIndex){
-                    var widthScale = (1080 * 1.0)/inputBitmapWidth
-                    var heightScale = (1920 * 1.0)/inputBitmapHeight
-                    var bitmap = Bitmap.createScaledBitmap(outputBitmap, (1080 * widthScale).toInt(), (1920 * heightScale).toInt(), true)
-                    var startX = ((1080 - inputBitmap.width) / 2f) * widthScale
-                    var startY = ScreenUtils.dip2px(70f).toFloat() * heightScale
-                    outputBitmap = Bitmap.createBitmap(bitmap, startX.toInt(), startY.toInt(), 1080, 1920, null, false)
-                }else if(index > startIndex && index < startIndex + 30){
-                    var widthScale = (1080 * 1.0)/inputBitmapWidth
-                    var heightScale = (1920 * 1.0)/inputBitmapHeight
-                    var widthScaleGap = widthScale/30
-                    var heightScaleGap = heightScale/30
-                    var realWidthScale = widthScale - (index - startIndex) * widthScaleGap
-                    var realHeightScale = heightScale - (index - startIndex) * heightScaleGap
-                    var bitmap = Bitmap.createScaledBitmap(outputBitmap, (1080 * realWidthScale).toInt(), (1920 * realHeightScale).toInt(), true)
-                    var startX = ((1080 * realWidthScale).toInt() - 1080)/2
-                    var startY = ScreenUtils.dip2px(70f).toFloat() * realHeightScale
-                    outputBitmap = Bitmap.createBitmap(bitmap, startX, startY.toInt(), 1080, 1920, null, false)
+                if (index > startIndex && index <= startIndex + 30) {
+                    var value = (index - startIndex)%30
+                    canvas.drawBitmap(
+                        commentBg,
+                        (1080 - commentBg.width) / 2f,
+                        (1920 - value * commentBgGap).toFloat(),
+                        paint
+                    )
+                }else if(index > startIndex + 30){
+                    canvas.drawBitmap(
+                        commentBg,
+                        (1080 - commentBg.width) / 2f,
+                        (1920 - 30 * commentBgGap).toFloat(),
+                        paint
+                    )
                 }
+
 
                 if (index == 0) {
                     setHandlePic(originPic, inputBitmap)
