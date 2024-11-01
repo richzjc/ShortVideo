@@ -40,7 +40,7 @@ fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: Te
         // 获取应用的内部存储路径
         val fengMianFile = File(imageFile, "fengmian.png")
         // 创建文件输出流
-        val fos = FileOutputStream(imageFile)
+        val fos = FileOutputStream(fengMianFile)
         // 将 Bitmap 压缩为 JPEG 格式并写入文件流
         outputBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
         // 关闭文件流
@@ -113,6 +113,7 @@ fun processImage(
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
         paint.alpha = 255
 
+        var fengmian = BitmapFactory.decodeFile(File(File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou"), "fengmian.png").absolutePath)
 
         var commentBg = BitmapFactory.decodeFile(selectPicPath)
         var commentBgWidth = 1080 - ScreenUtils.dip2px(40f)
@@ -122,10 +123,19 @@ fun processImage(
         var commentBgGap = ((commentBgHeight + ScreenUtils.dip2px(10f)) / (30 * 1.0f)).toInt()
         commentBg = getRoundedCornerBitmap(commentBg, ScreenUtils.dip2px(20f).toFloat())
 
+
+        var followHintBitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.follow_hint)
+        var followHintBitmapWidth = commentBgWidth
+        var followHintBitmapHeight = (followHintBitmap.height * commentBgWidth) / (followHintBitmap.width * 1.0f)
+        followHintBitmap =
+            Bitmap.createScaledBitmap(followHintBitmap, followHintBitmapWidth, followHintBitmapHeight.toInt(), false)
+        var horizonGap = (1080f/(listFiles.size/2 - 30)).toInt()
+        followHintBitmap = getRoundedCornerBitmap(followHintBitmap, ScreenUtils.dip2px(20f).toFloat())
+
         var startX = 0
         var gap = (1920 - 1080) / 150f
         var isIncrease = true
-        var startIndex = max(listFiles.size - 90, 0)
+        var startIndex = listFiles.size/2
         listFiles?.forEachIndexed { index, it ->
             try {
                 updateStatusText(
@@ -156,6 +166,7 @@ fun processImage(
 
                 //绘制图片
                 var inputBitmap = BitmapFactory.decodeFile(it.absolutePath)
+                inputBitmap = getRoundedCornerBitmap(inputBitmap, ScreenUtils.dip2px(15f).toFloat())
                 if (index <= startIndex) {
                     val inputWidth = 1080 * 0.98f
                     val inputHeight = 1920 * 0.98f
@@ -225,13 +236,29 @@ fun processImage(
                         paint
                     )
                 }else if(index >= startIndex + 30){
+                    var offset = (index - startIndex - 30) * horizonGap
                     canvas.drawBitmap(
                         commentBg,
-                        (1080 - commentBg.width) / 2f,
+                        (1080 - commentBg.width) / 2f - offset,
+                        (1920 - 30 * commentBgGap).toFloat(),
+                        paint
+                    )
+
+                    canvas.drawBitmap(
+                        followHintBitmap,
+                        1080f - offset,
                         (1920 - 30 * commentBgGap).toFloat(),
                         paint
                     )
                 }
+
+
+                if(index < 20){
+                    paint.alpha = (255 - 25.5 * (index + 1) * 0.5).toInt()
+                    canvas.drawBitmap(fengmian, 0f, 0f, paint)
+                    paint.alpha = 255
+                }
+
 
 
                 if (index == 0) {
@@ -256,15 +283,6 @@ fun processImage(
     updateStatusText("图片处理完成", statusTV)
 }
 
-
-private fun isBlack(color: Int): Boolean {
-    // 可以根据实际需求调整黑色阈值
-    val threshold = 10
-    val r = Color.red(color)
-    val g = Color.green(color)
-    val b = Color.blue(color)
-    return r < threshold && g < threshold && b < threshold
-}
 
 fun setHandlePic(handlePic: ImageView?, resultBitmap: Bitmap) {
     Handler(Looper.getMainLooper()).post {
