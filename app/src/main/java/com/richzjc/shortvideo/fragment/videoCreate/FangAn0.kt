@@ -24,11 +24,46 @@ import com.richzjc.shortvideo.util.requestData
 import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 import kotlin.math.max
 
+private fun copyRawToFile(context: Context, rawResId: Int, outputFile: File) {
+    val inputStream: InputStream = context.resources.openRawResource(rawResId)
+    val outputStream = FileOutputStream(outputFile)
+
+    inputStream.use { input ->
+        outputStream.use { output ->
+            input.copyTo(output)
+        }
+    }
+}
 
 fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: TextView?) {
     requestData {
+        var pianTouVideoPath = File(QDUtil.getShareImageCache(context).absolutePath, "piantou.mp4")
+        if(!pianTouVideoPath.exists()){
+            copyRawToFile(context, R.raw.piantou, pianTouVideoPath)
+        }
+
+        val imageFile = File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou")
+        if(!imageFile.exists()){
+            imageFile.mkdirs()
+        }
+
+        val command = "-i ${pianTouVideoPath.absolutePath} ${imageFile.absolutePath}/%d.png"
+        val returnCode = FFmpeg.execute(command)
+        if (returnCode == 0) {
+            // 命令执行成功
+            updateStatusText("提取片头帧图片完成", statusTV)
+        } else {
+            // 命令执行失败
+            updateStatusText("提取片头帧图片失败", statusTV)
+            // 获取错误日志
+            val output = Config.getLastCommandOutput()
+            Log.e("FFmpeg Error", output)
+            return@requestData
+        }
+
         originPath?.forEachIndexed { index, s ->
             val file0 = File(QDUtil.getShareImageCache(context).absolutePath, "image${index}")
             if (file0.exists()) {

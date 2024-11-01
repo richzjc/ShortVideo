@@ -17,6 +17,83 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.Arrays
 
+fun genneratePianTouVideo(context: Context, statusTV: TextView?, originPath: String) {
+    updateStatusText("开始生成片头视频", statusTV)
+    try {
+        val file = File(QDUtil.getShareImageCache(context).absolutePath, "PianTouVideo")
+        if (!file.exists())
+            file.mkdirs()
+
+        // 创建一个 MediaMetadataRetriever 对象
+        val retriever = MediaMetadataRetriever()
+
+
+        // 设置数据源为视频文件的 URI
+        retriever.setDataSource(originPath)
+
+        // 获取视频总时长
+        val time =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: "0"
+        val frameCountStr =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)
+        val frameCount = frameCountStr?.toLongOrNull() ?: 0
+
+
+        // Define the output video size and frame rate
+        val second = time.toLong() / 1000L
+        val fps = frameCount * 1.0 / second
+
+        val outputFile = File(
+            File(QDUtil.getShareImageCache(context).absolutePath, "PianTouVideo"),
+            "painTou.mp4"
+        )
+        if (outputFile.exists())
+            outputFile.delete()
+
+
+        val file1 = File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou")
+        if (!file1.exists())
+            file1.mkdirs()
+
+        val listFiles = file1.listFiles()
+        if (listFiles == null || listFiles.size <= 0)
+            return
+
+        Arrays.sort<File>(listFiles) { f1: File, f2: File ->
+            val num1: Int = extractNumber(f1.getName())
+            val num2: Int = extractNumber(f2.getName())
+            Integer.compare(num1, num2)
+        }
+
+        // 创建一个临时文本文件来存储图片路径
+        val imageListPathFile = File(context?.getExternalFilesDir(null), "pianTou");
+        if (imageListPathFile.exists())
+            imageListPathFile.delete()
+
+        val imageListPath: String = imageListPathFile.absolutePath
+        createImageListFile(listFiles, imageListPath, fps)
+
+        // 设置帧率，假设每秒24帧
+        val frameRate = fps
+
+        // 构建FFmpeg命令
+        val cmd =
+            "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
+
+        // 执行FFmpeg命令
+        val returnCode = FFmpeg.execute(cmd)
+        if (returnCode == Config.RETURN_CODE_SUCCESS) {
+            updateStatusText("生成片头视频成功", statusTV)
+        } else if (returnCode == Config.RETURN_CODE_CANCEL) {
+            updateStatusText("生成片头个视频取消", statusTV)
+        } else {
+            updateStatusText("生成片头个视频失败", statusTV)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        updateStatusText("生成片头个视频失败", statusTV)
+    }
+}
 
 fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextView?, index: Int) {
     updateStatusText("开始生成第${index}个视频", statusTV)
@@ -152,12 +229,11 @@ fun pinJiePianTou(outputVideoPath: String, requireContext: Context, statusTV: Te
         "realOutVideo.mp4"
     ).absolutePath
 
+
     val pianTouFile = File(
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-        "pianTou.mp4"
+        File(QDUtil.getShareImageCache(requireContext).absolutePath, "PianTouVideo"),
+        "painTou.mp4"
     )
-    if (!pianTouFile.exists())
-        copyRawToFile(requireContext, R.raw.piantou, pianTouFile)
 
     val inputFile = File(requireContext.cacheDir, "videoPath.txt")
     if (inputFile.exists())
@@ -189,16 +265,7 @@ fun pinJiePianTou(outputVideoPath: String, requireContext: Context, statusTV: Te
     }
 }
 
-fun copyRawToFile(context: Context, rawResId: Int, outputFile: File) {
-    val inputStream: InputStream = context.resources.openRawResource(rawResId)
-    val outputStream = FileOutputStream(outputFile)
 
-    inputStream.use { input ->
-        outputStream.use { output ->
-            input.copyTo(output)
-        }
-    }
-}
 
 fun createImageListFile(
     imagePaths: Array<File>,
