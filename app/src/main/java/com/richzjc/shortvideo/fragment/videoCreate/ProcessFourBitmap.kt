@@ -17,84 +17,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.Arrays
 
-fun genneratePianTouVideo(context: Context, statusTV: TextView?, originPath: String) {
-    updateStatusText("开始生成片头视频", statusTV)
-    try {
-        val file = File(QDUtil.getShareImageCache(context).absolutePath, "PianTouVideo")
-        if (!file.exists())
-            file.mkdirs()
-
-        // 创建一个 MediaMetadataRetriever 对象
-        val retriever = MediaMetadataRetriever()
-
-
-        // 设置数据源为视频文件的 URI
-        retriever.setDataSource(originPath)
-
-        // 获取视频总时长
-        val time =
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: "0"
-        val frameCountStr =
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)
-        val frameCount = frameCountStr?.toLongOrNull() ?: 0
-
-
-        // Define the output video size and frame rate
-        val second = time.toLong() / 1000L
-        val fps = frameCount * 1.0 / second
-
-        val outputFile = File(
-            File(QDUtil.getShareImageCache(context).absolutePath, "PianTouVideo"),
-            "painTou.mp4"
-        )
-        if (outputFile.exists())
-            outputFile.delete()
-
-
-        val file1 = File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou")
-        if (!file1.exists())
-            file1.mkdirs()
-
-        val listFiles = file1.listFiles()
-        if (listFiles == null || listFiles.size <= 0)
-            return
-
-        Arrays.sort<File>(listFiles) { f1: File, f2: File ->
-            val num1: Int = extractNumber(f1.getName())
-            val num2: Int = extractNumber(f2.getName())
-            Integer.compare(num1, num2)
-        }
-
-        // 创建一个临时文本文件来存储图片路径
-        val imageListPathFile = File(context?.getExternalFilesDir(null), "pianTou");
-        if (imageListPathFile.exists())
-            imageListPathFile.delete()
-
-        val imageListPath: String = imageListPathFile.absolutePath
-        createImageListFile(listFiles, imageListPath, fps)
-
-        // 设置帧率，假设每秒24帧
-        val frameRate = fps
-
-        // 构建FFmpeg命令
-        val cmd =
-            "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
-
-        // 执行FFmpeg命令
-        val returnCode = FFmpeg.execute(cmd)
-        if (returnCode == Config.RETURN_CODE_SUCCESS) {
-            updateStatusText("生成片头视频成功", statusTV)
-        } else if (returnCode == Config.RETURN_CODE_CANCEL) {
-            updateStatusText("生成片头个视频取消", statusTV)
-        } else {
-            updateStatusText("生成片头个视频失败", statusTV)
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        updateStatusText("生成片头个视频失败", statusTV)
-    }
-}
-
 fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextView?, index: Int) {
     updateStatusText("开始生成第${index}个视频", statusTV)
     try {
@@ -143,17 +65,25 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
             Integer.compare(num1, num2)
         }
 
+        val file2 = File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou")
+        if (!file2.exists())
+            file2.mkdirs()
+
+        val listFiles2 = file2.listFiles()
+        if (listFiles2 == null || listFiles2.size <= 0)
+            return
+
         // 创建一个临时文本文件来存储图片路径
         val imageListPathFile = File(context?.getExternalFilesDir(null), "my_directory");
         if (imageListPathFile.exists())
             imageListPathFile.delete()
 
         val imageListPath: String = imageListPathFile.absolutePath
-        createImageListFile(listFiles, imageListPath, fps)
+        createImageListFile(listFiles2, listFiles, imageListPath, fps)
 
         // 设置帧率，假设每秒24帧
         val frameRate = fps
-
+        val offsetTime = listFiles2.size/fps
         // 构建FFmpeg命令
         val cmd =
             "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
@@ -162,7 +92,7 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
         val returnCode = FFmpeg.execute(cmd)
         if (returnCode == Config.RETURN_CODE_SUCCESS) {
             updateStatusText("生成${index}个视频成功", statusTV)
-            heChengVideo(statusTV, context, originPath, index)
+            heChengVideo(statusTV, context, originPath, index, offsetTime)
         } else if (returnCode == Config.RETURN_CODE_CANCEL) {
             updateStatusText("生成${index}个视频取消", statusTV)
         } else {
@@ -174,7 +104,7 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
     }
 }
 
-fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, index: Int) {
+fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, index: Int, offsetTime : Double) {
     updateStatusText("合成第${index}个最终视频", statusTV)
 
     val file = File(QDUtil.getShareImageCache(context), "video")
@@ -199,9 +129,9 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     else
         fileName = "8"
 
+    
     // 输出音频文件路径
     val outputVideoPath = File(outputFile, "${fileName}.mp4").absolutePath
-
     val command = arrayOf<String>(
         "-i", inputVideoPath,  // 第一个视频，音频来源
         "-i", inputVideoPath1,  // 第二个视频，视频来源
@@ -216,58 +146,14 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     var returnCode = FFmpeg.execute(command)
     if (returnCode == 0) {
         updateStatusText("合成第${index}个视频成功", statusTV)
-        pinJiePianTou(outputVideoPath, context, statusTV)
     } else {
+        Log.e("ffmpeg", Config.getLastCommandOutput())
         updateStatusText("合成第${index}个视频失败", statusTV)
     }
 }
 
-fun pinJiePianTou(outputVideoPath: String, requireContext: Context, statusTV: TextView?) {
-    updateStatusText("开始拼接片头视频", statusTV)
-    val realOutputFile = File(
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-        "realOutVideo.mp4"
-    ).absolutePath
-
-
-    val pianTouFile = File(
-        File(QDUtil.getShareImageCache(requireContext).absolutePath, "PianTouVideo"),
-        "painTou.mp4"
-    )
-
-    val inputFile = File(requireContext.cacheDir, "videoPath.txt")
-    if (inputFile.exists())
-        inputFile.delete()
-
-    inputFile.createNewFile()
-    // FFmpeg 命令
-    inputFile.writeText(
-        "file '${pianTouFile.absolutePath}'\n" +
-                "file '${outputVideoPath}'"
-    )
-
-    val command =
-        "-f concat -safe 0 -i '${inputFile.absolutePath}' -c copy '${realOutputFile}'"
-
-
-    // 构建concat命令
-//    val command = java.lang.String.format("-i concat:%s|%s -c copy %s", pianTouFile.absolutePath, outputVideoPath, realOutputFile)
-
-    Log.e("ffmpeg", command)
-    // 执行命令
-    var returnCode = FFmpeg.execute(command)
-    if (returnCode == 0) {
-        updateStatusText("拼接片头成功", statusTV)
-    } else {
-        val msg = Config.getLastCommandOutput()
-        Log.e("ffmpeg", msg)
-        updateStatusText("拼接片头失败:" + msg, statusTV)
-    }
-}
-
-
-
 fun createImageListFile(
+    imagePathsPianTou : Array<File>,
     imagePaths: Array<File>,
     imageListPath: String,
     frameCount: Double
@@ -275,6 +161,12 @@ fun createImageListFile(
     try {
         val time = 1 / frameCount
         BufferedWriter(FileWriter(imageListPath)).use { writer ->
+            for (imagePath in imagePathsPianTou) {
+                writer.write("file '${imagePath.absolutePath}'\n")
+                // 设置每张图片显示的持续时间
+                writer.write("duration ${time}\n") // 每张图片显示时间（秒），24帧每秒 -> 1/24 ≈ 0.04
+            }
+
             for (imagePath in imagePaths) {
                 writer.write("file '${imagePath.absolutePath}'\n")
                 // 设置每张图片显示的持续时间

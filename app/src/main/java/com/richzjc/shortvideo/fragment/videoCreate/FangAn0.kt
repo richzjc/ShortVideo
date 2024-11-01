@@ -27,42 +27,24 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import kotlin.math.max
 
-private fun copyRawToFile(context: Context, rawResId: Int, outputFile: File) {
-    val inputStream: InputStream = context.resources.openRawResource(rawResId)
-    val outputStream = FileOutputStream(outputFile)
-
-    inputStream.use { input ->
-        outputStream.use { output ->
-            input.copyTo(output)
-        }
-    }
-}
-
 fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: TextView?) {
     requestData {
-        var pianTouVideoPath = File(QDUtil.getShareImageCache(context).absolutePath, "piantou.mp4")
-        if(!pianTouVideoPath.exists()){
-            copyRawToFile(context, R.raw.piantou, pianTouVideoPath)
-        }
 
         val imageFile = File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou")
         if(!imageFile.exists()){
             imageFile.mkdirs()
         }
 
-        val command = "-i ${pianTouVideoPath.absolutePath} ${imageFile.absolutePath}/%d.png"
-        val returnCode = FFmpeg.execute(command)
-        if (returnCode == 0) {
-            // 命令执行成功
-            updateStatusText("提取片头帧图片完成", statusTV)
-        } else {
-            // 命令执行失败
-            updateStatusText("提取片头帧图片失败", statusTV)
-            // 获取错误日志
-            val output = Config.getLastCommandOutput()
-            Log.e("FFmpeg Error", output)
-            return@requestData
-        }
+        var bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.fengmian)
+        var outputBitmap = Bitmap.createScaledBitmap(bitmap, 1080, 1920, false)
+        // 获取应用的内部存储路径
+        val fengMianFile = File(imageFile, "fengmian.png")
+        // 创建文件输出流
+        val fos = FileOutputStream(imageFile)
+        // 将 Bitmap 压缩为 JPEG 格式并写入文件流
+        outputBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+        // 关闭文件流
+        fos.close()
 
         originPath?.forEachIndexed { index, s ->
             val file0 = File(QDUtil.getShareImageCache(context).absolutePath, "image${index}")

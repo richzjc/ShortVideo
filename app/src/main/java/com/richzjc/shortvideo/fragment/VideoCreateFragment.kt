@@ -1,7 +1,6 @@
 package com.richzjc.shortvideo.fragment
 
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,18 +13,13 @@ import com.huantansheng.easyphotos.EasyPhotos
 import com.huantansheng.easyphotos.models.album.entity.Photo
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.dialog.selectPicFromCameraOrPic
-import com.richzjc.shortvideo.fragment.videoCreate.genneratePianTouVideo
 import com.richzjc.shortvideo.fragment.videoCreate.gennerateVideoNoAudio
-import com.richzjc.shortvideo.fragment.videoCreate.pinJiePianTou
 import com.richzjc.shortvideo.fragment.videoCreate.processImage
 import com.richzjc.shortvideo.fragment.videoCreate.responseHeChengNBA
 import com.richzjc.shortvideo.util.MToastHelper
 import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
 import com.richzjc.shortvideo.util.ShapeDrawable
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 import kotlin.concurrent.thread
 import kotlin.math.min
 
@@ -95,7 +89,6 @@ class VideoCreateFragment : Fragment() {
             MToastHelper.showToast("需要先删除本地文件")
             thread {
                 originPathList?.get(0)?.also {
-                    genneratePianTouVideo(requireContext(), status, it)
                     gennerateVideoNoAudio(it, requireContext(), status, 0)
                 }
             }
