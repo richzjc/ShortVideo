@@ -129,7 +129,6 @@ fun processImage(
         var followHintBitmapHeight = (followHintBitmap.height * commentBgWidth) / (followHintBitmap.width * 1.0f)
         followHintBitmap =
             Bitmap.createScaledBitmap(followHintBitmap, followHintBitmapWidth, followHintBitmapHeight.toInt(), false)
-        var horizonGap = (1080f/(listFiles.size/2 - 30)).toInt()
         followHintBitmap = getRoundedCornerBitmap(followHintBitmap, ScreenUtils.dip2px(20f).toFloat())
 
         var startX = 0
@@ -163,6 +162,14 @@ fun processImage(
                 }
 
                 canvas.drawBitmap(resultBitmap, 0f, 0f, paint)
+
+
+                paint.alpha = 40
+                var startX = 1080 - (index%100) * 10.8f
+                canvas.drawBitmap(followHintBitmap, startX , 1920f/2, paint)
+                paint.alpha = 255
+
+
 
                 //绘制图片
                 var inputBitmap = BitmapFactory.decodeFile(it.absolutePath)
@@ -236,17 +243,9 @@ fun processImage(
                         paint
                     )
                 }else if(index >= startIndex + 30){
-                    var offset = (index - startIndex - 30) * horizonGap
                     canvas.drawBitmap(
                         commentBg,
-                        (1080 - commentBg.width) / 2f - offset,
-                        (1920 - 30 * commentBgGap).toFloat(),
-                        paint
-                    )
-
-                    canvas.drawBitmap(
-                        followHintBitmap,
-                        1080f - offset,
+                        (1080 - commentBg.width) / 2f,
                         (1920 - 30 * commentBgGap).toFloat(),
                         paint
                     )
