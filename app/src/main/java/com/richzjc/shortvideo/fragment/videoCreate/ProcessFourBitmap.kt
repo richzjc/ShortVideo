@@ -114,10 +114,6 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     val inputVideoPath = originPath ?: ""
     val inputVideoPath1 = File(file, "hecheng_noaudio${index}.mp4").absolutePath
 
-    // 输入视频文件路径
-    val outputFile = File(QDUtil.getShareImageCache(context), "realVideo")
-    if (!outputFile.exists())
-        outputFile.mkdirs()
 
     var fileName = ""
     if (index == 0)
@@ -131,7 +127,7 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
 
     
     // 输出音频文件路径
-    val outputVideoPath = File(outputFile, "${fileName}.mp4").absolutePath
+    val outputVideoPath = File(QDUtil.getShareImageCache(context), "${fileName}.mp4").absolutePath
     val command = arrayOf<String>(
         "-i", inputVideoPath,  // 第一个视频，音频来源
         "-i", inputVideoPath1,  // 第二个视频，视频来源
