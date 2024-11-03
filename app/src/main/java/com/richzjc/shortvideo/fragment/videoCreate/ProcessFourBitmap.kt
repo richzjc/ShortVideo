@@ -119,7 +119,7 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     if (!file.exists())
         file.mkdirs()
 
-    var audioFile = File(file, "audio.mp4")
+    var audioFile = File(file, "audio.mp3")
     val command1 = "-i ${originPath} -q:a 0 -map a ${audioFile.absolutePath}"
     var returnCode1 = FFmpeg.execute(command1)
     if (returnCode1 == 0) {
