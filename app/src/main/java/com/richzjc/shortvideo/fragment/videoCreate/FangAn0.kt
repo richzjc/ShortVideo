@@ -27,25 +27,38 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import kotlin.math.max
 
-fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: TextView?) {
-    requestData {
+private fun copyRawToFile(context: Context, rawResId: Int, outputFile: File) {
+    val inputStream: InputStream = context.resources.openRawResource(rawResId)
+    val outputStream = FileOutputStream(outputFile)
 
-        val imageFile = File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou")
-        if(!imageFile.exists()){
-            imageFile.mkdirs()
+    inputStream.use { input ->
+        outputStream.use { output ->
+            input.copyTo(output)
+        }
+    }
+}
+
+fun responseHePianTou(context: Context) {
+    requestData {
+        val file0 = File(QDUtil.getShareImageCache(context), "piantou.mp4")
+        if (!file0.exists()) {
+           copyRawToFile(context, R.raw.piantou, file0)
         }
 
-        var bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.fengmian)
-        var outputBitmap = Bitmap.createScaledBitmap(bitmap, 1080, 1920, false)
-        // 获取应用的内部存储路径
-        val fengMianFile = File(imageFile, "fengmian.png")
-        // 创建文件输出流
-        val fos = FileOutputStream(fengMianFile)
-        // 将 Bitmap 压缩为 JPEG 格式并写入文件流
-        outputBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-        // 关闭文件流
-        fos.close()
+        val file1 = File(QDUtil.getShareImageCache(context), "piantou")
+        if(file1.exists())
+            return@requestData
 
+        file1.mkdirs()
+        delay(1000L)
+
+        val command = "-i ${file0.absolutePath} ${file1.absolutePath}/%d.png"
+        FFmpeg.execute(command)
+    }
+}
+
+fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: TextView?) {
+    requestData {
         originPath?.forEachIndexed { index, s ->
             val file0 = File(QDUtil.getShareImageCache(context).absolutePath, "image${index}")
             if (file0.exists()) {
@@ -74,6 +87,54 @@ fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: Te
                 val output = Config.getLastCommandOutput()
                 Log.e("FFmpeg Error", output)
             }
+        }
+    }
+}
+
+fun handlePianTou(context : Context){
+    // 加载图片
+    val file1 = File(QDUtil.getShareImageCache(context).absolutePath, "piantou_handle")
+    if (file1 != null) {
+        val listFiles = file1.listFiles()
+        listFiles?.forEach {
+            if (it.exists())
+                it.delete()
+        }
+    }
+
+    if (!file1.exists())
+        file1.mkdirs()
+
+
+    val file2 = File(QDUtil.getShareImageCache(context), "piantou")
+    val listFiles = file2.listFiles()
+    val paint = Paint()
+    // 设置画笔去掉透明度
+    paint.isAntiAlias = true
+    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
+    paint.alpha = 255
+    listFiles?.forEachIndexed { index, it ->
+        if(index < 25) {
+            var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(outputBitmap)
+            canvas.drawColor(Color.BLACK)
+            var inputBitmap = BitmapFactory.decodeFile(it.absolutePath)
+            var inputHeight = (inputBitmap.height * 1f/inputBitmap.width) * 1080f
+            inputBitmap = Bitmap.createScaledBitmap(inputBitmap, 1080, inputHeight.toInt(), false)
+            canvas.drawBitmap(
+                inputBitmap,
+                (1080f - inputBitmap.width) / 2f,
+                (1920f - inputBitmap.height) / 2f,
+                paint
+            )
+            // 获取应用的内部存储路径
+            val imageFile = File(file1, it.name)
+            // 创建文件输出流
+            val fos = FileOutputStream(imageFile)
+            // 将 Bitmap 压缩为 JPEG 格式并写入文件流
+            outputBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            // 关闭文件流
+            fos.close()
         }
     }
 }
@@ -113,7 +174,6 @@ fun processImage(
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
         paint.alpha = 255
 
-        var fengmian = BitmapFactory.decodeFile(File(File(QDUtil.getShareImageCache(context).absolutePath, "imagePianTou"), "fengmian.png").absolutePath)
 
         var commentBg = BitmapFactory.decodeFile(selectPicPath)
         var commentBgWidth = 1080 - ScreenUtils.dip2px(40f)
@@ -126,15 +186,22 @@ fun processImage(
 
         var followHintBitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.follow_hint)
         var followHintBitmapWidth = commentBgWidth
-        var followHintBitmapHeight = (followHintBitmap.height * commentBgWidth) / (followHintBitmap.width * 1.0f)
+        var followHintBitmapHeight =
+            (followHintBitmap.height * commentBgWidth) / (followHintBitmap.width * 1.0f)
         followHintBitmap =
-            Bitmap.createScaledBitmap(followHintBitmap, followHintBitmapWidth, followHintBitmapHeight.toInt(), false)
-        followHintBitmap = getRoundedCornerBitmap(followHintBitmap, ScreenUtils.dip2px(20f).toFloat())
+            Bitmap.createScaledBitmap(
+                followHintBitmap,
+                followHintBitmapWidth,
+                followHintBitmapHeight.toInt(),
+                false
+            )
+        followHintBitmap =
+            getRoundedCornerBitmap(followHintBitmap, ScreenUtils.dip2px(20f).toFloat())
 
         var startX = 0
         var gap = (1920 - 1080) / 150f
         var isIncrease = true
-        var startIndex = listFiles.size/2
+        var startIndex = listFiles.size / 2
         listFiles?.forEachIndexed { index, it ->
             try {
                 updateStatusText(
@@ -165,10 +232,9 @@ fun processImage(
 
 
                 paint.alpha = 40
-                var startX = 1080 - (index%100) * 10.8f
-                canvas.drawBitmap(followHintBitmap, startX , 1920f/2, paint)
+                var startX = 1080 - (index % 100) * 10.8f
+                canvas.drawBitmap(followHintBitmap, startX, 1920f / 2, paint)
                 paint.alpha = 255
-
 
 
                 //绘制图片
@@ -183,27 +249,27 @@ fun processImage(
                         inputHeight.toInt(),
                         false
                     )
-                    val startX = (1080 - inputWidth)/2f
-                    val startY = (1920 - inputHeight)/2
+                    val startX = (1080 - inputWidth) / 2f
+                    val startY = (1920 - inputHeight) / 2
                     canvas.drawBitmap(
                         inputBitmap,
                         startX,
                         startY,
                         paint
                     )
-                } else if(index < startIndex + 30) {
+                } else if (index < startIndex + 30) {
                     val inputWidth = 1080 * 0.98f
                     val inputHeight = 1920 * 0.98f
-                    var value = (index - startIndex)%30
+                    var value = (index - startIndex) % 30
                     var realInputHeight = inputHeight - value * commentBgGap
-                    var realInputWidth = (inputWidth * realInputHeight)/inputHeight
+                    var realInputWidth = (inputWidth * realInputHeight) / inputHeight
                     inputBitmap = Bitmap.createScaledBitmap(
                         inputBitmap,
                         realInputWidth.toInt(),
                         realInputHeight.toInt(),
                         false
                     )
-                    val startX = (1080 - realInputWidth)/2f
+                    val startX = (1080 - realInputWidth) / 2f
                     val startY = 1920 * 0.01f
                     canvas.drawBitmap(
                         inputBitmap,
@@ -211,19 +277,19 @@ fun processImage(
                         startY,
                         paint
                     )
-                }else{
+                } else {
                     val inputWidth = 1080 * 0.98f
                     val inputHeight = 1920 * 0.98f
                     var value = 30
                     var realInputHeight = inputHeight - value * commentBgGap
-                    var realInputWidth = (inputWidth * realInputHeight)/inputHeight
+                    var realInputWidth = (inputWidth * realInputHeight) / inputHeight
                     inputBitmap = Bitmap.createScaledBitmap(
                         inputBitmap,
                         realInputWidth.toInt(),
                         realInputHeight.toInt(),
                         false
                     )
-                    val startX = (1080 - realInputWidth)/2f
+                    val startX = (1080 - realInputWidth) / 2f
                     val startY = 1920 * 0.01f
                     canvas.drawBitmap(
                         inputBitmap,
@@ -235,14 +301,14 @@ fun processImage(
 
 
                 if (index > startIndex && index < startIndex + 30) {
-                    var value = (index - startIndex)%30
+                    var value = (index - startIndex) % 30
                     canvas.drawBitmap(
                         commentBg,
                         (1080 - commentBg.width) / 2f,
                         (1920 - value * commentBgGap).toFloat(),
                         paint
                     )
-                }else if(index >= startIndex + 30){
+                } else if (index >= startIndex + 30) {
                     canvas.drawBitmap(
                         commentBg,
                         (1080 - commentBg.width) / 2f,
@@ -250,14 +316,6 @@ fun processImage(
                         paint
                     )
                 }
-
-
-                if(index < 20){
-                    paint.alpha = (255 - 25.5 * (index + 1) * 0.5).toInt()
-                    canvas.drawBitmap(fengmian, 0f, 0f, paint)
-                    paint.alpha = 255
-                }
-
 
 
                 if (index == 0) {
