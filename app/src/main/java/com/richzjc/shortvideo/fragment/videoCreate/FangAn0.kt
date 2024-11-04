@@ -114,13 +114,12 @@ fun handlePianTou(context : Context){
     paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
     paint.alpha = 255
     listFiles?.forEachIndexed { index, it ->
-        if(index < 25) {
+        if(index < 40) {
             var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(outputBitmap)
             canvas.drawColor(Color.BLACK)
             var inputBitmap = BitmapFactory.decodeFile(it.absolutePath)
-            var inputHeight = (inputBitmap.height * 1f/inputBitmap.width) * 1080f
-            inputBitmap = Bitmap.createScaledBitmap(inputBitmap, 1080, inputHeight.toInt(), false)
+            inputBitmap = Bitmap.createScaledBitmap(inputBitmap, 1080, 1920, false)
             canvas.drawBitmap(
                 inputBitmap,
                 (1080f - inputBitmap.width) / 2f,

@@ -119,7 +119,7 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     if (!file.exists())
         file.mkdirs()
 
-    var audioFile = File(file, "audio.mp3")
+    var audioFile = File(file, "audio.mp4")
     val command1 = "-i ${originPath} -q:a 0 -map a ${audioFile.absolutePath}"
     var returnCode1 = FFmpeg.execute(command1)
     if (returnCode1 == 0) {
@@ -143,7 +143,17 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
         // 输出音频文件路径
         val outputVideoPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "${fileName}.mp4").absolutePath
 
-        val command = "-itsoffset ${timeOffset} -i ${audioFile.absolutePath} -i ${inputVideoPath1} -c:v copy -c:a aac ${outputVideoPath}"
+//        val command = "-itsoffset ${timeOffset} -i ${audioFile.absolutePath} -i ${inputVideoPath1} -c:v copy -c:a aac ${outputVideoPath}"
+
+        val command = arrayOf<String>(
+            "-i", audioFile.absolutePath,  // 第一个视频，音频来源
+            "-i", inputVideoPath1,  // 第二个视频，视频来源
+            "-c:v", "copy",  // 复制第二个视频的视频流
+            "-c:a", "aac",  // 使用 AAC 编码器来处理音频
+            "-map", "0:a:0",  // 从第一个视频中选择第一条音频流
+            "-map", "1:v:0",  // 从第二个视频中选择第一条视频流
+            outputVideoPath // 输出合成后的视频文件路径
+        )
 
 //        val command = arrayOf<String>(
 //            "-i", inputVideoPath,  // 第一个视频，音频来源
@@ -156,6 +166,7 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
 //            outputVideoPath // 输出合成后的视频文件路径
 //        )
 
+
         var returnCode = FFmpeg.execute(command)
         if (returnCode == 0) {
             updateStatusText("合成第${index}个视频成功", statusTV)
@@ -163,8 +174,6 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
             Log.e("ffmpeg", Config.getLastCommandOutput())
             updateStatusText("合成第${index}个视频失败", statusTV)
         }
-
-
     } else {
         Log.e("ffmpeg", Config.getLastCommandOutput())
         updateStatusText("提取音频失败", statusTV)
