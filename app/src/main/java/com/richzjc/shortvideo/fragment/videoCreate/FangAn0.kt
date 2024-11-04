@@ -182,7 +182,6 @@ fun processImage(
         var commentBgGap = ((commentBgHeight + ScreenUtils.dip2px(10f)) / (30 * 1.0f)).toInt()
         commentBg = getRoundedCornerBitmap(commentBg, ScreenUtils.dip2px(20f).toFloat())
 
-
         var followHintBitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.follow_hint)
         var followHintBitmapWidth = commentBgWidth
         var followHintBitmapHeight =
@@ -230,10 +229,10 @@ fun processImage(
                 canvas.drawBitmap(resultBitmap, 0f, 0f, paint)
 
 
-                paint.alpha = 40
-                var startX = 1080 - (index % 100) * 10.8f
-                canvas.drawBitmap(followHintBitmap, startX, 1920f / 2, paint)
-                paint.alpha = 255
+//                paint.alpha = 40
+//                var startX = 1080 - (index % 100) * 10.8f
+//                canvas.drawBitmap(followHintBitmap, startX, 1920f / 2, paint)
+//                paint.alpha = 255
 
 
                 //绘制图片
@@ -269,7 +268,7 @@ fun processImage(
                         false
                     )
                     val startX = (1080 - realInputWidth) / 2f
-                    val startY = 1920 * 0.01f
+                    val startY = 1920 * 0.01f + value * commentBgGap
                     canvas.drawBitmap(
                         inputBitmap,
                         startX,
@@ -289,7 +288,7 @@ fun processImage(
                         false
                     )
                     val startX = (1080 - realInputWidth) / 2f
-                    val startY = 1920 * 0.01f
+                    val startY = 1920 * 0.01f + value * commentBgGap
                     canvas.drawBitmap(
                         inputBitmap,
                         startX,
@@ -304,14 +303,14 @@ fun processImage(
                     canvas.drawBitmap(
                         commentBg,
                         (1080 - commentBg.width) / 2f,
-                        (1920 - value * commentBgGap).toFloat(),
+                        (-30 * commentBgGap + value * commentBgGap).toFloat(),
                         paint
                     )
                 } else if (index >= startIndex + 30) {
                     canvas.drawBitmap(
                         commentBg,
                         (1080 - commentBg.width) / 2f,
-                        (1920 - 30 * commentBgGap).toFloat(),
+                        (-30 * commentBgGap + 30 * commentBgGap).toFloat(),
                         paint
                     )
                 }
