@@ -80,7 +80,7 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
             Integer.compare(num1, num2)
         }
 
-        val itemOffset = (listFiles2.size * 1f)/fps
+        val itemOffset = (listFiles2.size * 1f) / fps
 
         // 创建一个临时文本文件来存储图片路径
         val imageListPathFile = File(context?.getExternalFilesDir(null), "my_directory");
@@ -112,7 +112,13 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
     }
 }
 
-fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, index: Int, timeOffset : Double) {
+fun heChengVideo(
+    statusTV: TextView?,
+    context: Context,
+    originPath: String?,
+    index: Int,
+    timeOffset: Double
+) {
     updateStatusText("合成第${index}个最终视频", statusTV)
 
     val file = File(QDUtil.getShareImageCache(context), "video")
@@ -125,25 +131,10 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
     if (returnCode1 == 0) {
         updateStatusText("提取音频成功", statusTV)
 
-
-    val inputVideoPath1 = File(file, "hecheng_noaudio${index}.mp4").absolutePath
-
-
-        var fileName = ""
-        if (index == 0)
-            fileName = "2"
-        else if (index == 1)
-            fileName = "4";
-        else if (index == 2)
-            fileName = "6"
-        else
-            fileName = "8"
-
+        val inputVideoPath1 = File(file, "hecheng_noaudio${index}.mp4").absolutePath
 
         // 输出音频文件路径
-        val outputVideoPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "${fileName}.mp4").absolutePath
-
-//        val command = "-itsoffset ${timeOffset} -i ${audioFile.absolutePath} -i ${inputVideoPath1} -c:v copy -c:a aac ${outputVideoPath}"
+        val outputVideoPath = File(QDUtil.getShareImageCache(context), "hasAudio.mp4").absolutePath
 
         val command = arrayOf<String>(
             "-i", audioFile.absolutePath,  // 第一个视频，音频来源
@@ -155,21 +146,18 @@ fun heChengVideo(statusTV: TextView?, context: Context, originPath: String?, ind
             outputVideoPath // 输出合成后的视频文件路径
         )
 
-//        val command = arrayOf<String>(
-//            "-i", inputVideoPath,  // 第一个视频，音频来源
-//            "-i", inputVideoPath1,  // 第二个视频，视频来源
-//            "-c:v", "copy",  // 复制第二个视频的视频流
-//            "-c:a", "aac",  // 使用 AAC 编码器来处理音频
-//            "-map", "0:a:0",  // 从第一个视频中选择第一条音频流
-//            "-map", "1:v:0",  // 从第二个视频中选择第一条视频流
-//            "-shortest",  // 以较短的视频长度为基准
-//            outputVideoPath // 输出合成后的视频文件路径
-//        )
-
-
         var returnCode = FFmpeg.execute(command)
         if (returnCode == 0) {
-            updateStatusText("合成第${index}个视频成功", statusTV)
+            updateStatusText("开始偏移音频", statusTV)
+            val offsetVideoPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "hasAudio.mp4").absolutePath
+            var realCommand = "-i ${outputVideoPath} -ss ${timeOffset} -c copy ${offsetVideoPath}"
+            var returnCode = FFmpeg.execute(realCommand)
+            if (returnCode == 0) {
+                updateStatusText("偏移视频成功", statusTV)
+            } else {
+                Log.e("ffmpeg", Config.getLastCommandOutput())
+                updateStatusText("偏移视频失败", statusTV)
+            }
         } else {
             Log.e("ffmpeg", Config.getLastCommandOutput())
             updateStatusText("合成第${index}个视频失败", statusTV)

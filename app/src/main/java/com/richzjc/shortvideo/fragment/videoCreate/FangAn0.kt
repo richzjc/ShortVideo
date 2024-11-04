@@ -303,14 +303,14 @@ fun processImage(
                     canvas.drawBitmap(
                         commentBg,
                         (1080 - commentBg.width) / 2f,
-                        (-30 * commentBgGap + value * commentBgGap).toFloat(),
+                        1920 * 0.01f + (-30 * commentBgGap + value * commentBgGap).toFloat(),
                         paint
                     )
                 } else if (index >= startIndex + 30) {
                     canvas.drawBitmap(
                         commentBg,
                         (1080 - commentBg.width) / 2f,
-                        (-30 * commentBgGap + 30 * commentBgGap).toFloat(),
+                        1920 * 0.01f + (-30 * commentBgGap + 30 * commentBgGap).toFloat(),
                         paint
                     )
                 }
