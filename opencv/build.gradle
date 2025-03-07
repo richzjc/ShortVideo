@@ -4,12 +4,11 @@ apply plugin: 'com.android.library'
 //apply from: '../basic_ktx.gradle'
 
 android {
-    compileSdkVersion COMPILE_SDK_VERSION as int
-    buildToolsVersion BUILD_TOOL_VERSION
+    compileSdk ANDROID_TARGET_VERSION as int
     namespace 'org.opencv'
     defaultConfig {
-        minSdkVersion ANDROID_MIN_VERSION  as int
-        targetSdkVersion ANDROID_TARGET_VERSION  as int
+        minSdk ANDROID_MIN_VERSION as int
+        targetSdk ANDROID_TARGET_VERSION as int
         versionCode 1
         versionName "1.0"
 
@@ -67,9 +66,10 @@ android {
     }
 
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+
 
     externalNativeBuild {
         cmake {

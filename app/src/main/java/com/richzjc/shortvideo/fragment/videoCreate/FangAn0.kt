@@ -27,35 +27,6 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import kotlin.math.max
 
-private fun copyRawToFile(context: Context, rawResId: Int, outputFile: File) {
-    val inputStream: InputStream = context.resources.openRawResource(rawResId)
-    val outputStream = FileOutputStream(outputFile)
-
-    inputStream.use { input ->
-        outputStream.use { output ->
-            input.copyTo(output)
-        }
-    }
-}
-
-fun responseHePianTou(context: Context) {
-    requestData {
-        val file0 = File(QDUtil.getShareImageCache(context), "piantou.mp4")
-        if (!file0.exists()) {
-           copyRawToFile(context, R.raw.piantou, file0)
-        }
-
-        val file1 = File(QDUtil.getShareImageCache(context), "piantou")
-        if(file1.exists())
-            return@requestData
-
-        file1.mkdirs()
-        delay(1000L)
-
-        val command = "-i ${file0.absolutePath} ${file1.absolutePath}/%d.png"
-        FFmpeg.execute(command)
-    }
-}
 
 fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: TextView?) {
     requestData {
@@ -87,53 +58,6 @@ fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: Te
                 val output = Config.getLastCommandOutput()
                 Log.e("FFmpeg Error", output)
             }
-        }
-    }
-}
-
-fun handlePianTou(context : Context){
-    // 加载图片
-    val file1 = File(QDUtil.getShareImageCache(context).absolutePath, "piantou_handle")
-    if (file1 != null) {
-        val listFiles = file1.listFiles()
-        listFiles?.forEach {
-            if (it.exists())
-                it.delete()
-        }
-    }
-
-    if (!file1.exists())
-        file1.mkdirs()
-
-
-    val file2 = File(QDUtil.getShareImageCache(context), "piantou")
-    val listFiles = file2.listFiles()
-    val paint = Paint()
-    // 设置画笔去掉透明度
-    paint.isAntiAlias = true
-    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
-    paint.alpha = 255
-    listFiles?.forEachIndexed { index, it ->
-        if(index < 40) {
-            var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(outputBitmap)
-            canvas.drawColor(Color.BLACK)
-            var inputBitmap = BitmapFactory.decodeFile(it.absolutePath)
-            inputBitmap = Bitmap.createScaledBitmap(inputBitmap, 1080, 1920, false)
-            canvas.drawBitmap(
-                inputBitmap,
-                (1080f - inputBitmap.width) / 2f,
-                (1920f - inputBitmap.height) / 2f,
-                paint
-            )
-            // 获取应用的内部存储路径
-            val imageFile = File(file1, it.name)
-            // 创建文件输出流
-            val fos = FileOutputStream(imageFile)
-            // 将 Bitmap 压缩为 JPEG 格式并写入文件流
-            outputBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            // 关闭文件流
-            fos.close()
         }
     }
 }

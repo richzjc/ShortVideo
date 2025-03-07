@@ -11,7 +11,7 @@ pluginManagement {
                 username properties.getProperty("mavenUser")
                 password properties.getProperty("mavenPwd")
             }
-            url 'https://maven.wallstcn.com/repository/mobile-public/'
+            url 'https://maven.wscn.net/repository/mobile-public/'
         }
     }
 }
@@ -36,7 +36,7 @@ dependencyResolutionManagement {
                 username properties.getProperty("mavenUser")
                 password properties.getProperty("mavenPwd")
             }
-            url 'https://maven.wallstcn.com/repository/mobile-public/'
+            url 'https://maven.wscn.net/repository/mobile-public/'
         }
     }
 }

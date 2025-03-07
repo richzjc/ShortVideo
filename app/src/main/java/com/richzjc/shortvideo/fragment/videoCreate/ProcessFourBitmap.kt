@@ -66,29 +66,13 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
         }
 
 
-        val file2 = File(QDUtil.getShareImageCache(context).absolutePath, "piantou_handle")
-        if (!file2.exists())
-            file2.mkdirs()
-
-        val listFiles2 = file2.listFiles()
-        if (listFiles2 == null || listFiles2.size <= 0)
-            return
-
-        Arrays.sort<File>(listFiles2) { f1: File, f2: File ->
-            val num1: Int = extractNumber(f1.getName())
-            val num2: Int = extractNumber(f2.getName())
-            Integer.compare(num1, num2)
-        }
-
-        val itemOffset = (listFiles2.size * 1f) / fps
-
         // 创建一个临时文本文件来存储图片路径
         val imageListPathFile = File(context?.getExternalFilesDir(null), "my_directory");
         if (imageListPathFile.exists())
             imageListPathFile.delete()
 
         val imageListPath: String = imageListPathFile.absolutePath
-        createImageListFile(listFiles2, listFiles, imageListPath, fps)
+        createImageListFile(listFiles, imageListPath, fps)
 
         // 设置帧率，假设每秒24帧
         val frameRate = fps
@@ -100,7 +84,7 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
         val returnCode = FFmpeg.execute(cmd)
         if (returnCode == Config.RETURN_CODE_SUCCESS) {
             updateStatusText("生成${index}个视频成功", statusTV)
-            heChengVideo(statusTV, context, originPath, index, itemOffset)
+            heChengVideo(statusTV, context, originPath, index)
         } else if (returnCode == Config.RETURN_CODE_CANCEL) {
             updateStatusText("生成${index}个视频取消", statusTV)
         } else {
@@ -116,8 +100,7 @@ fun heChengVideo(
     statusTV: TextView?,
     context: Context,
     originPath: String?,
-    index: Int,
-    timeOffset: Double
+    index: Int
 ) {
     updateStatusText("合成第${index}个最终视频", statusTV)
 
@@ -125,51 +108,31 @@ fun heChengVideo(
     if (!file.exists())
         file.mkdirs()
 
-    var audioFile = File(file, "audio.mp4")
-    val command1 = "-i ${originPath} -q:a 0 -map a ${audioFile.absolutePath}"
-    var returnCode1 = FFmpeg.execute(command1)
-    if (returnCode1 == 0) {
-        updateStatusText("提取音频成功", statusTV)
+    updateStatusText("提取音频成功", statusTV)
+    val inputVideoPath1 = File(file, "hecheng_noaudio${index}.mp4").absolutePath
+    // 输出音频文件路径
+    val outputVideoPath = File(QDUtil.getShareImageCache(context), "hasAudio.mp4").absolutePath
 
-        val inputVideoPath1 = File(file, "hecheng_noaudio${index}.mp4").absolutePath
+    val command = arrayOf<String>(
+        "-i", originPath!!,  // 第一个视频，音频来源
+        "-i", inputVideoPath1,  // 第二个视频，视频来源
+        "-c:v", "copy",  // 复制第二个视频的视频流
+        "-c:a", "aac",  // 使用 AAC 编码器来处理音频
+        "-map", "0:a:0",  // 从第一个视频中选择第一条音频流
+        "-map", "1:v:0",  // 从第二个视频中选择第一条视频流
+        outputVideoPath // 输出合成后的视频文件路径
+    )
 
-        // 输出音频文件路径
-        val outputVideoPath = File(QDUtil.getShareImageCache(context), "hasAudio.mp4").absolutePath
-
-        val command = arrayOf<String>(
-            "-i", audioFile.absolutePath,  // 第一个视频，音频来源
-            "-i", inputVideoPath1,  // 第二个视频，视频来源
-            "-c:v", "copy",  // 复制第二个视频的视频流
-            "-c:a", "aac",  // 使用 AAC 编码器来处理音频
-            "-map", "0:a:0",  // 从第一个视频中选择第一条音频流
-            "-map", "1:v:0",  // 从第二个视频中选择第一条视频流
-            outputVideoPath // 输出合成后的视频文件路径
-        )
-
-        var returnCode = FFmpeg.execute(command)
-        if (returnCode == 0) {
-            updateStatusText("开始偏移音频", statusTV)
-            val offsetVideoPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "hasAudio.mp4").absolutePath
-            var realCommand = "-i ${outputVideoPath} -ss ${timeOffset} -c copy ${offsetVideoPath}"
-            var returnCode = FFmpeg.execute(realCommand)
-            if (returnCode == 0) {
-                updateStatusText("偏移视频成功", statusTV)
-            } else {
-                Log.e("ffmpeg", Config.getLastCommandOutput())
-                updateStatusText("偏移视频失败", statusTV)
-            }
-        } else {
-            Log.e("ffmpeg", Config.getLastCommandOutput())
-            updateStatusText("合成第${index}个视频失败", statusTV)
-        }
+    var returnCode = FFmpeg.execute(command)
+    if (returnCode == 0) {
+        updateStatusText("合成成功", statusTV)
     } else {
         Log.e("ffmpeg", Config.getLastCommandOutput())
-        updateStatusText("提取音频失败", statusTV)
+        updateStatusText("合成第${index}个视频失败", statusTV)
     }
 }
 
 fun createImageListFile(
-    imagePaths2: Array<File>,
     imagePaths: Array<File>,
     imageListPath: String,
     frameCount: Double
@@ -177,12 +140,6 @@ fun createImageListFile(
     try {
         val time = 1 / frameCount
         BufferedWriter(FileWriter(imageListPath)).use { writer ->
-            for (imagePath in imagePaths2) {
-                writer.write("file '${imagePath.absolutePath}'\n")
-                // 设置每张图片显示的持续时间
-                writer.write("duration ${time}\n") // 每张图片显示时间（秒），24帧每秒 -> 1/24 ≈ 0.04
-            }
-
             for (imagePath in imagePaths) {
                 writer.write("file '${imagePath.absolutePath}'\n")
                 // 设置每张图片显示的持续时间

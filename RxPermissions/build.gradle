@@ -1,19 +1,22 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdk 34
+    compileSdk ANDROID_TARGET_VERSION as int
     namespace 'com.tbruyelle.rxpermissions3'
     defaultConfig {
-        minSdk 26
-        targetSdk 34
+        minSdk ANDROID_MIN_VERSION as int
+        targetSdk ANDROID_TARGET_VERSION as int
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     buildTypes {

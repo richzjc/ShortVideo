@@ -14,10 +14,8 @@ import com.huantansheng.easyphotos.models.album.entity.Photo
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.dialog.selectPicFromCameraOrPic
 import com.richzjc.shortvideo.fragment.videoCreate.gennerateVideoNoAudio
-import com.richzjc.shortvideo.fragment.videoCreate.handlePianTou
 import com.richzjc.shortvideo.fragment.videoCreate.processImage
 import com.richzjc.shortvideo.fragment.videoCreate.responseHeChengNBA
-import com.richzjc.shortvideo.fragment.videoCreate.responseHePianTou
 import com.richzjc.shortvideo.util.MToastHelper
 import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
@@ -77,14 +75,12 @@ class VideoCreateFragment : Fragment() {
             MToastHelper.showToast("需要先删除本地文件")
             thread {
                 responseHeChengNBA(requireContext(), originPathList, status)
-                responseHePianTou(requireContext())
             }
         }
 
         process.setOnClickListener {
             MToastHelper.showToast("需要先删除本地文件")
             thread {
-                handlePianTou(requireContext())
                 processImage(requireContext(), status, selectPicPath, handlePic, originPic)
             }
         }
