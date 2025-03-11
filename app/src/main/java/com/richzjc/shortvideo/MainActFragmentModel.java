@@ -1,5 +1,6 @@
 package com.richzjc.shortvideo;
 
+import com.richzjc.shortvideo.fragment.AutoFragment;
 import com.richzjc.shortvideo.fragment.EditPicFragment;
 import com.richzjc.shortvideo.fragment.PicVideoFragment;
 import com.richzjc.shortvideo.fragment.VideoCreateFragment;
@@ -33,6 +34,7 @@ public class MainActFragmentModel {
 
         tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "图片编辑", EditPicFragment.class, "editPic"));
         tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "视频制作", VideoCreateFragment.class, "videoCreate"));
-        tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "图片视频", PicVideoFragment.class, "videoCreate"));
+        tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "图片视频", PicVideoFragment.class, "picCreate"));
+        tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "自动化", AutoFragment.class, "autoCreate"));
     }
 }
