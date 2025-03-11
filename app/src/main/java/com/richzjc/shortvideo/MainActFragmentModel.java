@@ -32,7 +32,7 @@ public class MainActFragmentModel {
             tabItemEntities = new ArrayList<>();
 
 //        tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "图片编辑", EditPicFragment.class, "editPic"));
-        tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "视频制作", VideoCreateFragment.class, "videoCreate"));
+//        tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "视频制作", VideoCreateFragment.class, "videoCreate"));
         tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "图片视频", PicVideoFragment.class, "videoCreate"));
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
@@ -14,9 +13,8 @@ import android.os.Looper
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.graphics.set
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.util.QDUtil
 import com.richzjc.shortvideo.util.ScreenUtils
@@ -24,8 +22,6 @@ import com.richzjc.shortvideo.util.requestData
 import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
-import kotlin.math.max
 
 
 fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: TextView?) {
@@ -47,16 +43,12 @@ fun responseHeChengNBA(context: Context, originPath: List<String>?, statusTV: Te
             delay(1000L)
 
             val command = "-i ${file1.absolutePath} ${file0.absolutePath}/%d.png"
-            val returnCode = FFmpeg.execute(command)
-            if (returnCode == 0) {
-                // 命令执行成功
-                updateStatusText("提取帧图片完成", statusTV)
-            } else {
-                // 命令执行失败
-                updateStatusText("提取帧图片失败", statusTV)
-                // 获取错误日志
-                val output = Config.getLastCommandOutput()
-                Log.e("FFmpeg Error", output)
+            FFmpegKit.executeAsync(command) { session ->
+                if (session != null && ReturnCode.isSuccess(session.returnCode)) {
+                    updateStatusText("提取帧图片完成", statusTV)
+                } else {
+                    updateStatusText("提取帧图片失败", statusTV)
+                }
             }
         }
     }

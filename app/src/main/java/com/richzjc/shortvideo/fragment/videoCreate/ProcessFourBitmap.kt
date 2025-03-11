@@ -2,19 +2,17 @@ package com.richzjc.shortvideo.fragment.videoCreate
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.os.Environment
 import android.util.Log
 import android.widget.TextView
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
-import com.richzjc.shortvideo.R
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.FFmpegSession
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback
+import com.arthenica.ffmpegkit.ReturnCode
 import com.richzjc.shortvideo.util.QDUtil
 import java.io.BufferedWriter
 import java.io.File
-import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.IOException
-import java.io.InputStream
 import java.util.Arrays
 
 fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextView?, index: Int) {
@@ -80,15 +78,19 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
         val cmd =
             "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
 
+
         // 执行FFmpeg命令
-        val returnCode = FFmpeg.execute(cmd)
-        if (returnCode == Config.RETURN_CODE_SUCCESS) {
-            updateStatusText("生成${index}个视频成功", statusTV)
-            heChengVideo(statusTV, context, originPath, index)
-        } else if (returnCode == Config.RETURN_CODE_CANCEL) {
-            updateStatusText("生成${index}个视频取消", statusTV)
-        } else {
-            updateStatusText("生成${index}个视频失败", statusTV)
+        FFmpegKit.executeAsync(
+            cmd
+        ) { session ->
+            if (session != null && ReturnCode.isSuccess(session.returnCode)) {
+                Log.d("FFmpeg", "视频生成成功！路径: /sdcard/Movies/output.mp4");
+                updateStatusText("生成${index}个视频成功", statusTV)
+                heChengVideo(statusTV, context, originPath, index)
+            } else {
+                Log.e("FFmpeg", "失败原因: " + session?.failStackTrace);
+                updateStatusText("生成${index}个视频失败", statusTV)
+            }
         }
     } catch (e: Exception) {
         e.printStackTrace()
@@ -122,13 +124,18 @@ fun heChengVideo(
         "-map", "1:v:0",  // 从第二个视频中选择第一条视频流
         outputVideoPath // 输出合成后的视频文件路径
     )
+    val cmd = "-i ${originPath} -i ${inputVideoPath1} -c:v copy -c:a aac -map 0:a:0 -map 1:v:0"
 
-    var returnCode = FFmpeg.execute(command)
-    if (returnCode == 0) {
-        updateStatusText("合成成功", statusTV)
-    } else {
-        Log.e("ffmpeg", Config.getLastCommandOutput())
-        updateStatusText("合成第${index}个视频失败", statusTV)
+    FFmpegKit.executeAsync(
+        cmd
+    ) { session ->
+        if (session != null && ReturnCode.isSuccess(session.returnCode)) {
+            Log.d("FFmpeg", "视频生成成功！路径: /sdcard/Movies/output.mp4");
+            updateStatusText("合成成功", statusTV)
+        } else {
+            Log.e("FFmpeg", "失败原因: " + session?.failStackTrace);
+            updateStatusText("合成第${index}个视频失败", statusTV)
+        }
     }
 }
 

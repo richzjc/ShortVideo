@@ -13,10 +13,11 @@ import android.graphics.Shader
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.UtilsContextManager
 import com.richzjc.shortvideo.fragment.videoCreate.updateStatusText
@@ -65,20 +66,20 @@ fun genPic(
 
         var curBitmap = BitmapFactory.decodeFile(curPath)
         var picHeight = height - ScreenUtils.dip2px(20f) * 2
-        var picWidth = (curBitmap.width * picHeight)/curBitmap.height
+        var picWidth = (curBitmap.width * picHeight) / curBitmap.height
         curBitmap = Bitmap.createScaledBitmap(curBitmap, picWidth, picHeight, true)
         val curShuMiaoBitmap = responseToShuMiao(curBitmap)
 
         var nextBitmap = BitmapFactory.decodeFile(nextPath)
-       picHeight = height - ScreenUtils.dip2px(20f) * 2
-       picWidth = (nextBitmap.width * picHeight)/nextBitmap.height
+        picHeight = height - ScreenUtils.dip2px(20f) * 2
+        picWidth = (nextBitmap.width * picHeight) / nextBitmap.height
         nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
         val nextShuMiaoBitmap = responseToShuMiao(nextBitmap)
 
 
-        var  bmp0 = makeEdgesOpaque(curShuMiaoBitmap)
-        var  bmp1 = makeEdgesOpaque(curBitmap)
-        var  bmp2 = null
+        var bmp0 = makeEdgesOpaque(curShuMiaoBitmap)
+        var bmp1 = makeEdgesOpaque(curBitmap)
+        var bmp2 = null
         //生成1.0
         var bitmap = realGenPic(curShuMiaoBitmap, curBitmap, null, 1.0f, true)
         if (index == 0) {
@@ -171,7 +172,7 @@ fun makeEdgesOpaque(originalBitmap: Bitmap): Bitmap {
                     Color.blue(pixel)
                 )
                 outputBitmap.setPixel(x, y, newPixel)
-            }else if(x > width - 88 || y > height - 88){
+            } else if (x > width - 88 || y > height - 88) {
                 val alpha = (((min(width - x, height - y) + 1) / 88.0) * 255.0).toInt()
                 val pixel = outputBitmap.getPixel(x, y)
                 val newPixel = Color.argb(
@@ -364,13 +365,14 @@ fun genPicVideo(context: Context, statusTv: TextView?, pairList: List<Pair<Strin
         "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 8000k ${realOutputFile.absolutePath}"
 
     // 执行FFmpeg命令
-    val returnCode = FFmpeg.execute(cmd)
-    if (returnCode == Config.RETURN_CODE_SUCCESS) {
-        updateStatusText("生成视频成功", statusTv)
-    } else if (returnCode == Config.RETURN_CODE_CANCEL) {
-        updateStatusText("生成视频取消", statusTv)
-    } else {
-        updateStatusText("生成失败", statusTv)
+    FFmpegKit.executeAsync(cmd) { session ->
+        if (session != null && ReturnCode.isSuccess(session.returnCode)) {
+            Log.d("FFmpeg", "视频生成成功！路径: /sdcard/Movies/output.mp4");
+            updateStatusText("生成视频成功", statusTv)
+        } else {
+            Log.e("FFmpeg", "失败原因: " + session?.failStackTrace);
+            updateStatusText("生成失败", statusTv)
+        }
     }
 }
 

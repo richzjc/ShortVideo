@@ -21,16 +21,12 @@ dependencyResolutionManagement {
     properties.load(new File(rootDir.getAbsolutePath() + "/local.properties").newDataInputStream())
 
     repositories {
-        google()
         mavenCentral()
+        google()
         maven { url "https://jitpack.io" }
         maven { url "https://repo1.maven.org/maven2/" }
-        maven { url 'https://developer.huawei.com/repo/' }
         maven { url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo' }
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/releases/' }
-        maven {
-            url 'https://developer.hihonor.com/repo'
-        }
         maven {
             credentials {
                 username properties.getProperty("mavenUser")
