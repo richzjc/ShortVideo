@@ -1,7 +1,5 @@
 
 apply plugin: 'com.android.library'
-//apply plugin: 'com.jakewharton.butterknife'
-//apply from: '../basic_ktx.gradle'
 
 android {
     compileSdk ANDROID_TARGET_VERSION as int

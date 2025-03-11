@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 rootProject.name = "ShortVideo"
 include ':app'
 include ':opencv'
-//include ':RxPermissions'
+include ':RxPermissions'
 
 include ':RouterLib'
 project(':RouterLib').projectDir = new File(rootProject.projectDir, 'Router/RouterLib')

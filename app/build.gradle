@@ -52,16 +52,18 @@ dependencies {
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.10.0'
     api project(':opencv')
+    api project(':RxPermissions')
     api project(':RouterLib')
     kapt project(':RouterCompiler')
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation 'com.github.richzjc:easyPhotos:1.0.7'
-    implementation 'com.github.richzjc:rxPermissionNew:1.1.6'
     implementation 'com.github.richzjc:dialogLib:1.0.2'
     implementation 'com.github.yalantis:ucrop:2.2.6'
-    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
-    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.1.10'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
 }
