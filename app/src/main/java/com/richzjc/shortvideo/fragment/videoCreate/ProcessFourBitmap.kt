@@ -5,8 +5,7 @@ import android.media.MediaMetadataRetriever
 import android.util.Log
 import android.widget.TextView
 import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.FFmpegSession
-import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback
+import com.arthenica.ffmpegkit.FFmpegKitConfig
 import com.arthenica.ffmpegkit.ReturnCode
 import com.richzjc.shortvideo.util.QDUtil
 import java.io.BufferedWriter
@@ -53,30 +52,16 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
         if (!file1.exists())
             file1.mkdirs()
 
-        val listFiles = file1.listFiles()
-        if (listFiles == null || listFiles.size <= 0)
-            return
-
-        Arrays.sort<File>(listFiles) { f1: File, f2: File ->
-            val num1: Int = extractNumber(f1.getName())
-            val num2: Int = extractNumber(f2.getName())
-            Integer.compare(num1, num2)
-        }
-
-
-        // 创建一个临时文本文件来存储图片路径
-        val imageListPathFile = File(context?.getExternalFilesDir(null), "my_directory");
-        if (imageListPathFile.exists())
-            imageListPathFile.delete()
-
-        val imageListPath: String = imageListPathFile.absolutePath
-        createImageListFile(listFiles, imageListPath, fps)
 
         // 设置帧率，假设每秒24帧
         val frameRate = fps
         // 构建FFmpeg命令
-        val cmd =
-            "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
+
+
+        val cmd = "-framerate ${frameRate} -i ${file1.absolutePath}/%d.png -c:v h264_mediacodec -b:v 5000k -s 1080x1920 -pix_fmt yuv420p -r ${frameRate} ${outputFile.absolutePath}"
+
+//        val cmd =
+//            "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
 
 
         // 执行FFmpeg命令
@@ -88,7 +73,7 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
                 updateStatusText("生成${index}个视频成功", statusTV)
                 heChengVideo(statusTV, context, originPath, index)
             } else {
-                Log.e("FFmpeg", "失败原因: " + session?.failStackTrace);
+                Log.e("FFmpeg", "失败原因: " + FFmpegKitConfig.getLastSession() + "；sessionCode = ${session?.returnCode}");
                 updateStatusText("生成${index}个视频失败", statusTV)
             }
         }
@@ -137,32 +122,6 @@ fun heChengVideo(
             updateStatusText("合成第${index}个视频失败", statusTV)
         }
     }
-}
-
-fun createImageListFile(
-    imagePaths: Array<File>,
-    imageListPath: String,
-    frameCount: Double
-) {
-    try {
-        val time = 1 / frameCount
-        BufferedWriter(FileWriter(imageListPath)).use { writer ->
-            for (imagePath in imagePaths) {
-                writer.write("file '${imagePath.absolutePath}'\n")
-                // 设置每张图片显示的持续时间
-                writer.write("duration ${time}\n") // 每张图片显示时间（秒），24帧每秒 -> 1/24 ≈ 0.04
-            }
-            // 需要最后一张图片的持续时间
-            writer.write("file '" + imagePaths[imagePaths.size - 1].absolutePath + "'\n")
-        }
-    } catch (e: IOException) {
-        e.printStackTrace()
-    }
-}
-
-fun extractNumber(fileName: String): Int {
-    val parts = fileName.split(".")
-    return parts[0].toInt() // Assuming file names are like "1.jpg", "2.jpg", etc.
 }
 
 
