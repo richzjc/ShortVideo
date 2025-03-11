@@ -60,10 +60,6 @@ fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextVi
 
         val cmd = "-framerate ${frameRate} -i ${file1.absolutePath}/%d.png -c:v h264_mediacodec -b:v 5000k -s 1080x1920 -pix_fmt yuv420p -r ${frameRate} ${outputFile.absolutePath}"
 
-//        val cmd =
-//            "-y -f concat -safe 0 -i $imageListPath -vsync vfr -pix_fmt yuv420p -r $frameRate -b:v 10M -s 1080x1920 -preset slow -crf 18 ${outputFile.absolutePath}"
-
-
         // 执行FFmpeg命令
         FFmpegKit.executeAsync(
             cmd
@@ -95,21 +91,10 @@ fun heChengVideo(
     if (!file.exists())
         file.mkdirs()
 
-    updateStatusText("提取音频成功", statusTV)
     val inputVideoPath1 = File(file, "hecheng_noaudio${index}.mp4").absolutePath
     // 输出音频文件路径
     val outputVideoPath = File(QDUtil.getShareImageCache(context), "hasAudio.mp4").absolutePath
-
-    val command = arrayOf<String>(
-        "-i", originPath!!,  // 第一个视频，音频来源
-        "-i", inputVideoPath1,  // 第二个视频，视频来源
-        "-c:v", "copy",  // 复制第二个视频的视频流
-        "-c:a", "aac",  // 使用 AAC 编码器来处理音频
-        "-map", "0:a:0",  // 从第一个视频中选择第一条音频流
-        "-map", "1:v:0",  // 从第二个视频中选择第一条视频流
-        outputVideoPath // 输出合成后的视频文件路径
-    )
-    val cmd = "-i ${originPath} -i ${inputVideoPath1} -c:v copy -c:a aac -map 0:a:0 -map 1:v:0"
+    val cmd = "-i ${originPath} -i ${inputVideoPath1} -c:v copy -c:a aac -map 0:a:0 -map 1:v:0 -shortest ${outputVideoPath}"
 
     FFmpegKit.executeAsync(
         cmd
