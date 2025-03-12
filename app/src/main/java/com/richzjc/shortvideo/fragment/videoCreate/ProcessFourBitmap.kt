@@ -2,17 +2,14 @@ package com.richzjc.shortvideo.fragment.videoCreate
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
+import android.os.Environment
 import android.util.Log
 import android.widget.TextView
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegKitConfig
 import com.arthenica.ffmpegkit.ReturnCode
 import com.richzjc.shortvideo.util.QDUtil
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileWriter
-import java.io.IOException
-import java.util.Arrays
 
 fun gennerateVideoNoAudio(originPath: String, context: Context, statusTV: TextView?, index: Int) {
     updateStatusText("开始生成第${index}个视频", statusTV)
@@ -100,8 +97,8 @@ fun heChengVideo(
         cmd
     ) { session ->
         if (session != null && ReturnCode.isSuccess(session.returnCode)) {
-            Log.d("FFmpeg", "视频生成成功！路径: /sdcard/Movies/output.mp4");
             updateStatusText("合成成功", statusTV)
+            pinJiePianTou(statusTV, context, outputVideoPath)
         } else {
             Log.e("FFmpeg", "失败原因: " + session?.failStackTrace);
             updateStatusText("合成第${index}个视频失败", statusTV)
@@ -109,4 +106,27 @@ fun heChengVideo(
     }
 }
 
+fun pinJiePianTou(statusTV: TextView?,  context: Context, inputPath1 : String) {
+    updateStatusText("开始拼接片头", statusTV)
+
+    val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "piantou")
+    if (!file.exists())
+        file.mkdirs()
+
+    val inputVideoPath1 = File(file, "piantou.mp4").absolutePath
+    // 输出音频文件路径
+    val outputVideoPath = File(QDUtil.getShareImageCache(context), "hasPianTou.mp4").absolutePath
+    val cmd = "-i ${inputVideoPath1} -i ${inputPath1} -filter_complex [0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a] -map [v] -map [a] ${outputVideoPath}"
+
+    FFmpegKit.executeAsync(
+        cmd
+    ) { session ->
+        if (session != null && ReturnCode.isSuccess(session.returnCode)) {
+            updateStatusText("接拼片头成功", statusTV)
+        } else {
+            Log.e("FFmpeg", "失败原因: " + session?.failStackTrace);
+            updateStatusText("接拼片头失败", statusTV)
+        }
+    }
+}
 
