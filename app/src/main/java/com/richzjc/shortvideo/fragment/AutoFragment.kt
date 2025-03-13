@@ -1,6 +1,8 @@
 package com.richzjc.shortvideo.fragment
 
-import android.content.Intent
+import android.Manifest.permission
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,8 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
+import com.huantansheng.easyphotos.EasyPhotos
+import com.huantansheng.easyphotos.engine.GlideEngine
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetPianTouFileDuration
@@ -22,6 +25,7 @@ import com.richzjc.shortvideo.util.MToastHelper
 import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
 import com.richzjc.shortvideo.util.ShapeDrawable
+import com.tbruyelle.rxpermissions3.RxPermissionsNew
 import java.io.File
 
 class AutoFragment : Fragment() {
@@ -49,14 +53,20 @@ class AutoFragment : Fragment() {
         select_pic.background = btnDrawable
 
         select_pic?.setOnClickListener {
-            MToastHelper.showToast("请先删除 picVideo 文件")
+            MToastHelper.showToast("先到图片编辑页面获取读写权限")
             isStartFlag = !isStartFlag
             if (isStartFlag)
+                select_pic.text = "暂停"
+            else
+                select_pic.text = "开始"
+            if (isStartFlag) {
                 responseToStart()
+            }
         }
     }
 
     private fun responseToStart() {
+        MToastHelper.showToast("开始获取")
         //TODO 第一步，选择音频文件， 计算出需要多少张图片
         updateStatusText("获取音频文件", status)
         audioFile = responseToSelectAudioFile()
@@ -84,10 +94,11 @@ class AutoFragment : Fragment() {
             return
         //TODO 第三步，处理图片
         updateStatusText("开始处理图片文件", status)
-        responseToHandlePic()
+        if (!isStartFlag) return
+        responseToHandlePic(picList!!)
         //TODO 第四步，将处理图片，生成视频
         //TODO 第五步，拼接片头视频
-        //TODO 第六步，合并音频文件
+        //TODO 第六步，合并音频文件, 并且删除之前的图片文件
         //TODO 第七步，启动微信
         //TODO 第八步，跳转到我的页面
         //TODO 第九步，点击视频号
@@ -115,9 +126,12 @@ class AutoFragment : Fragment() {
         var picList: List<File>? = null
 
         fun updateStatusText(statusText: String?, statusTV: TextView?) {
-            Handler(Looper.getMainLooper()).post {
+            if (Looper.myLooper() != Looper.getMainLooper())
+                Handler(Looper.getMainLooper()).post {
+                    statusTV?.text = statusText ?: ""
+                }
+            else
                 statusTV?.text = statusText ?: ""
-            }
         }
     }
 }
