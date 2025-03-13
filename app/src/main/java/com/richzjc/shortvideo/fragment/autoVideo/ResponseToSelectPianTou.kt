@@ -2,6 +2,8 @@ package com.richzjc.shortvideo.fragment.autoVideo
 
 import android.media.MediaMetadataRetriever
 import android.os.Environment
+import android.util.Log
+import kotlinx.coroutines.delay
 import java.io.File
 
 fun responseToSelectPianTouFile(): File? {
@@ -21,8 +23,10 @@ fun responseToSelectPianTouFile(): File? {
     return fileList.get(randomIndex)
 }
 
-fun responseToGetPianTouFileDuration(file: File): Float {
+suspend fun responseToGetPianTouFileDuration(file: File): Float {
     try {// 创建一个 MediaMetadataRetriever 对象
+        Log.e("short", "pianTouFile = ${file.absolutePath}")
+        delay(1000L)
         val retriever = MediaMetadataRetriever()
         // 设置数据源为视频文件的 URI
         retriever.setDataSource(file.absolutePath)
@@ -31,6 +35,7 @@ fun responseToGetPianTouFileDuration(file: File): Float {
         val time =
             retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: "0"
         val second = time.toLong() / 1000f
+        Log.e("short", "pianTouDuration = ${second}")
         return second
     } catch (e: Exception) {
         e.printStackTrace()

@@ -1,8 +1,5 @@
 package com.richzjc.shortvideo.fragment
 
-import android.Manifest.permission
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,8 +9,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.huantansheng.easyphotos.EasyPhotos
-import com.huantansheng.easyphotos.engine.GlideEngine
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetPianTouFileDuration
@@ -25,7 +20,7 @@ import com.richzjc.shortvideo.util.MToastHelper
 import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
 import com.richzjc.shortvideo.util.ShapeDrawable
-import com.tbruyelle.rxpermissions3.RxPermissionsNew
+import com.richzjc.shortvideo.util.requestData
 import java.io.File
 
 class AutoFragment : Fragment() {
@@ -60,13 +55,15 @@ class AutoFragment : Fragment() {
             else
                 select_pic.text = "开始"
             if (isStartFlag) {
-                responseToStart()
+                requestData {
+                    responseToStart()
+                }
             }
+
         }
     }
 
-    private fun responseToStart() {
-        MToastHelper.showToast("开始获取")
+    private suspend fun responseToStart() {
         //TODO 第一步，选择音频文件， 计算出需要多少张图片
         updateStatusText("获取音频文件", status)
         audioFile = responseToSelectAudioFile()
@@ -85,17 +82,17 @@ class AutoFragment : Fragment() {
         pianTouFileDuration = responseToGetPianTouFileDuration(pianTouFile!!)
         if (pianTouFileDuration <= 0)
             return
-
-        //TODO 第二步，选择图片文件
-        if (!isStartFlag) return
-        updateStatusText("选择图片文件", status)
-        picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
-        if (picList == null || picList!!.isEmpty())
-            return
-        //TODO 第三步，处理图片
-        updateStatusText("开始处理图片文件", status)
-        if (!isStartFlag) return
-        responseToHandlePic(picList!!)
+//
+//        //TODO 第二步，选择图片文件
+//        if (!isStartFlag) return
+//        updateStatusText("选择图片文件", status)
+//        picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
+//        if (picList == null || picList!!.isEmpty())
+//            return
+//        //TODO 第三步，处理图片
+//        updateStatusText("开始处理图片文件", status)
+//        if (!isStartFlag) return
+//        responseToHandlePic(picList!!)
         //TODO 第四步，将处理图片，生成视频
         //TODO 第五步，拼接片头视频
         //TODO 第六步，合并音频文件, 并且删除之前的图片文件
