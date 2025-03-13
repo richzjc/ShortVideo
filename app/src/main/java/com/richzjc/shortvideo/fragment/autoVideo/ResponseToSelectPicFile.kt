@@ -1,11 +1,17 @@
 package com.richzjc.shortvideo.fragment.autoVideo
 
 import android.os.Environment
+import android.text.TextUtils
+import android.util.Log
+import com.richzjc.shortvideo.UtilsContextManager
+import com.richzjc.shortvideo.util.SharedPrefsUtil
+import kotlinx.coroutines.delay
 import java.io.File
 import java.util.Arrays
 
 
-fun responseToSelectPicFile(totalDuration: Float, pianTouDuration: Float): List<File> {
+suspend fun responseToSelectPicFile(totalDuration: Float, pianTouDuration: Float): List<File> {
+    delay(1000L)
     val picDuration = totalDuration - pianTouDuration
     val picCount = Math.floor(picDuration / 2.0).toInt()
     val fileList = ArrayList<File>()
@@ -35,8 +41,12 @@ fun responseToSelectPicFile(totalDuration: Float, pianTouDuration: Float): List<
     if (allPicList.size <= 0)
         return fileList
 
-
-    fileList.add(allPicList.get(0))
+    val firstPath =
+        SharedPrefsUtil.getString(UtilsContextManager.getInstance().application, "firstImage", "")
+    if (TextUtils.isEmpty(firstPath) || !TextUtils.equals(firstPath, allPicList.get(0).absolutePath)) {
+        fileList.add(allPicList.get(0))
+        SharedPrefsUtil.saveString(UtilsContextManager.getInstance().application, "firstImage", allPicList.get(0).absolutePath)
+    }
 
     while (fileList.size < picCount) {
         val randomIndex = (0 until allPicList.size).random()
@@ -45,5 +55,8 @@ fun responseToSelectPicFile(totalDuration: Float, pianTouDuration: Float): List<
             fileList.add(file)
     }
 
+    fileList.forEach {
+        Log.e("short", "${it.absolutePath}")
+    }
     return fileList
 }
