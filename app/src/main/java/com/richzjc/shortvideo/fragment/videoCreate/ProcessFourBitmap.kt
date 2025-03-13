@@ -109,7 +109,7 @@ fun heChengVideo(
 fun pinJiePianTou(statusTV: TextView?,  context: Context, inputPath1 : String) {
     updateStatusText("开始拼接片头", statusTV)
 
-    val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "piantou")
+    val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "piantou")
     if (!file.exists())
         file.mkdirs()
 
