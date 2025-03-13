@@ -5,7 +5,12 @@ import android.util.Log
 import kotlinx.coroutines.delay
 import java.io.File
 
-suspend fun responseToHandlePic(context : Context, picList: List<File>) {
+suspend fun responseToHandlePic(
+    context: Context,
+    picList: List<File>,
+    audioFileDuration: Long,
+    pianTouFileDuration: Long
+) {
     delay(1000L)
     val file1 = File(context.externalCacheDir, "imageHandle")
     if(!file1.exists())
@@ -20,6 +25,10 @@ suspend fun responseToHandlePic(context : Context, picList: List<File>) {
             }
         }
     }
+
+    val picTime = audioFileDuration - pianTouFileDuration
+    val guoDuTotalTime = (picList.size - 1) * 0.3
+    val everyPicTime = picTime - (guoDuTotalTime * 1000)
 
 
 

@@ -92,7 +92,7 @@ class AutoFragment : Fragment() {
         //TODO 第三步，处理图片
         updateStatusText("开始处理图片文件", status)
         if (!isStartFlag) return
-        responseToHandlePic(requireContext(), picList!!)
+        responseToHandlePic(requireContext(), picList!!, audioFileDuration, pianTouFileDuration)
         //TODO 第四步，将处理图片，生成视频
         //TODO 第五步，拼接片头视频
         //TODO 第六步，合并音频文件, 并且删除之前的图片文件
@@ -118,8 +118,8 @@ class AutoFragment : Fragment() {
         var status: TextView? = null
         var audioFile: File? = null
         var pianTouFile: File? = null
-        var audioFileDuration: Float = 0f
-        var pianTouFileDuration: Float = 0f
+        var audioFileDuration: Long = 0L
+        var pianTouFileDuration: Long = 0L
         var picList: List<File>? = null
 
         fun updateStatusText(statusText: String?, statusTV: TextView?) {

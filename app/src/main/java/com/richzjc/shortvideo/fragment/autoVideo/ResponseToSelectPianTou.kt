@@ -23,7 +23,7 @@ fun responseToSelectPianTouFile(): File? {
     return fileList.get(randomIndex)
 }
 
-suspend fun responseToGetPianTouFileDuration(file: File): Float {
+suspend fun responseToGetPianTouFileDuration(file: File): Long {
     try {// 创建一个 MediaMetadataRetriever 对象
         Log.e("short", "pianTouFile = ${file.absolutePath}")
         delay(1000L)
@@ -34,11 +34,11 @@ suspend fun responseToGetPianTouFileDuration(file: File): Float {
         // 获取视频总时长
         val time =
             retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: "0"
-        val second = time.toLong() / 1000f
+        val second = time.toLong()
         Log.e("short", "pianTouDuration = ${second}")
         return second
     } catch (e: Exception) {
         e.printStackTrace()
     }
-    return 0f
+    return 0L
 }
