@@ -23,62 +23,69 @@ suspend fun responseToHandlePic(
     pianTouFileDuration: Long,
     status: TextView?
 ) {
-    delay(1000L)
-    val file1 = File(context.externalCacheDir, "imageHandle")
-    if (!file1.exists())
-        file1.mkdirs()
+    try {
+        delay(1000L)
+        val file1 = File(context.externalCacheDir, "imageHandle")
+        if (!file1.exists())
+            file1.mkdirs()
 
-    Log.d("short", "handlePath = ${file1.absolutePath}")
+        Log.d("short", "handlePath = ${file1.absolutePath}")
 
-    if (file1 != null && file1.exists()) {
-        val listFiles = file1.listFiles()
-        listFiles?.forEach {
-            if (it.exists()) {
-                val delResult = it.delete()
-                Log.d("short", "delResult = ${delResult}")
+        if (file1 != null && file1.exists()) {
+            val listFiles = file1.listFiles()
+            listFiles?.forEach {
+                if (it.exists()) {
+                    val delResult = it.delete()
+                    Log.d("short", "delResult = ${delResult}")
+                }
             }
         }
-    }
 
-    val picTime = audioFileDuration - pianTouFileDuration
-    val guoDuTotalTime = (picList.size - 1) * 0.3
-    val everyCount = ((picTime - (guoDuTotalTime * 1000)) / (20 * picList.size)).toInt()
-    val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
-    val paint = Paint()
-    // 设置画笔去掉透明度
-    paint.isAntiAlias = true
-    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
-    paint.alpha = 255
+        val picTime = audioFileDuration - pianTouFileDuration
+        val guoDuTotalTime = (picList.size - 1) * 0.3
+        val everyCount = ((picTime - (guoDuTotalTime * 1000)) / (20 * picList.size)).toInt()
+        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
+        val paint = Paint()
+        // 设置画笔去掉透明度
+        paint.isAntiAlias = true
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
+        paint.alpha = 255
 
 
-    picList.forEachIndexed { index, file ->
-        AutoFragment.updateStatusText("开始处理第${index + 1}张图片", status)
-        var curBitmap = BitmapFactory.decodeFile(file.absolutePath)
-        var picWidth = 1080
-        var picHeight = (curBitmap.height * picWidth) / curBitmap.width
-        curBitmap = Bitmap.createScaledBitmap(curBitmap, picWidth, picHeight, true)
-
-        (0 until everyCount)?.forEach {
-            val outputBitmap = drawTextAnimBitmap(curBitmap, paint, index)
-            saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
-        }
-
-        if (index < picList.size - 1) {
-            var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
+        picList.forEachIndexed { index, file ->
+            Log.e("short", "生成处理的图片： index = ${index}")
+            AutoFragment.updateStatusText("开始处理第${index + 1}张图片", status)
+            var curBitmap = BitmapFactory.decodeFile(file.absolutePath)
             var picWidth = 1080
-            var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
-            nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
-            (0 until guoDuCount)?.forEach {
-                val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
-                val outputBitmap = drawGuoDuBitmap(curBitmap, nextBitmap, paint, index, scaleRate)
-                saveBitmapToFile(
-                    outputBitmap,
-                    index * everyCount + everyCount + it + 1,
-                    file1,
-                    status
-                )
+            var picHeight = (curBitmap.height * picWidth) / curBitmap.width
+            curBitmap = Bitmap.createScaledBitmap(curBitmap, picWidth, picHeight, true)
+
+            (0 until everyCount)?.forEach {
+                val outputBitmap = drawTextAnimBitmap(curBitmap, paint, index)
+                saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
+            }
+
+            if (index < picList.size - 1) {
+                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
+                var picWidth = 1080
+                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
+                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
+                (0 until guoDuCount)?.forEach {
+                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
+                    val outputBitmap =
+                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, index, scaleRate)
+                    saveBitmapToFile(
+                        outputBitmap,
+                        index * everyCount + everyCount + it + 1,
+                        file1,
+                        status
+                    )
+                }
             }
         }
+    }catch (exception : Exception){
+        exception.printStackTrace()
+        Log.e("short", "处理图片异常了： msg = ${exception.message}")
     }
 }
 
@@ -118,12 +125,16 @@ private suspend fun drawGuoDuBitmap(
     paint.alpha = 120
     canvas1.drawText("第${index + 1}位", 1080 / 2f, 1920 / 2f, paint)
     paint.alpha = 255
-    curOutBitmap = Bitmap.createScaledBitmap(
-        curOutBitmap,
-        (1080 * scaleRate).toInt(),
-        (1920 * scaleRate).toInt(),
-        true
-    )
+    val scaleW =  (1080 * scaleRate).toInt()
+    val scaleH = (1920 * scaleRate).toInt()
+    if(scaleW > 0 && scaleH > 0) {
+        curOutBitmap = Bitmap.createScaledBitmap(
+            curOutBitmap,
+            scaleW,
+            scaleH,
+            true
+        )
+    }
 
     canvas.drawBitmap(curOutBitmap, curOutBitmap.width / 2f, 0f, paint)
 //-----------------------
