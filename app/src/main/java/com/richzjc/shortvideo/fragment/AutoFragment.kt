@@ -90,9 +90,9 @@ class AutoFragment : Fragment() {
         if (picList == null || picList!!.isEmpty())
             return
         //TODO 第三步，处理图片
-        updateStatusText("开始处理图片文件", status)
         if (!isStartFlag) return
-        responseToHandlePic(requireContext(), picList!!, audioFileDuration, pianTouFileDuration)
+        updateStatusText("开始处理图片文件", status)
+        responseToHandlePic(requireContext(), picList!!, audioFileDuration, pianTouFileDuration, status)
         //TODO 第四步，将处理图片，生成视频
         //TODO 第五步，拼接片头视频
         //TODO 第六步，合并音频文件, 并且删除之前的图片文件
