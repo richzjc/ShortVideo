@@ -14,6 +14,8 @@ import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetPianTouFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToHandlePic
+import com.richzjc.shortvideo.fragment.autoVideo.responseToMergeAudio
+import com.richzjc.shortvideo.fragment.autoVideo.responseToPinJieVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectAudioFile
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectPianTouFile
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectPicFile
@@ -107,9 +109,18 @@ class AutoFragment : Fragment() {
             return
         //TODO 第五步，拼接片头视频
         if (!isStartFlag) return
+        val pinJieVideoFlag = responseToPinJieVideo(requireContext(), pianTouFile!!, status)
+        if (!pinJieVideoFlag)
+            return
+        //TODO 第六步，合并音频文件
+        if (!isStartFlag) return
+        val mergeAudioVideoFlag = responseToMergeAudio(requireContext(), audioFile!!, status)
+        if (!mergeAudioVideoFlag)
+            return
 
-        //TODO 第六步，合并音频文件, 并且删除之前的图片文件
         //TODO 第七步，启动微信
+        if (!isStartFlag) return
+
         //TODO 第八步，跳转到我的页面
         //TODO 第九步，点击视频号
         //TODO 第十步，点击发表视频
