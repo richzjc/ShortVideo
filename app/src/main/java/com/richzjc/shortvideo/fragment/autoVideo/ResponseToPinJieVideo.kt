@@ -2,6 +2,7 @@ package com.richzjc.shortvideo.fragment.autoVideo
 
 import java.io.File
 import android.content.Context
+import android.util.Log
 import android.widget.TextView
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegKitConfig
@@ -28,6 +29,7 @@ suspend fun responseToPinJieVideo(context: Context, pianTouFile: File, statusTV 
                 AutoFragment.updateStatusText("拼接片头成功", statusTV)
                 continuation.resume(true)
             } else {
+                Log.e("short", "拼接片头失败:${FFmpegKitConfig.getLastSession()}")
                 AutoFragment.updateStatusText("拼接片头失败:${FFmpegKitConfig.getLastSession()}", statusTV)
                 continuation.resume(false)
             }

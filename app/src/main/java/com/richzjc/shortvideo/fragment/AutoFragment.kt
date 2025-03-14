@@ -87,26 +87,26 @@ class AutoFragment : Fragment() {
             return
 
         //TODO 第二步，选择图片文件
-        if (!isStartFlag) return
-        updateStatusText("选择图片文件", status)
-        picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
-        if (picList == null || picList!!.isEmpty())
-            return
-        //TODO 第三步，处理图片
-        if (!isStartFlag) return
-        updateStatusText("开始处理图片文件", status)
-        responseToHandlePic(
-            requireContext(),
-            picList!!,
-            audioFileDuration,
-            pianTouFileDuration,
-            status
-        )
-        //TODO 第四步，将处理图片，生成视频
-        if (!isStartFlag) return
-        val genNoVideoFlag = genHandleVideo(requireContext(), status)
-        if (!genNoVideoFlag)
-            return
+//        if (!isStartFlag) return
+//        updateStatusText("选择图片文件", status)
+//        picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
+//        if (picList == null || picList!!.isEmpty())
+//            return
+//        //TODO 第三步，处理图片
+//        if (!isStartFlag) return
+//        updateStatusText("开始处理图片文件", status)
+//        responseToHandlePic(
+//            requireContext(),
+//            picList!!,
+//            audioFileDuration,
+//            pianTouFileDuration,
+//            status
+//        )
+//        //TODO 第四步，将处理图片，生成视频
+//        if (!isStartFlag) return
+//        val genNoVideoFlag = genHandleVideo(requireContext(), status)
+//        if (!genNoVideoFlag)
+//            return
         //TODO 第五步，拼接片头视频
         if (!isStartFlag) return
         val pinJieVideoFlag = responseToPinJieVideo(requireContext(), pianTouFile!!, status)

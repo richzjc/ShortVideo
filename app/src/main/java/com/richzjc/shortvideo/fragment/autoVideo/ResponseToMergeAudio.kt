@@ -2,6 +2,7 @@ package com.richzjc.shortvideo.fragment.autoVideo
 
 import android.content.Context
 import android.os.Environment
+import android.util.Log
 import android.widget.TextView
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegKitConfig
@@ -26,6 +27,7 @@ suspend fun responseToMergeAudio(context: Context, audioFile: File, statusTV: Te
                 AutoFragment.updateStatusText("拼接音频成功", statusTV)
                 continuation.resume(true)
             } else {
+                Log.e("short", "拼接音频失败:${FFmpegKitConfig.getLastSession()}")
                 AutoFragment.updateStatusText("拼接音频失败:${FFmpegKitConfig.getLastSession()}", statusTV)
                 continuation.resume(false)
             }

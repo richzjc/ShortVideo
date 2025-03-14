@@ -36,6 +36,7 @@ suspend fun genHandleVideo(context: Context, statusTV: TextView?): Boolean {
                 AutoFragment.updateStatusText("生成无音频视频成功", statusTV)
                 continuation.resume(true)
             } else {
+                Log.e("short", "生成无音频视频失败:${FFmpegKitConfig.getLastSession()}")
                 AutoFragment.updateStatusText("生成无音频视频失败:${FFmpegKitConfig.getLastSession()}", statusTV)
                 continuation.resume(false)
             }
