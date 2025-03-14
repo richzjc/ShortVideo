@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.richzjc.shortvideo.R
+import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetPianTouFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToHandlePic
@@ -92,10 +93,21 @@ class AutoFragment : Fragment() {
         //TODO 第三步，处理图片
         if (!isStartFlag) return
         updateStatusText("开始处理图片文件", status)
-        responseToHandlePic(requireContext(), picList!!, audioFileDuration, pianTouFileDuration, status)
+        responseToHandlePic(
+            requireContext(),
+            picList!!,
+            audioFileDuration,
+            pianTouFileDuration,
+            status
+        )
         //TODO 第四步，将处理图片，生成视频
-
+        if (!isStartFlag) return
+        val genNoVideoFlag = genHandleVideo(requireContext(), status)
+        if (!genNoVideoFlag)
+            return
         //TODO 第五步，拼接片头视频
+        if (!isStartFlag) return
+
         //TODO 第六步，合并音频文件, 并且删除之前的图片文件
         //TODO 第七步，启动微信
         //TODO 第八步，跳转到我的页面
