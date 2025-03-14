@@ -3,14 +3,15 @@ package com.faqun.service
 import android.accessibilityservice.AccessibilityService
 import android.text.TextUtils
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
+import com.richzjc.shortvideo.fragment.AutoFragment.Companion.isStartFlag
+import com.richzjc.shortvideo.service.responseToClick
+import com.richzjc.shortvideo.util.requestData
 import kotlinx.coroutines.delay
 
-var isStartFlag = false
 
 class FaQunAccessibilityService : AccessibilityService() {
 
-        override fun onServiceConnected() {
+    override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
     }
@@ -22,8 +23,7 @@ class FaQunAccessibilityService : AccessibilityService() {
                 val random = (1..2).random()
                 delay(random * 1000L)
                 if (isStartFlag) {
-                    chatGroupList = null
-                    responseToContact()
+                    responseToClick()
                 }
             }
         }
@@ -44,15 +44,8 @@ class FaQunAccessibilityService : AccessibilityService() {
 
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             if (TextUtils.equals("com.tencent.mm.ui.LauncherUI", event.className)) {
-                chatGroupList = null
-                responseToContact()
+                responseToClick()
             }
-
-            if (TextUtils.equals("com.tencent.mm.ui.contact.ChatroomContactUI", event.className))
-                responseToQunLiaoList()
-
-            if (TextUtils.equals("com.tencent.mm.ui.chatting.ChattingUI", event.className))
-                responseToChat()
         }
     }
 
@@ -62,6 +55,5 @@ class FaQunAccessibilityService : AccessibilityService() {
     companion object {
         var instance: FaQunAccessibilityService? = null
         var curClassName: String? = ""
-        var chatGroupList: ArrayList<AccessibilityNodeInfo>? = null
     }
 }

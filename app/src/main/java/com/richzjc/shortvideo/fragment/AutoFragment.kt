@@ -17,12 +17,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.richzjc.shortvideo.R
+import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetPianTouFileDuration
+import com.richzjc.shortvideo.fragment.autoVideo.responseToHandlePic
 import com.richzjc.shortvideo.fragment.autoVideo.responseToMergeAudio
 import com.richzjc.shortvideo.fragment.autoVideo.responseToPinJieVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectAudioFile
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectPianTouFile
+import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectPicFile
 import com.richzjc.shortvideo.util.MToastHelper
 import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
@@ -101,6 +104,15 @@ class AutoFragment : Fragment() {
         }
 
         select_pic?.setOnClickListener {
+            if (!Settings.canDrawOverlays(context)){
+                MToastHelper.showToast("请开启悬浮窗权限")
+                return@setOnClickListener
+            }
+            if (!isAccessibilityServiceEnabled(requireContext())) {
+                MToastHelper.showToast("请开启辅助功能权限")
+                return@setOnClickListener
+            }
+
             MToastHelper.showToast("先到图片编辑页面获取读写权限")
             isStartFlag = !isStartFlag
             if (isStartFlag)
@@ -137,26 +149,26 @@ class AutoFragment : Fragment() {
             return
 
         //TODO 第二步，选择图片文件
-//        if (!isStartFlag) return
-//        updateStatusText("选择图片文件", status)
-//        picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
-//        if (picList == null || picList!!.isEmpty())
-//            return
-//        //TODO 第三步，处理图片
-//        if (!isStartFlag) return
-//        updateStatusText("开始处理图片文件", status)
-//        responseToHandlePic(
-//            requireContext(),
-//            picList!!,
-//            audioFileDuration,
-//            pianTouFileDuration,
-//            status
-//        )
-//        //TODO 第四步，将处理图片，生成视频
-//        if (!isStartFlag) return
-//        val genNoVideoFlag = genHandleVideo(requireContext(), status)
-//        if (!genNoVideoFlag)
-//            return
+        if (!isStartFlag) return
+        updateStatusText("选择图片文件", status)
+        picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
+        if (picList == null || picList!!.isEmpty())
+            return
+        //TODO 第三步，处理图片
+        if (!isStartFlag) return
+        updateStatusText("开始处理图片文件", status)
+        responseToHandlePic(
+            requireContext(),
+            picList!!,
+            audioFileDuration,
+            pianTouFileDuration,
+            status
+        )
+        //TODO 第四步，将处理图片，生成视频
+        if (!isStartFlag) return
+        val genNoVideoFlag = genHandleVideo(requireContext(), status)
+        if (!genNoVideoFlag)
+            return
         //TODO 第五步，拼接片头视频
         if (!isStartFlag) return
         val pinJieVideoFlag = responseToPinJieVideo(requireContext(), pianTouFile!!, status)
@@ -176,21 +188,6 @@ class AutoFragment : Fragment() {
             startActivity(intent)
 //            context?.startService(Intent(this, OverlayService::class.java))
         }
-        //TODO 第八步，跳转到我的页面
-        //TODO 第九步，点击视频号
-        //TODO 第十步，点击发表视频
-        //TODO 第十一步， 点击从相册选择视频
-        //TODO 第十二步， 点击图片和视频
-        //TODO 第十三步， 点击所有视频
-        //TODO 第十四步， 选择第一条视频
-        //TODO 第十五步， 点击下一步
-        //TODO 第十六步， 点击完成按钮
-        //TODO 第十七步， 输入话题
-        //TODO 第十八步， 点击原创声明
-        //TODO 第十九步， 勾选复选框
-        //TODO 第二十步， 点击声明原创
-        //TODO 第二十一步，
-
     }
 
     companion object {
