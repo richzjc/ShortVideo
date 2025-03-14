@@ -1,25 +1,28 @@
 package com.richzjc.shortvideo.fragment
 
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityManager
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.richzjc.shortvideo.R
-import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetPianTouFileDuration
-import com.richzjc.shortvideo.fragment.autoVideo.responseToHandlePic
 import com.richzjc.shortvideo.fragment.autoVideo.responseToMergeAudio
 import com.richzjc.shortvideo.fragment.autoVideo.responseToPinJieVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectAudioFile
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectPianTouFile
-import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectPicFile
 import com.richzjc.shortvideo.util.MToastHelper
 import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
@@ -45,11 +48,57 @@ class AutoFragment : Fragment() {
         return inflater.inflate(R.layout.auto_video_fragment_create, container, false)
     }
 
+    fun isAccessibilityServiceEnabled(context: Context): Boolean {
+        // 获取AccessibilityManager实例
+        val accessibilityManager =
+            context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+
+
+        // 检查无障碍服务是否开启
+        if (accessibilityManager.isEnabled) {
+            // 获取已启用的无障碍服务列表
+            val enabledServices =
+                accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_GENERIC)
+
+
+            // 遍历已启用服务以查找目标服务
+            for (serviceInfo in enabledServices) {
+                if (serviceInfo.id.contains("AutoAccessibilityService")) {
+                    return true // 目标服务已开启
+                }
+            }
+        }
+        return false // 目标服务未开启
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val select_pic = view.findViewById<Button>(R.id.select_pic)
         status = view.findViewById(R.id.status)
+        val openAssit = view.findViewById<Button>(R.id.open_assit)
+        val openFloat = view.findViewById<Button>(R.id.open_float)
         select_pic.background = btnDrawable
+        openAssit.background = btnDrawable
+        openFloat.background = btnDrawable
+
+        openAssit.setOnClickListener {
+            if (!isAccessibilityServiceEnabled(requireContext())) {
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            }else{
+                MToastHelper.showToast("已经开启辅助功能权限")
+            }
+        }
+
+        openFloat.setOnClickListener {
+            if (!Settings.canDrawOverlays(context)) {
+                val drawOverlaysSettingsIntent =
+                    Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                drawOverlaysSettingsIntent.setData(Uri.parse("package:" + context?.getPackageName()))
+                this.startActivity(drawOverlaysSettingsIntent)
+            } else {
+                MToastHelper.showToast("已经开启悬浮窗")
+            }
+        }
 
         select_pic?.setOnClickListener {
             MToastHelper.showToast("先到图片编辑页面获取读写权限")
@@ -141,6 +190,7 @@ class AutoFragment : Fragment() {
         //TODO 第十九步， 勾选复选框
         //TODO 第二十步， 点击声明原创
         //TODO 第二十一步，
+
     }
 
     companion object {

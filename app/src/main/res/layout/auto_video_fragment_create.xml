@@ -18,6 +18,32 @@
         android:textColor="@color/day_mode_text_color3_999999" />
 
     <Button
+        android:id="@+id/open_float"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_dp15"
+        android:layout_marginTop="@dimen/margin_dp20"
+        android:layout_marginRight="@dimen/margin_dp15"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_dp10"
+        android:paddingBottom="@dimen/margin_dp10"
+        android:text="开启悬浮窗"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/open_assit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_dp15"
+        android:layout_marginTop="@dimen/margin_dp20"
+        android:layout_marginRight="@dimen/margin_dp15"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_dp10"
+        android:paddingBottom="@dimen/margin_dp10"
+        android:text="开始辅助功能"
+        android:textColor="@color/white" />
+
+    <Button
         android:id="@+id/select_pic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
