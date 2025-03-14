@@ -42,9 +42,8 @@ suspend fun responseToHandlePic(
 
     val picTime = audioFileDuration - pianTouFileDuration
     val guoDuTotalTime = (picList.size - 1) * 0.3
-    val everyCount = ((picTime - (guoDuTotalTime * 1000)) / 20).toInt()
-    val guoDuCount = ((guoDuTotalTime * 1000) / 20).toInt()
-    val rate = 50
+    val everyCount = ((picTime - (guoDuTotalTime * 1000)) / (20 * picList.size)).toInt()
+    val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
     val paint = Paint()
     // 设置画笔去掉透明度
     paint.isAntiAlias = true
