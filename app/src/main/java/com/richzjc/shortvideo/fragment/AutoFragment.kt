@@ -1,5 +1,6 @@
 package com.richzjc.shortvideo.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -120,7 +121,12 @@ class AutoFragment : Fragment() {
 
         //TODO 第七步，启动微信
         if (!isStartFlag) return
-
+        val intent = context?.packageManager?.getLaunchIntentForPackage("com.tencent.mm")
+        if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+//            context?.startService(Intent(this, OverlayService::class.java))
+        }
         //TODO 第八步，跳转到我的页面
         //TODO 第九步，点击视频号
         //TODO 第十步，点击发表视频
