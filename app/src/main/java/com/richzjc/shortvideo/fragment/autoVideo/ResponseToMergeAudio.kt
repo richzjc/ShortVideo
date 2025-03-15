@@ -1,6 +1,8 @@
 package com.richzjc.shortvideo.fragment.autoVideo
 
 import android.content.Context
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import android.widget.TextView
@@ -13,11 +15,18 @@ import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+
 suspend fun responseToMergeAudio(context: Context, audioFile: File, statusTV: TextView?): Boolean {
     delay(1000L)
     val inputFile = File(context.externalCacheDir, "pinjie.mp4")
     val outputVideoPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "${System.currentTimeMillis()}.mp4").absolutePath
-    val cmd = "-i ${audioFile.absolutePath} -i ${inputFile.absolutePath} -c:v copy -c:a aac -map 0:a:0 -map 1:v:0 -b:v 5000k -shortest ${outputVideoPath}"
+//    val cmd = "-i ${audioFile.absolutePath} -i ${inputFile.absolutePath} -c:v copy -c:a aac -map 0:a:0 -map 1:v:0 -b:v 5000k -shortest ${outputVideoPath}"
+    val cmd = "-i ${audioFile.absolutePath} -i ${inputFile.absolutePath} " +
+            "-map 0:a:0 -map 1:v:0 " +
+            "-c:v libx264 -preset fast -profile:v high -crf 23 " +
+            "-vf \"scale=1080:1920\" -r 50 -vsync vfr " +
+            "-c:a aac -b:v 5000k " +
+            "-movflags +faststart -shortest ${outputVideoPath}"
     val result = suspendCoroutine { continuation ->
         // 执行FFmpeg命令
         FFmpegKit.executeAsync(
@@ -25,6 +34,7 @@ suspend fun responseToMergeAudio(context: Context, audioFile: File, statusTV: Te
         ) { session ->
             if (session != null && ReturnCode.isSuccess(session.returnCode)) {
                 AutoFragment.updateStatusText("拼接音频成功", statusTV)
+                notifyMediaScanner(context, File(outputVideoPath))
                 continuation.resume(true)
             } else {
                 Log.e("short", "拼接音频失败:${FFmpegKitConfig.getLastSession()}")
@@ -34,4 +44,13 @@ suspend fun responseToMergeAudio(context: Context, audioFile: File, statusTV: Te
         }
     }
     return result
+}
+
+// 保存图片后调用此方法
+private fun notifyMediaScanner(context: Context, file: File) {
+    MediaScannerConnection.scanFile(
+        context,
+        arrayOf(file.absolutePath),
+        arrayOf("image/jpeg")
+    ) { path: String?, uri: Uri? -> }
 }

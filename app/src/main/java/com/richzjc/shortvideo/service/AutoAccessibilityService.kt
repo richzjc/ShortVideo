@@ -9,7 +9,7 @@ import com.richzjc.shortvideo.util.requestData
 import kotlinx.coroutines.delay
 
 
-class FaQunAccessibilityService : AccessibilityService() {
+class AutoAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -53,7 +53,7 @@ class FaQunAccessibilityService : AccessibilityService() {
     }
 
     companion object {
-        var instance: FaQunAccessibilityService? = null
+        var instance: AutoAccessibilityService? = null
         var curClassName: String? = ""
     }
 }

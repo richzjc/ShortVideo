@@ -3,6 +3,7 @@
     android:id="@+id/tabhost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     android:background="@color/day_mode_background_color1_ffffff">
 
     <RelativeLayout

@@ -62,7 +62,7 @@ suspend fun responseToHandlePic(
 
             (0 until everyCount)?.forEach {
                 val outputBitmap = drawTextAnimBitmap(curBitmap, paint, index)
-                saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
+                saveBitmapToFile(outputBitmap, index * everyCount + index * guoDuCount + it + 1, file1, status)
             }
 
             if (index < picList.size - 1) {
@@ -76,7 +76,7 @@ suspend fun responseToHandlePic(
                         drawGuoDuBitmap(curBitmap, nextBitmap, paint, index, scaleRate)
                     saveBitmapToFile(
                         outputBitmap,
-                        index * everyCount + everyCount + it + 1,
+                        index * everyCount + index * guoDuCount + everyCount + it + 1,
                         file1,
                         status
                     )
@@ -98,8 +98,6 @@ private suspend fun drawTextAnimBitmap(curBitmap: Bitmap, paint: Paint, index: I
     val canvas = Canvas(outputBitmap)
     canvas.drawColor(Color.BLACK)
     canvas.drawBitmap(curBitmap, 0f, max(0, (1920 - curBitmap.height) / 2).toFloat(), paint)
-    paint.alpha = 120
-    canvas.drawText("第${index + 1}位", 1080 / 2f, 1920 / 2f, paint)
     return outputBitmap
 }
 
@@ -122,15 +120,13 @@ private suspend fun drawGuoDuBitmap(
     val canvas1 = Canvas(curOutBitmap)
     canvas1.drawColor(Color.BLACK)
     canvas1.drawBitmap(curBitmap, 0f, max(0, (1920 - curBitmap.height) / 2).toFloat(), paint)
-    paint.alpha = 120
-    canvas1.drawText("第${index + 1}位", 1080 / 2f, 1920 / 2f, paint)
     paint.alpha = 255
     val scaleW =  (1080 * scaleRate).toInt()
     val scaleH = (1920 * scaleRate).toInt()
     if(scaleW > 0 && scaleH > 0) {
         curOutBitmap = Bitmap.createScaledBitmap(
             curOutBitmap,
-            scaleW,
+            (1080 - scaleW)/2,
             scaleH,
             true
         )
@@ -142,9 +138,6 @@ private suspend fun drawGuoDuBitmap(
     val canvas2 = Canvas(nextOutBitmap)
     canvas2.drawColor(Color.BLACK)
     canvas2.drawBitmap(nextBitmap, 0f, max(0, (1920 - curBitmap.height) / 2).toFloat(), paint)
-    paint.alpha = 120
-    canvas2.drawText("第${index + 1 + 2}位", 1080 / 2f, 1920 / 2f, paint)
-    paint.alpha = 255
 
     canvas.drawBitmap(nextOutBitmap, 0f, (1920 * scaleRate), paint)
     return outputBitmap
