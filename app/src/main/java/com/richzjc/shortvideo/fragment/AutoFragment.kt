@@ -14,9 +14,9 @@ import android.view.ViewGroup
 import android.view.accessibility.AccessibilityManager
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.richzjc.shortvideo.R
+import com.richzjc.shortvideo.UtilsContextManager
 import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetPianTouFileDuration
@@ -124,71 +124,10 @@ class AutoFragment : Fragment() {
                     responseToStart()
                 }
             }
-
         }
     }
 
-    private suspend fun responseToStart() {
-        //TODO 第一步，选择音频文件， 计算出需要多少张图片
-        updateStatusText("获取音频文件", status)
-        audioFile = responseToSelectAudioFile()
-        audioFile ?: return
-        if (!isStartFlag) return
-        audioFileDuration = responseToGetAudioFileDuration(audioFile!!)
-        if (audioFileDuration <= 0)
-            return
 
-        if (!isStartFlag) return
-        updateStatusText("音频时长为：${audioFileDuration}秒", status)
-
-        pianTouFile = responseToSelectPianTouFile()
-        pianTouFile ?: return
-        if (!isStartFlag) return
-        pianTouFileDuration = responseToGetPianTouFileDuration(pianTouFile!!)
-        if (pianTouFileDuration <= 0)
-            return
-
-        //TODO 第二步，选择图片文件
-//        if (!isStartFlag) return
-//        updateStatusText("选择图片文件", status)
-//        picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
-//        if (picList == null || picList!!.isEmpty())
-//            return
-//        //TODO 第三步，处理图片
-//        if (!isStartFlag) return
-//        updateStatusText("开始处理图片文件", status)
-//        responseToHandlePic(
-//            requireContext(),
-//            picList!!,
-//            audioFileDuration,
-//            pianTouFileDuration,
-//            status
-//        )
-        //TODO 第四步，将处理图片，生成视频
-        if (!isStartFlag) return
-        val genNoVideoFlag = genHandleVideo(requireContext(), status)
-        if (!genNoVideoFlag)
-            return
-        //TODO 第五步，拼接片头视频
-        if (!isStartFlag) return
-        val pinJieVideoFlag = responseToPinJieVideo(requireContext(), pianTouFile!!, status)
-        if (!pinJieVideoFlag)
-            return
-        //TODO 第六步，合并音频文件
-        if (!isStartFlag) return
-        val mergeAudioVideoFlag = responseToMergeAudio(requireContext(), audioFile!!, status)
-        if (!mergeAudioVideoFlag)
-            return
-
-        //TODO 第七步，启动微信
-        if (!isStartFlag) return
-        val intent = context?.packageManager?.getLaunchIntentForPackage("com.tencent.mm")
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-//            context?.startService(Intent(this, OverlayService::class.java))
-        }
-    }
 
     companion object {
         var isStartFlag = false
@@ -206,6 +145,69 @@ class AutoFragment : Fragment() {
                 }
             else
                 statusTV?.text = statusText ?: ""
+        }
+
+
+        suspend fun responseToStart() {
+            //TODO 第一步，选择音频文件， 计算出需要多少张图片
+            updateStatusText("获取音频文件", status)
+            audioFile = responseToSelectAudioFile()
+            audioFile ?: return
+            if (!isStartFlag) return
+            audioFileDuration = responseToGetAudioFileDuration(audioFile!!)
+            if (audioFileDuration <= 0)
+                return
+
+            if (!isStartFlag) return
+            updateStatusText("音频时长为：${audioFileDuration}秒", status)
+
+            pianTouFile = responseToSelectPianTouFile()
+            pianTouFile ?: return
+            if (!isStartFlag) return
+            pianTouFileDuration = responseToGetPianTouFileDuration(pianTouFile!!)
+            if (pianTouFileDuration <= 0)
+                return
+
+            //TODO 第二步，选择图片文件
+            if (!isStartFlag) return
+            updateStatusText("选择图片文件", status)
+            picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
+            if (picList == null || picList!!.isEmpty())
+                return
+            //TODO 第三步，处理图片
+            if (!isStartFlag) return
+            updateStatusText("开始处理图片文件", status)
+            responseToHandlePic(
+                UtilsContextManager.getInstance().application,
+                picList!!,
+                audioFileDuration,
+                pianTouFileDuration,
+                status
+            )
+            //TODO 第四步，将处理图片，生成视频
+            if (!isStartFlag) return
+            val genNoVideoFlag = genHandleVideo( UtilsContextManager.getInstance().application, status)
+            if (!genNoVideoFlag)
+                return
+            //TODO 第五步，拼接片头视频
+            if (!isStartFlag) return
+            val pinJieVideoFlag = responseToPinJieVideo( UtilsContextManager.getInstance().application, pianTouFile!!, status)
+            if (!pinJieVideoFlag)
+                return
+            //TODO 第六步，合并音频文件
+            if (!isStartFlag) return
+            val mergeAudioVideoFlag = responseToMergeAudio( UtilsContextManager.getInstance().application, audioFile!!, status)
+            if (!mergeAudioVideoFlag)
+                return
+
+            //TODO 第七步，启动微信
+            if (!isStartFlag) return
+            val intent =  UtilsContextManager.getInstance().application?.packageManager?.getLaunchIntentForPackage("com.tencent.mm")
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                UtilsContextManager.getInstance().application.startActivity(intent)
+//            context?.startService(Intent(this, OverlayService::class.java))
+            }
         }
     }
 }

@@ -20,13 +20,13 @@ suspend fun responseToMergeAudio(context: Context, audioFile: File, statusTV: Te
     delay(1000L)
     val inputFile = File(context.externalCacheDir, "pinjie.mp4")
     val outputVideoPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "${System.currentTimeMillis()}.mp4").absolutePath
-//    val cmd = "-i ${audioFile.absolutePath} -i ${inputFile.absolutePath} -c:v copy -c:a aac -map 0:a:0 -map 1:v:0 -b:v 5000k -shortest ${outputVideoPath}"
-    val cmd = "-i ${audioFile.absolutePath} -i ${inputFile.absolutePath} " +
-            "-map 0:a:0 -map 1:v:0 " +
-            "-c:v libx264 -preset fast -profile:v high -crf 23 " +
-            "-vf \"scale=1080:1920\" -r 50 -vsync vfr " +
-            "-c:a aac -b:v 5000k " +
-            "-movflags +faststart -shortest ${outputVideoPath}"
+    val cmd = "-i ${audioFile.absolutePath} -i ${inputFile.absolutePath} -c:v copy -c:a aac -map 0:a:0 -map 1:v:0 -b:v 5000k -shortest ${outputVideoPath}"
+//    val cmd = "-i ${audioFile.absolutePath} -i ${inputFile.absolutePath} " +
+//            "-map 0:a:0 -map 1:v:0 " +
+//            "-c:v libx264 -preset fast -profile:v high -crf 23 " +
+//            "-vf \"scale=1080:1920\" -r 50 -vsync vfr " +
+//            "-c:a aac -b:v 5000k " +
+//            "-movflags +faststart -shortest ${outputVideoPath}"
     val result = suspendCoroutine { continuation ->
         // 执行FFmpeg命令
         FFmpegKit.executeAsync(

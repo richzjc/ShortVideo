@@ -42,9 +42,9 @@ suspend fun responseToHandlePic(
         }
 
         val picTime = audioFileDuration - pianTouFileDuration
-        val guoDuTotalTime = (picList.size - 1) * 0.3
-        val everyCount = ((picTime - (guoDuTotalTime * 1000)) / (20 * picList.size)).toInt()
-        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
+//        val guoDuTotalTime = (picList.size - 1) * 0.3
+        val everyCount = (picTime / (20 * picList.size)).toInt()
+//        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
         val paint = Paint()
         // 设置画笔去掉透明度
         paint.isAntiAlias = true
@@ -62,26 +62,26 @@ suspend fun responseToHandlePic(
 
             (0 until everyCount)?.forEach {
                 val outputBitmap = drawTextAnimBitmap(curBitmap, paint, index)
-                saveBitmapToFile(outputBitmap, index * everyCount + index * guoDuCount + it + 1, file1, status)
+                saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
             }
 
-            if (index < picList.size - 1) {
-                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
-                var picWidth = 1080
-                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
-                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
-                (0 until guoDuCount)?.forEach {
-                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
-                    val outputBitmap =
-                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, index, scaleRate)
-                    saveBitmapToFile(
-                        outputBitmap,
-                        index * everyCount + index * guoDuCount + everyCount + it + 1,
-                        file1,
-                        status
-                    )
-                }
-            }
+//            if (index < picList.size - 1) {
+//                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
+//                var picWidth = 1080
+//                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
+//                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
+//                (0 until guoDuCount)?.forEach {
+//                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
+//                    val outputBitmap =
+//                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, index, scaleRate)
+//                    saveBitmapToFile(
+//                        outputBitmap,
+//                        index * everyCount + index * guoDuCount + everyCount + it + 1,
+//                        file1,
+//                        status
+//                    )
+//                }
+//            }
         }
     }catch (exception : Exception){
         exception.printStackTrace()
