@@ -1,12 +1,14 @@
 package com.richzjc.shortvideo.fragment
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Process
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import android.view.ViewGroup
 import android.view.accessibility.AccessibilityManager
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.UtilsContextManager
@@ -31,7 +34,9 @@ import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
 import com.richzjc.shortvideo.util.ShapeDrawable
 import com.richzjc.shortvideo.util.requestData
+import kotlinx.coroutines.delay
 import java.io.File
+
 
 class AutoFragment : Fragment() {
     private val btnDrawable by lazy {
@@ -87,7 +92,7 @@ class AutoFragment : Fragment() {
         openAssit.setOnClickListener {
             if (!isAccessibilityServiceEnabled(requireContext())) {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            }else{
+            } else {
                 MToastHelper.showToast("已经开启辅助功能权限")
             }
         }
@@ -104,7 +109,7 @@ class AutoFragment : Fragment() {
         }
 
         select_pic?.setOnClickListener {
-            if (!Settings.canDrawOverlays(context)){
+            if (!Settings.canDrawOverlays(context)) {
                 MToastHelper.showToast("请开启悬浮窗权限")
                 return@setOnClickListener
             }
@@ -128,7 +133,6 @@ class AutoFragment : Fragment() {
     }
 
 
-
     companion object {
         var isStartFlag = false
         var status: TextView? = null
@@ -147,6 +151,17 @@ class AutoFragment : Fragment() {
                 statusTV?.text = statusText ?: ""
         }
 
+        fun killWx() {
+            val am =
+                UtilsContextManager.getInstance().application.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            am ?: return
+            val processes = am!!.runningAppProcesses
+            for (process in processes) {
+                if (process.processName == "com.tencent.mm") { // 微信包名
+                    Process.killProcess(process.pid)
+                }
+            }
+        }
 
         suspend fun responseToStart() {
             //TODO 第一步，选择音频文件， 计算出需要多少张图片
@@ -186,28 +201,37 @@ class AutoFragment : Fragment() {
             )
             //TODO 第四步，将处理图片，生成视频
             if (!isStartFlag) return
-            val genNoVideoFlag = genHandleVideo( UtilsContextManager.getInstance().application, status)
+            val genNoVideoFlag =
+                genHandleVideo(UtilsContextManager.getInstance().application, status)
             if (!genNoVideoFlag)
                 return
             //TODO 第五步，拼接片头视频
             if (!isStartFlag) return
-            val pinJieVideoFlag = responseToPinJieVideo( UtilsContextManager.getInstance().application, pianTouFile!!, status)
+            val pinJieVideoFlag = responseToPinJieVideo(
+                UtilsContextManager.getInstance().application,
+                pianTouFile!!,
+                status
+            )
             if (!pinJieVideoFlag)
                 return
             //TODO 第六步，合并音频文件
             if (!isStartFlag) return
-            val mergeAudioVideoFlag = responseToMergeAudio( UtilsContextManager.getInstance().application, audioFile!!, status)
+            val mergeAudioVideoFlag = responseToMergeAudio(
+                UtilsContextManager.getInstance().application,
+                audioFile!!,
+                status
+            )
             if (!mergeAudioVideoFlag)
                 return
 
             //TODO 第七步，启动微信
             if (!isStartFlag) return
-            val intent =  UtilsContextManager.getInstance().application?.packageManager?.getLaunchIntentForPackage("com.tencent.mm")
-            if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                UtilsContextManager.getInstance().application.startActivity(intent)
-//            context?.startService(Intent(this, OverlayService::class.java))
-            }
+            val intent = Intent()
+            intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            UtilsContextManager.getInstance().application.startActivity(intent)
+
+
         }
     }
 }

@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 private val locateList = mutableListOf(
     "1050,2586",
     "600,1311",
-    "383,839",
+    "383,934",
     "122,2497",
     "607,167",
     "479,492",
@@ -29,14 +29,11 @@ private val locateList = mutableListOf(
     "330,2149",
     "657,2333",
     "329,1038",
-    "1091,2296",
-    "612,181",
-    "522,1178",
-    "236,324",
-    "1057,2572",
-    "1076,2578",
+    "544,2372",
+    "1056,2587",
     "506,1259"
 )
+
 
 private val fabiaoLocate = "1069,215"
 private val IS_NORMAL = 0
@@ -74,8 +71,11 @@ private fun AccessibilityService.simulateClick(x: Float, y: Float, isLast: Int) 
             } else if (isLast == IS_FABIAO) {
                 //TODO 循环
                 requestData {
-                    delay(60  * 1000L)
-                    val intent = Intent(UtilsContextManager.getInstance().application, MainActivity::class.java)
+                    delay(60 * 1000L)
+                    val intent = Intent(
+                        UtilsContextManager.getInstance().application,
+                        MainActivity::class.java
+                    )
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     UtilsContextManager.getInstance().application.startActivity(intent)
                     delay(2 * 1000L)
