@@ -111,6 +111,7 @@ private suspend fun drawGuoDuBitmap(
     paint.color = Color.RED
     paint.textSize = 30f
     paint.alpha = 255
+
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
     canvas.drawColor(Color.BLACK)
@@ -129,9 +130,11 @@ private suspend fun drawGuoDuBitmap(
             scaleH,
             true
         )
+
+        canvas.drawBitmap(curOutBitmap, (1080 - curOutBitmap.width) / 2f, 0f, paint)
     }
 
-    canvas.drawBitmap(curOutBitmap, (1080 - curOutBitmap.width) / 2f, 0f, paint)
+
 //-----------------------
     var nextOutBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas2 = Canvas(nextOutBitmap)
