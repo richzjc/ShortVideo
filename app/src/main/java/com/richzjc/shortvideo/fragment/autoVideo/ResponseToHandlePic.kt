@@ -10,6 +10,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.Log
 import android.widget.TextView
+import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.fragment.AutoFragment
 import kotlinx.coroutines.delay
 import java.io.File
@@ -42,15 +43,14 @@ suspend fun responseToHandlePic(
         }
 
         val picTime = audioFileDuration - pianTouFileDuration
-//        val guoDuTotalTime = (picList.size - 1) * 0.3
-        val everyCount = (picTime / (20 * picList.size)).toInt()
-//        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
+        val guoDuTotalTime = (picList.size - 1) * 0.3
+        val everyCount = ((picTime - guoDuTotalTime * 1000L) / (20 * picList.size)).toInt()
+        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
         val paint = Paint()
         // 设置画笔去掉透明度
         paint.isAntiAlias = true
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
         paint.alpha = 255
-
 
         picList.forEachIndexed { index, file ->
             Log.e("short", "生成处理的图片： index = ${index}")
@@ -61,27 +61,27 @@ suspend fun responseToHandlePic(
             curBitmap = Bitmap.createScaledBitmap(curBitmap, picWidth, picHeight, true)
 
             (0 until everyCount)?.forEach {
-                val outputBitmap = drawTextAnimBitmap(curBitmap, paint, index)
+                val outputBitmap = drawTextAnimBitmap(curBitmap, paint)
                 saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
             }
 
-//            if (index < picList.size - 1) {
-//                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
-//                var picWidth = 1080
-//                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
-//                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
-//                (0 until guoDuCount)?.forEach {
-//                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
-//                    val outputBitmap =
-//                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, index, scaleRate)
-//                    saveBitmapToFile(
-//                        outputBitmap,
-//                        index * everyCount + index * guoDuCount + everyCount + it + 1,
-//                        file1,
-//                        status
-//                    )
-//                }
-//            }
+            if (index < picList.size - 1) {
+                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
+                var picWidth = 1080
+                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
+                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
+                (0 until guoDuCount)?.forEach {
+                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
+                    val outputBitmap =
+                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, scaleRate)
+                    saveBitmapToFile(
+                        outputBitmap,
+                        index * everyCount + index * guoDuCount + everyCount + it + 1,
+                        file1,
+                        status
+                    )
+                }
+            }
         }
     }catch (exception : Exception){
         exception.printStackTrace()
@@ -89,7 +89,7 @@ suspend fun responseToHandlePic(
     }
 }
 
-private suspend fun drawTextAnimBitmap(curBitmap: Bitmap, paint: Paint, index: Int): Bitmap {
+private suspend fun drawTextAnimBitmap(curBitmap: Bitmap, paint: Paint): Bitmap {
     delay(30)
     paint.color = Color.RED
     paint.textSize = 30f
@@ -105,7 +105,6 @@ private suspend fun drawGuoDuBitmap(
     curBitmap: Bitmap,
     nextBitmap: Bitmap,
     paint: Paint,
-    index: Int,
     scaleRate: Float
 ): Bitmap {
     delay(30)
@@ -132,7 +131,7 @@ private suspend fun drawGuoDuBitmap(
         )
     }
 
-    canvas.drawBitmap(curOutBitmap, curOutBitmap.width / 2f, 0f, paint)
+    canvas.drawBitmap(curOutBitmap, (1080 - curOutBitmap.width) / 2f, 0f, paint)
 //-----------------------
     var nextOutBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas2 = Canvas(nextOutBitmap)

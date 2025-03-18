@@ -151,17 +151,6 @@ class AutoFragment : Fragment() {
                 statusTV?.text = statusText ?: ""
         }
 
-        fun killWx() {
-            val am =
-                UtilsContextManager.getInstance().application.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
-            am ?: return
-            val processes = am!!.runningAppProcesses
-            for (process in processes) {
-                if (process.processName == "com.tencent.mm") { // 微信包名
-                    Process.killProcess(process.pid)
-                }
-            }
-        }
 
         suspend fun responseToStart() {
             //TODO 第一步，选择音频文件， 计算出需要多少张图片
