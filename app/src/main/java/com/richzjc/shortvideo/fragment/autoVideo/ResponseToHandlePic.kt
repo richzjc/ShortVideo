@@ -43,9 +43,10 @@ suspend fun responseToHandlePic(
         }
 
         val picTime = audioFileDuration - pianTouFileDuration
-        val guoDuTotalTime = (picList.size - 1) * 0.3
+//        val guoDuTotalTime = (picList.size - 1) * 0.3
+        val guoDuTotalTime = (picList.size - 1) * 0f
         val everyCount = ((picTime - guoDuTotalTime * 1000L) / (20 * picList.size)).toInt()
-        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
+//        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
         val paint = Paint()
         // 设置画笔去掉透明度
         paint.isAntiAlias = true
@@ -65,23 +66,23 @@ suspend fun responseToHandlePic(
                 saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
             }
 
-            if (index < picList.size - 1) {
-                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
-                var picWidth = 1080
-                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
-                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
-                (0 until guoDuCount)?.forEach {
-                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
-                    val outputBitmap =
-                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, scaleRate)
-                    saveBitmapToFile(
-                        outputBitmap,
-                        index * everyCount + index * guoDuCount + everyCount + it + 1,
-                        file1,
-                        status
-                    )
-                }
-            }
+//            if (index < picList.size - 1) {
+//                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
+//                var picWidth = 1080
+//                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
+//                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
+//                (0 until guoDuCount)?.forEach {
+//                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
+//                    val outputBitmap =
+//                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, scaleRate)
+//                    saveBitmapToFile(
+//                        outputBitmap,
+//                        index * everyCount + index * guoDuCount + everyCount + it + 1,
+//                        file1,
+//                        status
+//                    )
+//                }
+//            }
         }
     }catch (exception : Exception){
         exception.printStackTrace()
@@ -139,15 +140,16 @@ private suspend fun drawGuoDuBitmap(
     var nextOutBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas2 = Canvas(nextOutBitmap)
     canvas2.drawColor(Color.BLACK)
-    canvas2.drawBitmap(nextBitmap, 0f, max(0, (1920 - curBitmap.height) / 2).toFloat(), paint)
+    canvas2.drawBitmap(nextBitmap, 0f, max(0, (1920 - nextOutBitmap.height) / 2).toFloat(), paint)
 
-    canvas.drawBitmap(nextOutBitmap, 0f, (1920 * scaleRate), paint)
+    canvas.drawBitmap(nextOutBitmap, 0f, scaleH.toFloat(), paint)
     return outputBitmap
 }
 
 
 private fun saveBitmapToFile(outputBitmap: Bitmap, index: Int, file: File, status: TextView?) {
     try {// 获取应用的内部存储路径
+        Log.e("saveFile", "${index}")
         val imageFile = File(file, "${index}.png")
         // 创建文件输出流
         val fos = FileOutputStream(imageFile)

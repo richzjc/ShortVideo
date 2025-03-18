@@ -110,10 +110,10 @@ class AutoFragment : Fragment() {
         }
 
         select_pic?.setOnClickListener {
-            if (!Settings.canDrawOverlays(context)) {
-                MToastHelper.showToast("请开启悬浮窗权限")
-                return@setOnClickListener
-            }
+//            if (!Settings.canDrawOverlays(context)) {
+//                MToastHelper.showToast("请开启悬浮窗权限")
+//                return@setOnClickListener
+//            }
             if (!isAccessibilityServiceEnabled(requireContext())) {
                 MToastHelper.showToast("请开启辅助功能权限")
                 return@setOnClickListener
