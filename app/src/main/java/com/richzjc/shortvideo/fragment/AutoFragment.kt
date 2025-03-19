@@ -154,65 +154,65 @@ class AutoFragment : Fragment() {
 
 
         suspend fun responseToStart() {
-            //TODO 第一步，选择音频文件， 计算出需要多少张图片
-            updateStatusText("获取音频文件", status)
-            audioFile = responseToSelectAudioFile()
-            audioFile ?: return
-            if (!isStartFlag) return
-            audioFileDuration = responseToGetAudioFileDuration(audioFile!!)
-            if (audioFileDuration <= 0)
-                return
-
-            if (!isStartFlag) return
-            updateStatusText("音频时长为：${audioFileDuration}秒", status)
-
-            pianTouFile = responseToSelectPianTouFile()
-            pianTouFile ?: return
-            if (!isStartFlag) return
-            pianTouFileDuration = responseToGetPianTouFileDuration(pianTouFile!!)
-            if (pianTouFileDuration <= 0)
-                return
-
-            //TODO 第二步，选择图片文件
-            if (!isStartFlag) return
-            updateStatusText("选择图片文件", status)
-            picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
-            if (picList == null || picList!!.isEmpty())
-                return
-            //TODO 第三步，处理图片
-            if (!isStartFlag) return
-            updateStatusText("开始处理图片文件", status)
-            responseToHandlePic(
-                UtilsContextManager.getInstance().application,
-                picList!!,
-                audioFileDuration,
-                pianTouFileDuration,
-                status
-            )
-            //TODO 第四步，将处理图片，生成视频
-            if (!isStartFlag) return
-            val genNoVideoFlag =
-                genHandleVideo(UtilsContextManager.getInstance().application, status)
-            if (!genNoVideoFlag)
-                return
-            //TODO 第五步，拼接片头视频
-            if (!isStartFlag) return
-            val pinJieVideoFlag = responseToPinJieVideo(
-                UtilsContextManager.getInstance().application,
-                pianTouFile!!,
-                status
-            )
-            if (!pinJieVideoFlag)
-                return
-            //TODO 第六步，合并音频文件
-            if (!isStartFlag) return
-            val mergeAudioVideoFlag = responseToMergeAudio(
-                UtilsContextManager.getInstance().application,
-                audioFile!!,
-                status
-            )
-            if (!mergeAudioVideoFlag)
-                return
+//            //TODO 第一步，选择音频文件， 计算出需要多少张图片
+//            updateStatusText("获取音频文件", status)
+//            audioFile = responseToSelectAudioFile()
+//            audioFile ?: return
+//            if (!isStartFlag) return
+//            audioFileDuration = responseToGetAudioFileDuration(audioFile!!)
+//            if (audioFileDuration <= 0)
+//                return
+//
+//            if (!isStartFlag) return
+//            updateStatusText("音频时长为：${audioFileDuration}秒", status)
+//
+//            pianTouFile = responseToSelectPianTouFile()
+//            pianTouFile ?: return
+//            if (!isStartFlag) return
+//            pianTouFileDuration = responseToGetPianTouFileDuration(pianTouFile!!)
+//            if (pianTouFileDuration <= 0)
+//                return
+//
+//            //TODO 第二步，选择图片文件
+//            if (!isStartFlag) return
+//            updateStatusText("选择图片文件", status)
+//            picList = responseToSelectPicFile(audioFileDuration, pianTouFileDuration)
+//            if (picList == null || picList!!.isEmpty())
+//                return
+//            //TODO 第三步，处理图片
+//            if (!isStartFlag) return
+//            updateStatusText("开始处理图片文件", status)
+//            responseToHandlePic(
+//                UtilsContextManager.getInstance().application,
+//                picList!!,
+//                audioFileDuration,
+//                pianTouFileDuration,
+//                status
+//            )
+//            //TODO 第四步，将处理图片，生成视频
+//            if (!isStartFlag) return
+//            val genNoVideoFlag =
+//                genHandleVideo(UtilsContextManager.getInstance().application, status)
+//            if (!genNoVideoFlag)
+//                return
+//            //TODO 第五步，拼接片头视频
+//            if (!isStartFlag) return
+//            val pinJieVideoFlag = responseToPinJieVideo(
+//                UtilsContextManager.getInstance().application,
+//                pianTouFile!!,
+//                status
+//            )
+//            if (!pinJieVideoFlag)
+//                return
+//            //TODO 第六步，合并音频文件
+//            if (!isStartFlag) return
+//            val mergeAudioVideoFlag = responseToMergeAudio(
+//                UtilsContextManager.getInstance().application,
+//                audioFile!!,
+//                status
+//            )
+//            if (!mergeAudioVideoFlag)
+//                return
 
             //TODO 第七步，启动微信
             if (!isStartFlag) return
