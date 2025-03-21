@@ -181,7 +181,7 @@ private suspend fun drawTextAnimBitmap(
     val realText1 = "经典歌曲 / 超级好听"
     paint.textSize = 30f
     val rect2 = Rect()
-    paint.getTextBounds(realText1, 0, realText.length, rect2)
+    paint.getTextBounds(realText1, 0, realText1.length, rect2)
     canvas.drawText(realText1, (1080 - abs(rect2.right - rect2.left)) / 2f, 400f + abs(rect1.bottom - rect1.top) + 10f, paint)
     return outputBitmap
 }
