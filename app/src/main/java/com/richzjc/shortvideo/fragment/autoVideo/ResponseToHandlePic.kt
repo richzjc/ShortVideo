@@ -172,7 +172,7 @@ private suspend fun drawTextAnimBitmap(
     paint.setTypeface(Typeface.DEFAULT_BOLD)
     paint.alpha = 255
     paint.color = Color.WHITE
-    val realText = "<<${fileName}>>"
+    val realText = "< ${fileName} >"
     paint.textSize = 70f
     val rect1 = Rect()
     paint.getTextBounds(realText, 0, realText.length, rect1)

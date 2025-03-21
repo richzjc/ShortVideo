@@ -1,6 +1,7 @@
 package com.richzjc.shortvideo.service
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK
 import android.accessibilityservice.AccessibilityService.GestureResultCallback
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
@@ -29,36 +30,34 @@ private val locateList = mutableListOf(
     "340,1938",
     "549,2101",
     "290,966",//点击封面
-    "438,2080",
-    "955,2314",
-    "460,1831",//点击活动
-    "584,2148",
-    "297,202" //这一步是点击输入框，需要粘贴搜索内容
+    "975,2064",
+    "542,200",
+    "428,644",
+    "215,316",
+    "939,2328",
+    "948,2319",
+    "394,1145",//点击输入框
 )
 
 private val locateList1 = mutableListOf(
-    "991,2328",
-    "416,377",
-    "540,2390",
-    "568,1129" //点击输入框，输入主题与标题
+    "552,1834",
+    "566,2167",
+    "335,210"
 )
 
-//需要滑动页面，勾选ai说明
 private val locateList2 = mutableListOf(
-    "263,2290",
-    "565,1533"
-)
-
-private val locateList3 = mutableListOf(
-    "952,221"
+    "982,2307",
+    "512,365",
+    "541,2106",
+    "938,220"
 )
 
 private val themes = mutableListOf("美女", "少妇", "苗条身材", "经典歌曲", "性感", "小姐姐")
 
-private val fabiaoLocate = "1069,215"
 private val IS_NORMAL = 0
 private val IS_LAST = 1
 private val IS_FABIAO = 2
+private val IS_SEARCH_ACTIVITY = 3
 
 fun AccessibilityService.responseToClick() {
     requestData {
@@ -76,6 +75,32 @@ fun AccessibilityService.responseToClick() {
     }
 }
 
+private suspend fun AccessibilityService.responseToClickActivity() {
+    locateList1.forEachIndexed { index, it ->
+        delay(3000L)
+        val arr = it.split(",")
+        val isLast = index == locateList1.size - 1
+        if (isLast) {
+            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_SEARCH_ACTIVITY)
+        } else {
+            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_NORMAL)
+        }
+    }
+}
+
+private suspend fun AccessibilityService.responseToClickSearch() {
+    locateList2.forEachIndexed { index, it ->
+        delay(4000L)
+        val arr = it.split(",")
+        val isLast = index == locateList.size - 1
+        if (isLast) {
+            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_FABIAO)
+        } else {
+            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_NORMAL)
+        }
+    }
+}
+
 private fun AccessibilityService.simulateClick(x: Float, y: Float, isLast: Int) {
     val path = Path()
     path.moveTo(x, y) // 移动到点击的起点（通常是点击位置）
@@ -86,8 +111,14 @@ private fun AccessibilityService.simulateClick(x: Float, y: Float, isLast: Int) 
         // 派发手势并监听结果回调
         override fun onCompleted(gesture: GestureDescription) {
             super.onCompleted(gesture) // 完成时的回调（可选）
-            if (isLast == IS_LAST) {
-                responseToSetText(recursionEditNode(rootInActiveWindow), "")
+            if (isLast == IS_SEARCH_ACTIVITY) {
+                responseToSetText(recursionEditNode(rootInActiveWindow), "美女", IS_SEARCH_ACTIVITY)
+            } else if (isLast == IS_LAST) {
+                responseToSetText(
+                    recursionEditNode(rootInActiveWindow),
+                    "千万不能让老婆看到，看到就后悔了#美女#少妇#完美身材#性感#经典歌曲",
+                    IS_LAST
+                )
             } else if (isLast == IS_FABIAO) {
                 //TODO 循环
                 requestData {
@@ -141,7 +172,8 @@ fun AccessibilityService.recursionEditNode(listNodes: AccessibilityNodeInfo): Ac
 
 private fun AccessibilityService.responseToSetText(
     editNodeInfo: AccessibilityNodeInfo?,
-    faqunText: String
+    faqunText: String,
+    flag: Int
 ) {
     requestData {
         var realText = faqunText
@@ -160,7 +192,12 @@ private fun AccessibilityService.responseToSetText(
             contactNodes = rootInActiveWindow.findAccessibilityNodeInfosByText(realText)
         }
 
-        val arr = fabiaoLocate.split(",")
-        simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_FABIAO)
+        if (flag == IS_LAST) {
+            delay(2000L)
+            performGlobalAction(GLOBAL_ACTION_BACK)
+            delay(2000L)
+            responseToClickActivity()
+        }else if (flag == IS_SEARCH_ACTIVITY)
+            responseToClickSearch()
     }
 }
