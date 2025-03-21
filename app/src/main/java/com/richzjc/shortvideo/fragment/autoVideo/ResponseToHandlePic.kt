@@ -103,7 +103,7 @@ private suspend fun drawTextAnimBitmap(
     val canvas = Canvas(outputBitmap)
     //TODO 第一步，绘制黑色背景
     canvas.drawColor(Color.BLACK)
-    val scrollGap = (1080 * 0.2f) / (everyCount - 10)
+    val scrollGap = (1080 * 0.1f) / (everyCount - 10)
     val alphaGap = 25.5f
     //TODO 判断是左滑还是右滑
     if (outerIndex % 2 == 0) {
@@ -141,7 +141,7 @@ private suspend fun drawTextAnimBitmap(
         if (index >= (everyCount - 10)) {
             //TODO 判断NextBitMap是否为空
             if (nextBitmap == null) {
-                val startX = -0.2f * 1080
+                val startX = -0.1f * 1080
                 paint.alpha = 255
                 canvas.drawBitmap(curBitmap, startX, (1920 - curBitmap.height) / 2.toFloat(), paint)
             } else {
@@ -150,7 +150,7 @@ private suspend fun drawTextAnimBitmap(
                     alphaValue = 255
 
                 paint.alpha = alphaValue
-                val startX = -0.2f * 1080
+                val startX = -0.1f * 1080
                 canvas.drawBitmap(nextBitmap, startX, (1920 - nextBitmap.height) / 2.toFloat(), paint)
 
                 var alpha1 = 255 - alphaValue
@@ -167,19 +167,18 @@ private suspend fun drawTextAnimBitmap(
     }
 
     //TODO 绘制阴影
-    canvas.drawColor(Color.parseColor("#331478f0"))
+    canvas.drawColor(Color.parseColor("#661478f0"))
     //TODO 绘制标题
     paint.setTypeface(Typeface.DEFAULT_BOLD)
-    paint.letterSpacing = 0.1f
     paint.alpha = 255
     paint.color = Color.WHITE
     val realText = "<<${fileName}>>"
-    paint.textSize = 60f
+    paint.textSize = 70f
     val rect1 = Rect()
     paint.getTextBounds(realText, 0, realText.length, rect1)
     canvas.drawText(realText, (1080 - abs(rect1.right - rect1.left)) / 2f, 400f, paint)
     val realText1 = "经典歌曲 / 超级好听"
-    paint.textSize = 30f
+    paint.textSize = 40f
     val rect2 = Rect()
     paint.getTextBounds(realText1, 0, realText1.length, rect2)
     canvas.drawText(realText1, (1080 - abs(rect2.right - rect2.left)) / 2f, 400f + abs(rect1.bottom - rect1.top) + 10f, paint)

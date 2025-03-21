@@ -53,6 +53,7 @@ private val locateList3 = mutableListOf(
     "952,221"
 )
 
+private val themes = mutableListOf("美女", "少妇", "苗条身材", "经典歌曲", "性感", "小姐姐")
 
 private val fabiaoLocate = "1069,215"
 private val IS_NORMAL = 0
