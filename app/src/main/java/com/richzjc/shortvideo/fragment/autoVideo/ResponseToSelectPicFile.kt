@@ -10,10 +10,9 @@ import java.io.File
 import java.util.Arrays
 
 
-suspend fun responseToSelectPicFile(totalDuration: Long, pianTouDuration: Long): List<File> {
+suspend fun responseToSelectPicFile(picDuration: Long): List<File> {
     delay(1000L)
-    val picDuration = totalDuration - pianTouDuration
-    val picCount = Math.floor(picDuration / 2000.0).toInt()
+    val picCount = Math.floor(picDuration / 3000.0).toInt()
     val fileList = ArrayList<File>()
     if (picCount <= 0)
         return fileList
@@ -55,8 +54,5 @@ suspend fun responseToSelectPicFile(totalDuration: Long, pianTouDuration: Long):
             fileList.add(file)
     }
 
-    fileList.forEach {
-        Log.e("short", "${it.absolutePath}")
-    }
     return fileList
 }

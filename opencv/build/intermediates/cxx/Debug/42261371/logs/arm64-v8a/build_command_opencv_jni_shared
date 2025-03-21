@@ -1,4 +1,0 @@
-/Users/zhangjianchuan/Library/Android/sdk/cmake/3.22.1/bin/ninja \
-  -C \
-  /Users/zhangjianchuan/project/android/ShortVideo/opencv/.cxx/Debug/42261371/arm64-v8a \
-  opencv_jni_shared

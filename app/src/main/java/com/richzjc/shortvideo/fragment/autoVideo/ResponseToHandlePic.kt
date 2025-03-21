@@ -8,20 +8,21 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.graphics.Rect
+import android.graphics.Typeface
 import android.util.Log
 import android.widget.TextView
-import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.fragment.AutoFragment
 import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.max
+import kotlin.math.abs
 
 suspend fun responseToHandlePic(
     context: Context,
     picList: List<File>,
     audioFileDuration: Long,
-    pianTouFileDuration: Long,
+    fileName: String,
     status: TextView?
 ) {
     try {
@@ -42,11 +43,8 @@ suspend fun responseToHandlePic(
             }
         }
 
-        val picTime = audioFileDuration - pianTouFileDuration
-//        val guoDuTotalTime = (picList.size - 1) * 0.3
-//        val guoDuTotalTime = (picList.size - 1) * 0f
-        val everyCount = (picTime / (20 * picList.size)).toInt()
-//        val guoDuCount = ((guoDuTotalTime * 1000) / (20 * (picList.size - 1))).toInt()
+        val picTime = audioFileDuration
+        val everyCount = (picTime / (33 * picList.size)).toInt()
         val paint = Paint()
         // 设置画笔去掉透明度
         paint.isAntiAlias = true
@@ -54,95 +52,137 @@ suspend fun responseToHandlePic(
         paint.alpha = 255
 
         picList.forEachIndexed { index, file ->
-            Log.e("short", "生成处理的图片： index = ${index}")
             AutoFragment.updateStatusText("开始处理第${index + 1}张图片", status)
             var curBitmap = BitmapFactory.decodeFile(file.absolutePath)
-            var picWidth = 1080
+            var picWidth = 1080 * 1.2f
             var picHeight = (curBitmap.height * picWidth) / curBitmap.width
-            curBitmap = Bitmap.createScaledBitmap(curBitmap, picWidth, picHeight, true)
+            curBitmap =
+                Bitmap.createScaledBitmap(curBitmap, picWidth.toInt(), picHeight.toInt(), true)
 
-            (0 until everyCount)?.forEach {
-                val outputBitmap = drawTextAnimBitmap(curBitmap, paint)
-                saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
+            var nextBitmap: Bitmap? = null
+            if (index + 1 < picList.size) {
+                nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
+                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
+                nextBitmap =
+                    Bitmap.createScaledBitmap(nextBitmap, picWidth.toInt(), picHeight.toInt(), true)
             }
 
-//            if (index < picList.size - 1) {
-//                var nextBitmap = BitmapFactory.decodeFile(picList.get(index + 1).absolutePath)
-//                var picWidth = 1080
-//                var picHeight = (nextBitmap.height * picWidth) / nextBitmap.width
-//                nextBitmap = Bitmap.createScaledBitmap(nextBitmap, picWidth, picHeight, true)
-//                (0 until guoDuCount)?.forEach {
-//                    val scaleRate = (guoDuCount - it - 1) / (guoDuCount * 1.0f)
-//                    val outputBitmap =
-//                        drawGuoDuBitmap(curBitmap, nextBitmap, paint, scaleRate)
-//                    saveBitmapToFile(
-//                        outputBitmap,
-//                        index * everyCount + index * guoDuCount + everyCount + it + 1,
-//                        file1,
-//                        status
-//                    )
-//                }
-//            }
+            (0 until everyCount)?.forEach {
+                val outputBitmap = drawTextAnimBitmap(
+                    curBitmap,
+                    nextBitmap,
+                    paint,
+                    it,
+                    everyCount,
+                    index,
+                    fileName
+                )
+                saveBitmapToFile(outputBitmap, index * everyCount + it + 1, file1, status)
+            }
         }
-    }catch (exception : Exception){
+    } catch (exception: Exception) {
         exception.printStackTrace()
         Log.e("short", "处理图片异常了： msg = ${exception.message}")
     }
 }
 
-private suspend fun drawTextAnimBitmap(curBitmap: Bitmap, paint: Paint): Bitmap {
-    delay(30)
-    paint.color = Color.RED
-    paint.textSize = 30f
-    paint.alpha = 255
-    var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(outputBitmap)
-    canvas.drawColor(Color.BLACK)
-    canvas.drawBitmap(curBitmap, 0f, max(0, (1920 - curBitmap.height) / 2).toFloat(), paint)
-    return outputBitmap
-}
-
-private suspend fun drawGuoDuBitmap(
+private suspend fun drawTextAnimBitmap(
     curBitmap: Bitmap,
-    nextBitmap: Bitmap,
+    nextBitmap: Bitmap?,
     paint: Paint,
-    scaleRate: Float
+    index: Int,
+    everyCount: Int,
+    outerIndex: Int,
+    fileName: String
 ): Bitmap {
     delay(30)
     paint.color = Color.RED
     paint.textSize = 30f
     paint.alpha = 255
-
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
+    //TODO 第一步，绘制黑色背景
     canvas.drawColor(Color.BLACK)
-    //-------------
-    var curOutBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val canvas1 = Canvas(curOutBitmap)
-    canvas1.drawColor(Color.BLACK)
-    canvas1.drawBitmap(curBitmap, 0f, max(0, (1920 - curBitmap.height) / 2).toFloat(), paint)
-    paint.alpha = 255
-    val scaleW =  (1080 * scaleRate).toInt()
-    val scaleH = (1920 * scaleRate).toInt()
-    if(scaleW > 0 && scaleH > 0) {
-        curOutBitmap = Bitmap.createScaledBitmap(
-            curOutBitmap,
-            (1080 - scaleW)/2,
-            scaleH,
-            true
-        )
+    val scrollGap = (1080 * 0.2f) / (everyCount - 10)
+    val alphaGap = 25.5f
+    //TODO 判断是左滑还是右滑
+    if (outerIndex % 2 == 0) {
+        //向右滑动
+        //TODO 判断有没有滚动到边
+        if (index >= (everyCount - 10)) {
+            //TODO 判断NextBitMap是否为空
+            if (nextBitmap == null) {
+                val startX = 0f
+                paint.alpha = 255
+                canvas.drawBitmap(curBitmap, startX, (1920 - curBitmap.height) / 2.toFloat(), paint)
+            } else {
+                var alphaValue = ((10 - (everyCount - index) + 1) * alphaGap).toInt()
+                if (alphaValue > 255)
+                    alphaValue = 255
 
-        canvas.drawBitmap(curOutBitmap, (1080 - curOutBitmap.width) / 2f, 0f, paint)
+                paint.alpha = alphaValue
+                var startX = 0f
+                canvas.drawBitmap(nextBitmap, startX, (1920 - nextBitmap.height) / 2.toFloat(), paint)
+
+                var alpha1 = 255 - alphaValue
+                if(alpha1 <= 0)
+                    alpha1 = 0
+                paint.alpha = alpha1
+                canvas.drawBitmap(curBitmap, startX, (1920 - curBitmap.height) / 2.toFloat(), paint)
+            }
+        } else {
+            val startX = 1080 - curBitmap.width + index * scrollGap
+            paint.alpha = 255
+            canvas.drawBitmap(curBitmap, startX, (1920 - curBitmap.height) / 2.toFloat(), paint)
+        }
+    } else {
+        //向左滑动
+        //TODO 判断有没有滚动到边
+        if (index >= (everyCount - 10)) {
+            //TODO 判断NextBitMap是否为空
+            if (nextBitmap == null) {
+                val startX = -0.2f * 1080
+                paint.alpha = 255
+                canvas.drawBitmap(curBitmap, startX, (1920 - curBitmap.height) / 2.toFloat(), paint)
+            } else {
+                var alphaValue = ((10 - (everyCount - index) + 1) * alphaGap).toInt()
+                if (alphaValue > 255)
+                    alphaValue = 255
+
+                paint.alpha = alphaValue
+                val startX = -0.2f * 1080
+                canvas.drawBitmap(nextBitmap, startX, (1920 - nextBitmap.height) / 2.toFloat(), paint)
+
+                var alpha1 = 255 - alphaValue
+                if(alpha1 <= 0)
+                    alpha1 = 0
+                paint.alpha = alpha1
+                canvas.drawBitmap(curBitmap, startX, (1920 - curBitmap.height) / 2.toFloat(), paint)
+            }
+        } else {
+            val startX = -index * scrollGap
+            paint.alpha = 255
+            canvas.drawBitmap(curBitmap, startX, (1920 - curBitmap.height) / 2.toFloat(), paint)
+        }
     }
 
-
-//-----------------------
-    var nextOutBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val canvas2 = Canvas(nextOutBitmap)
-    canvas2.drawColor(Color.BLACK)
-    canvas2.drawBitmap(nextBitmap, 0f, max(0, (1920 - nextOutBitmap.height) / 2).toFloat(), paint)
-
-    canvas.drawBitmap(nextOutBitmap, 0f, scaleH.toFloat(), paint)
+    //TODO 绘制阴影
+    canvas.drawColor(Color.parseColor("#331478f0"))
+    //TODO 绘制标题
+    paint.setTypeface(Typeface.DEFAULT_BOLD)
+    paint.letterSpacing = 0.1f
+    paint.alpha = 255
+    paint.color = Color.WHITE
+    val realText = "<<${fileName}>>"
+    paint.textSize = 60f
+    val rect1 = Rect()
+    paint.getTextBounds(realText, 0, realText.length, rect1)
+    canvas.drawText(realText, (1080 - abs(rect1.right - rect1.left)) / 2f, 400f, paint)
+    val realText1 = "经典歌曲 / 超级好听"
+    paint.textSize = 30f
+    val rect2 = Rect()
+    paint.getTextBounds(realText1, 0, realText.length, rect2)
+    canvas.drawText(realText1, (1080 - abs(rect2.right - rect2.left)) / 2f, 400f + abs(rect1.bottom - rect1.top) + 10f, paint)
     return outputBitmap
 }
 
