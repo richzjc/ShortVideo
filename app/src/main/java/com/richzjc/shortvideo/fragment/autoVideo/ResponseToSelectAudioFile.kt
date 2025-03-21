@@ -3,10 +3,13 @@ package com.richzjc.shortvideo.fragment.autoVideo
 import android.media.MediaMetadataRetriever
 import android.os.Environment
 import android.util.Log
+import android.widget.TextView
+import com.richzjc.shortvideo.fragment.AutoFragment
 import kotlinx.coroutines.delay
 import java.io.File
 
-fun responseToSelectAudioFile(): File? {
+
+fun responseToSelectAudioFile(status: TextView?): File? {
     val file = File(
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
         "audio"
@@ -15,6 +18,7 @@ fun responseToSelectAudioFile(): File? {
         return null
 
     val fileList = file.listFiles()
+    AutoFragment.updateStatusText("音频文件数为:${fileList.size}", status)
     val size = fileList.size
     if (size <= 0)
         return null

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -148,7 +147,7 @@ class AutoFragment : Fragment() {
         suspend fun responseToStart() {
             //TODO 第一步，选择音频文件， 计算出需要多少张图片
             updateStatusText("获取音频文件", status)
-            audioFile = responseToSelectAudioFile()
+            audioFile = responseToSelectAudioFile(status)
             audioFile ?: return
             if (!isStartFlag) return
             audioFileDuration = responseToGetAudioFileDuration(audioFile!!)
@@ -167,11 +166,13 @@ class AutoFragment : Fragment() {
             //TODO 第三步，处理图片
             if (!isStartFlag) return
             updateStatusText("开始处理图片文件", status)
+            val lastIndex = audioFile!!.name.lastIndexOf(".")
+            val fileName = audioFile!!.name.substring(0, lastIndex)
             responseToHandlePic(
                 UtilsContextManager.getInstance().application,
                 picList!!,
                 audioFileDuration,
-                audioFile!!.name,
+                fileName,
                 status
             )
             //TODO 第四步，将处理图片，生成视频
