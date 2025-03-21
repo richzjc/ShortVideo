@@ -18,7 +18,7 @@ suspend fun genHandleVideo(context: Context, statusTV: TextView?): Boolean {
     if (!file1.exists())
         file1.mkdirs()
 
-    var frameRate = 50
+    var frameRate = 30
     val outputFile = File(context.externalCacheDir, "noAudio.mp4")
     if (outputFile.exists()) {
         outputFile.delete()
