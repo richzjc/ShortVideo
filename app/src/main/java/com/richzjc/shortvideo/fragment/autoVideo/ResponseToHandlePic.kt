@@ -54,7 +54,7 @@ suspend fun responseToHandlePic(
         picList.forEachIndexed { index, file ->
             AutoFragment.updateStatusText("开始处理第${index + 1}张图片", status)
             var curBitmap = BitmapFactory.decodeFile(file.absolutePath)
-            var picWidth = 1080 * 1.2f
+            var picWidth = 1080 * 1.1f
             var picHeight = (curBitmap.height * picWidth) / curBitmap.width
             curBitmap =
                 Bitmap.createScaledBitmap(curBitmap, picWidth.toInt(), picHeight.toInt(), true)
@@ -167,7 +167,7 @@ private suspend fun drawTextAnimBitmap(
     }
 
     //TODO 绘制阴影
-    canvas.drawColor(Color.parseColor("#661478f0"))
+    canvas.drawColor(Color.parseColor("#551478f0"))
     //TODO 绘制标题
     paint.setTypeface(Typeface.DEFAULT_BOLD)
     paint.alpha = 255

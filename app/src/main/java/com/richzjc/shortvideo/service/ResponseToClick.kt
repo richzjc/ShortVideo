@@ -1,7 +1,6 @@
 package com.richzjc.shortvideo.service
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK
 import android.accessibilityservice.AccessibilityService.GestureResultCallback
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
@@ -36,10 +35,6 @@ private val locateList = mutableListOf(
     "215,316",
     "939,2328",
     "948,2319",
-    "394,1145",//点击输入框
-)
-
-private val locateList1 = mutableListOf(
     "552,1834",
     "566,2167",
     "335,210"
@@ -49,7 +44,7 @@ private val locateList2 = mutableListOf(
     "982,2307",
     "512,365",
     "541,2106",
-    "938,220"
+    "394,1145"
 )
 
 private val themes = mutableListOf("美女", "少妇", "苗条身材", "经典歌曲", "性感", "小姐姐")
@@ -66,27 +61,14 @@ fun AccessibilityService.responseToClick() {
             val arr = it.split(",")
             val isLast = index == locateList.size - 1
             if (isLast) {
-                simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_LAST)
+                simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_SEARCH_ACTIVITY)
             } else {
                 simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_NORMAL)
             }
-
         }
     }
 }
 
-private suspend fun AccessibilityService.responseToClickActivity() {
-    locateList1.forEachIndexed { index, it ->
-        delay(3000L)
-        val arr = it.split(",")
-        val isLast = index == locateList1.size - 1
-        if (isLast) {
-            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_SEARCH_ACTIVITY)
-        } else {
-            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_NORMAL)
-        }
-    }
-}
 
 private suspend fun AccessibilityService.responseToClickSearch() {
     locateList2.forEachIndexed { index, it ->
@@ -94,7 +76,7 @@ private suspend fun AccessibilityService.responseToClickSearch() {
         val arr = it.split(",")
         val isLast = index == locateList.size - 1
         if (isLast) {
-            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_FABIAO)
+            simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_LAST)
         } else {
             simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_NORMAL)
         }
@@ -193,11 +175,9 @@ private fun AccessibilityService.responseToSetText(
         }
 
         if (flag == IS_LAST) {
-            delay(2000L)
-            performGlobalAction(GLOBAL_ACTION_BACK)
-            delay(2000L)
-            responseToClickActivity()
-        }else if (flag == IS_SEARCH_ACTIVITY)
+            //    "938,220"
+            simulateClick(938f, 220f, IS_FABIAO)
+        } else if (flag == IS_SEARCH_ACTIVITY)
             responseToClickSearch()
     }
 }
