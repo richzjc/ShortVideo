@@ -6,8 +6,10 @@ import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.content.Intent
 import android.graphics.Path
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 import com.richzjc.shortvideo.MainActivity
 import com.richzjc.shortvideo.UtilsContextManager
@@ -74,7 +76,7 @@ private suspend fun AccessibilityService.responseToClickSearch() {
     locateList2.forEachIndexed { index, it ->
         delay(4000L)
         val arr = it.split(",")
-        val isLast = index == locateList.size - 1
+        val isLast = index == locateList2.size - 1
         if (isLast) {
             simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_LAST)
         } else {
@@ -94,10 +96,14 @@ private fun AccessibilityService.simulateClick(x: Float, y: Float, isLast: Int) 
         override fun onCompleted(gesture: GestureDescription) {
             super.onCompleted(gesture) // 完成时的回调（可选）
             if (isLast == IS_SEARCH_ACTIVITY) {
-                responseToSetText(recursionEditNode(rootInActiveWindow), "美女", IS_SEARCH_ACTIVITY)
+                responseToSetText(
+                    recursionEditNode(rootInActiveWindow, x, y),
+                    "美女",
+                    IS_SEARCH_ACTIVITY
+                )
             } else if (isLast == IS_LAST) {
                 responseToSetText(
-                    recursionEditNode(rootInActiveWindow),
+                    recursionEditNode(rootInActiveWindow, x, y),
                     "千万不能让老婆看到，看到就后悔了#美女#少妇#完美身材#性感#经典歌曲",
                     IS_LAST
                 )
@@ -135,15 +141,35 @@ private fun checkContainsEditText(contactNodes: List<AccessibilityNodeInfo>): Bo
 }
 
 
-fun AccessibilityService.recursionEditNode(listNodes: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+fun AccessibilityService.recursionEditNode(
+    listNodes: AccessibilityNodeInfo,
+    x: Float,
+    y: Float
+): AccessibilityNodeInfo? {
+    val className: String = listNodes.className.toString() // 控件类名
+    if (TextUtils.equals(className, "android.widget.EditText")) {
+        val rect = Rect()
+        listNodes.getBoundsInScreen(rect)
+        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom)
+            return listNodes
+    }
+
     if (listNodes != null && listNodes.childCount > 0) {
         (0 until listNodes.childCount).forEach {
             val node = listNodes.getChild(it)
             val className: String = node.className.toString() // 控件类名
-            if (TextUtils.equals(className, "android.widget.EditText"))
-                return node
-            else {
-                val nodel = recursionEditNode(node)
+            if (TextUtils.equals(className, "android.widget.EditText")){
+                val rect = Rect()
+                listNodes.getBoundsInScreen(rect)
+                if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom)
+                    return node
+                else{
+                    val nodel = recursionEditNode(node, x, y)
+                    if (nodel != null)
+                        return nodel
+                }
+            } else {
+                val nodel = recursionEditNode(node, x, y)
                 if (nodel != null)
                     return nodel
             }
@@ -161,17 +187,16 @@ private fun AccessibilityService.responseToSetText(
         var realText = faqunText
         if (TextUtils.isEmpty(realText))
             realText = "#AI #美女"
-        var contactNodes = rootInActiveWindow.findAccessibilityNodeInfosByText(realText)
-        while (!checkContainsEditText(contactNodes)) {
+        var startIndex = 0
+        while (startIndex <= 10) {
             val arguments = Bundle()
             arguments.putCharSequence(
                 AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
                 realText
             )
             editNodeInfo?.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
-
-            delay(300L)
-            contactNodes = rootInActiveWindow.findAccessibilityNodeInfosByText(realText)
+            delay(500L)
+            startIndex += 1
         }
 
         if (flag == IS_LAST) {

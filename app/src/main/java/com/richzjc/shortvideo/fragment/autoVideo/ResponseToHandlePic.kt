@@ -166,6 +166,18 @@ private suspend fun drawTextAnimBitmap(
         }
     }
 
+    canvasDrawText(canvas, paint, fileName, index, everyCount, outerIndex)
+    return outputBitmap
+}
+
+private fun canvasDrawText(
+    canvas: Canvas,
+    paint: Paint,
+    fileName: String,
+    index: Int,
+    everyCount: Int,
+    outerIndex: Int
+) {
     //TODO 绘制阴影
     canvas.drawColor(Color.parseColor("#551478f0"))
     //TODO 绘制标题
@@ -181,8 +193,12 @@ private suspend fun drawTextAnimBitmap(
     paint.textSize = 40f
     val rect2 = Rect()
     paint.getTextBounds(realText1, 0, realText1.length, rect2)
-    canvas.drawText(realText1, (1080 - abs(rect2.right - rect2.left)) / 2f, 400f + abs(rect1.bottom - rect1.top) + 10f, paint)
-    return outputBitmap
+    canvas.drawText(
+        realText1,
+        (1080 - abs(rect2.right - rect2.left)) / 2f,
+        400f + abs(rect1.bottom - rect1.top) + 10f,
+        paint
+    )
 }
 
 

@@ -108,10 +108,10 @@ class AutoFragment : Fragment() {
 //                MToastHelper.showToast("请开启悬浮窗权限")
 //                return@setOnClickListener
 //            }
-            if (!isAccessibilityServiceEnabled(requireContext())) {
-                MToastHelper.showToast("请开启辅助功能权限")
-                return@setOnClickListener
-            }
+//            if (!isAccessibilityServiceEnabled(requireContext())) {
+//                MToastHelper.showToast("请开启辅助功能权限")
+//                return@setOnClickListener
+//            }
 
             MToastHelper.showToast("先到图片编辑页面获取读写权限")
             isStartFlag = !isStartFlag
@@ -154,8 +154,6 @@ class AutoFragment : Fragment() {
             audioFileDuration = responseToGetAudioFileDuration(audioFile!!)
             if (audioFileDuration <= 0)
                 return
-
-            audioFileDuration = 6000L
 
             if (!isStartFlag) return
             updateStatusText("音频时长为：${audioFileDuration}秒", status)

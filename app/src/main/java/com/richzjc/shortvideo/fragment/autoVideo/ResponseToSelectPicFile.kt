@@ -17,8 +17,8 @@ suspend fun responseToSelectPicFile(picDuration: Long): List<File> {
     if (picCount <= 0)
         return fileList
     val file = File(
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-        "autopic"
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+        "pic"
     )
     val allPicList = file.listFiles()
     if (allPicList.isEmpty())
