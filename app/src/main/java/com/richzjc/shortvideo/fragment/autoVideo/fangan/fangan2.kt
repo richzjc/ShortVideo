@@ -20,12 +20,11 @@ suspend fun fangan2(
     paint: Paint
 ) {
     delay(30)
+    var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+    val blurCanvas = Canvas(blurBitmap)
+    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
+    blurBitmap = blur(blurBitmap)
     (0 until 60)?.forEach {
-        var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        val blurCanvas = Canvas(blurBitmap)
-        blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
-        blurBitmap = blur(blurBitmap)
-
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
                 fangan1Small30(preBitmap, curBitmap, blurBitmap, paint, handleFile, status, it)
