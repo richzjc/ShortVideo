@@ -14,6 +14,7 @@ import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan1
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan2
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan3
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan4
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan5
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -67,27 +68,33 @@ suspend fun responseToHandlePic(
                 preBitmap = outputBitmap
             }
 
-            var random = (0 until 3).random()
+            var random = (0 until 5).random()
             var lastRandow = -1
             while (true){
                 if(lastRandow == random)
-                    random = (0 until 3).random()
+                    random = (0 until 5).random()
                 else
                     break
             }
             //TODO 这一行是测试代码
-            fangan4(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            fangan4(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
-//            if (random == 0) {
-//                AutoFragment.updateStatusText("执行方案1", status)
-//                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-//            }else if(random == 1){
-//                AutoFragment.updateStatusText("执行方案2", status)
-//                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-//            }else if(random == 2){
-//                AutoFragment.updateStatusText("执行方案3", status)
-//                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-//            }
+            if (random == 0) {
+                AutoFragment.updateStatusText("执行方案1", status)
+                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }else if(random == 1){
+                AutoFragment.updateStatusText("执行方案2", status)
+                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }else if(random == 2){
+                AutoFragment.updateStatusText("执行方案3", status)
+                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }else if(random == 3){
+                AutoFragment.updateStatusText("执行方案4", status)
+                fangan4(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }else if(random == 4){
+                AutoFragment.updateStatusText("执行方案5", status)
+                fangan5(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }
             picStartIndex += 1
         }
     } catch (exception: Exception) {
