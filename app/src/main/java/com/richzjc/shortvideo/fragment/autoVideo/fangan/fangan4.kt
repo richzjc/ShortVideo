@@ -45,8 +45,8 @@ private suspend fun fang1Large30(
 ) {
     delay(30)
     paint.alpha = 255
-    val widthGap = (pBitmap.width * 0.05f) / 30f
-    val heightGap = (pBitmap.height * 0.05f) / 30f
+    val widthGap = (pBitmap.width * 0.1f) / 30f
+    val heightGap = (pBitmap.height * 0.1f) / 30f
     if(index - 30 < 5){
         val realWidth = 1080 + widthGap * (index - 30 + 1)
         val realHeight = 1920 + heightGap * (index - 30 + 1)
