@@ -1,6 +1,7 @@
 package com.richzjc.shortvideo.fragment.autoVideo
 
 import android.content.Context
+import android.os.Environment
 import android.util.Log
 import android.widget.TextView
 import com.arthenica.ffmpegkit.FFmpegKit
@@ -20,6 +21,7 @@ suspend fun genHandleVideo(context: Context, statusTV: TextView?): Boolean {
 
     var frameRate = 30
     val outputFile = File(context.externalCacheDir, "noAudio.mp4")
+
     if (outputFile.exists()) {
         outputFile.delete()
     }

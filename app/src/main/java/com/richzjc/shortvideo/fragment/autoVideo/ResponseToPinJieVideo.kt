@@ -20,7 +20,6 @@ suspend fun responseToPinJieVideo(context: Context, pianTouFile: File, statusTV 
         outputFile.delete()
     }
 
-//    ffmpeg -i /Users/zhangjianchuan/Desktop/marry.mp4 -i /Users/zhangjianchuan/Desktop/1.mp4 -filter_complex "[1:v]colorkey=0x000000:0.1:0.1[ckout];[0:v][ckout]overlay=shortest=1[out]" -map "[out]" output.mp4
     val cmd = "-i ${inputFile.absolutePath} -i ${pianTouFile.absolutePath} -b:v 5000k -filter_complex [1:v]scale=1000:563:flags=lanczos,colorkey=0x000000:0.3:0.2[ckout];[0:v][ckout]overlay=shortest=1:x=40:y=1000,unsharp=5:5:1.0:5:5:0.5[out] -map [out] -c:v libx264 -crf 18 -preset slower -profile:v high -movflags +faststart ${outputFile.absolutePath}"
     val result = suspendCoroutine { continuation ->
         // 执行FFmpeg命令

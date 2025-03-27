@@ -12,7 +12,7 @@ import java.util.Arrays
 
 suspend fun responseToSelectPicFile(picDuration: Long): List<File> {
     delay(1000L)
-    val picCount = Math.floor(picDuration / 4000.0).toInt()
+    val picCount = 30
     val fileList = ArrayList<File>()
     if (picCount <= 0)
         return fileList

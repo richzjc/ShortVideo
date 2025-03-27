@@ -8,7 +8,6 @@ import com.richzjc.shortvideo.fragment.AutoFragment
 import kotlinx.coroutines.delay
 import java.io.File
 
-
 fun responseToSelectAudioFile(status: TextView?): File? {
     val file = File(
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
