@@ -75,18 +75,18 @@ suspend fun responseToHandlePic(
                     break
             }
             //TODO 这一行是测试代码
-            fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
-//            if (random == 0) {
-//                AutoFragment.updateStatusText("执行方案1", status)
-//                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-//            }else if(random == 1){
-//                AutoFragment.updateStatusText("执行方案2", status)
-//                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-//            }else if(random == 2){
-//                AutoFragment.updateStatusText("执行方案3", status)
-//                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-//            }
+            if (random == 0) {
+                AutoFragment.updateStatusText("执行方案1", status)
+                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }else if(random == 1){
+                AutoFragment.updateStatusText("执行方案2", status)
+                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }else if(random == 2){
+                AutoFragment.updateStatusText("执行方案3", status)
+                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            }
             picStartIndex += 1
         }
     } catch (exception: Exception) {
