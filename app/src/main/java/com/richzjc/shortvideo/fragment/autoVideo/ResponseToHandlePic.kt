@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.TextView
 import com.richzjc.shortvideo.fragment.AutoFragment
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan1
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan2
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -64,11 +65,24 @@ suspend fun responseToHandlePic(
                 preBitmap = outputBitmap
             }
 
-            val random = (0 until 1).random()
-            if (random == 0) {
-                AutoFragment.updateStatusText("执行方案1", status)
-                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            var random = (0 until 2).random()
+            var lastRandow = -1
+            while (true){
+                if(lastRandow == random)
+                    random = (0 until 1).random()
+                else
+                    break
             }
+            //TODO 这一行是测试代码
+            fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+
+//            if (random == 0) {
+//                AutoFragment.updateStatusText("执行方案1", status)
+//                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 1){
+//                AutoFragment.updateStatusText("执行方案2", status)
+//                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }
         }
     } catch (exception: Exception) {
         exception.printStackTrace()

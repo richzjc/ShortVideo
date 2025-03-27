@@ -32,6 +32,7 @@ suspend fun fangan1(
     paint: Paint
 ) {
     delay(30)
+    val originSize = handleFile.listFiles().size
     (0 until 60)?.forEach {
         var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
         val blurCanvas = Canvas(blurBitmap)
@@ -42,7 +43,7 @@ suspend fun fangan1(
             if (it < 30) {
                 fangan1Small30(preBitmap, curBitmap, blurBitmap, paint, handleFile, status, it)
             } else {
-                val bfile = File(handleFile, "30.png")
+                val bfile = File(handleFile, "${originSize + 30}.png")
                 var pbitmap = BitmapFactory.decodeFile(bfile.absolutePath)
                 fang1Large30(pbitmap, paint, handleFile, status, it)
             }
