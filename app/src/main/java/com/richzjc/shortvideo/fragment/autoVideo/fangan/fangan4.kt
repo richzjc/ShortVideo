@@ -117,8 +117,9 @@ private suspend fun fangan1Small30(
         )
     }
 
-    canvas.drawBitmap(curBitmap, 0f, (1920 - (index + 1) * heightGap), paint)
     paint.alpha = 255
+    canvas.drawBitmap(curBitmap, 0f, (1920 - (index + 1) * heightGap), paint)
+
 
 
 
