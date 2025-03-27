@@ -20,15 +20,11 @@ suspend fun fangan4(
     paint: Paint
 ) {
     delay(30)
-    var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val blurCanvas = Canvas(blurBitmap)
-    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
-    blurBitmap = blur(blurBitmap)
 
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
-                fangan1Small30(preBitmap, curBitmap, blurBitmap, paint, handleFile, status, it)
+                fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
                 fang1Large30(curBitmap, paint, handleFile, status, it)
             }
@@ -90,7 +86,6 @@ private suspend fun fang1Large30(
 private suspend fun fangan1Small30(
     preBitmap: Bitmap,
     curBitmap: Bitmap,
-    blurBitmap: Bitmap,
     paint: Paint,
     handleFile: File,
     status: TextView?,
@@ -100,6 +95,10 @@ private suspend fun fangan1Small30(
     paint.alpha = 255
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
+    var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+    val blurCanvas = Canvas(blurBitmap)
+    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
+    blurBitmap = blur(blurBitmap)
 
     canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 

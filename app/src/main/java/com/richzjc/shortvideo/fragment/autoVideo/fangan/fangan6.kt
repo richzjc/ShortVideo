@@ -1,17 +1,22 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
+import android.graphics.Camera
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.widget.TextView
 import kotlinx.coroutines.delay
 import java.io.File
+import kotlin.math.max
 
 /**
  * 透明度变换
  */
-suspend fun fangan2(
+suspend fun fangan6(
     handleFile: File,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
@@ -64,6 +69,12 @@ private suspend fun fangan1Small30(
     index: Int
 ) {
     delay(30)
+    paint.apply {
+        isAntiAlias = true
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT) // 圆形裁剪模式
+    }
+
+
     paint.alpha = 255
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
@@ -74,25 +85,25 @@ private suspend fun fangan1Small30(
     blurBitmap = blur(blurBitmap)
     canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 
-    val preAlpha = (255 - (255 / 15f) * index)
-    if (preAlpha > 0) {
-        paint.alpha = preAlpha.toInt()
-        canvas.drawBitmap(preBitmap, 0f, 0f, paint)
-    }
-
-    paint.alpha = 255
     val progress = (index + 1) / 30f
-    val matrix = Matrix()
-    val degrees = 360f * progress
-    val scale = 0.2f + progress * 0.9f
-    matrix.apply {
-        reset()
-        postScale(scale, scale, 1080 / 2f, 1920 / 2f)
-        postRotate(degrees, 1080 / 2f, 1920 / 2f)
-    }
+    // 绘制背景图
+    canvas.drawBitmap(preBitmap, 0f, 0f, paint)
 
-    // 绘制动态图
-    canvas.drawBitmap(curBitmap, matrix, null)
+    val maxRadius = 1920 / 2f
+    val currentRadius = maxRadius * progress
+
+    // 创建圆形遮罩层
+    val maskBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+    val maskCanvas = Canvas(maskBitmap)
+    maskCanvas.drawCircle(1080/2f, 1920/2f, currentRadius, Paint().apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+    })
+
+    // 应用遮罩绘制覆盖图
+    canvas.drawBitmap(curBitmap, 0f, 0f, null)
+    canvas.drawBitmap(maskBitmap, 0f, 0f, paint)
 
     saveBitmapToFile(outputBitmap, handleFile, status)
+    paint.xfermode = null
 }
