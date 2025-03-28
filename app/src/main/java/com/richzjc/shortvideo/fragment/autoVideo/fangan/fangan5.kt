@@ -62,13 +62,13 @@ private suspend fun fang1Large30(
     val realHeight = pBitmap.height * 1.05f - heightGap * (index - 30 + 1)
     val preBitmap = Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
 
-
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
+
 
 
 private suspend fun fangan1Small30(
@@ -90,27 +90,32 @@ private suspend fun fangan1Small30(
     blurBitmap = blur(blurBitmap)
     canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 
-
-    if(index < 15){
-        var alpha = (index + 1) * (255/15f)
-        if(alpha > 255)
+    if (index < 15) {
+        var alpha = (index + 1) * (255 / 15f)
+        if (alpha > 255)
             alpha = 255f
         paint.alpha = alpha.toInt()
-        canvas.drawBitmap(curBitmap, 0f, 0f, paint)
     }else{
         paint.alpha = 255
-        val widthGap = (1080 * 0.05f) / 15f
-        val heightGap = (1920 * 0.05f) / 15f
-
-        val realWidth = 1080 + widthGap * (index  + 1)
-        val realHeight = 1920 + heightGap * (index + 1)
-        val preBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
-        canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
+
+    val widthGap1 = (1080 * 0.05f) / 30f
+    val heightGap1 = (1920 * 0.05f) / 30f
+
+    val realWidth = 1080 + widthGap1 * (index  + 1)
+    val realHeight = 1920 + heightGap1 * (index + 1)
+    val preBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
+    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
+
 
     paint.alpha = 255
     val heightGap = 1920/30f
     val widthGap = 1080/4f
+    var realAlpha = 255 - (255 / 30f) * (index)
+    if (realAlpha < 0)
+        realAlpha = 0f
+    paint.alpha = realAlpha.toInt()
+
     preBitmapList.forEachIndexed { innerIndex, bitmap ->
         if(innerIndex%2 == 0){
             val startY = (index + 1) * heightGap

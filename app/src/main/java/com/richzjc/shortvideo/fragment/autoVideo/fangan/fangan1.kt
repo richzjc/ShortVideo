@@ -1,15 +1,11 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.Typeface
 import android.widget.TextView
 import com.richzjc.shortvideo.fragment.AutoFragment
-import com.richzjc.shortvideo.fragment.AutoFragment.Companion.audioFile
 import kotlinx.coroutines.delay
 import org.opencv.android.Utils
 import org.opencv.core.CvType
@@ -18,7 +14,6 @@ import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.abs
 
 
 /**

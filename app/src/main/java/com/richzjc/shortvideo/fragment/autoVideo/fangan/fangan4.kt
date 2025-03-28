@@ -42,49 +42,18 @@ private suspend fun fang1Large30(
 ) {
     delay(30)
     paint.alpha = 255
-    val widthGap = (pBitmap.width * 0.1f) / 30f
-    val heightGap = (pBitmap.height * 0.1f) / 30f
-    if (index - 30 < 5) {
-        val realWidth = 1080 + widthGap * (index - 30 + 1)
-        val realHeight = 1920 + heightGap * (index - 30 + 1)
-        val preBitmap =
-            Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
-        var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(outputBitmap)
-        canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#1132cd32"))
-        saveBitmapToFile(outputBitmap, file1, status)
-    } else if (index - 30 < 15) {
-        val realWidth = 1080 + widthGap * 5 - widthGap * (index - 35 + 1)
-        val realHeight = 1920 + heightGap * 5 - heightGap * (index - 35 + 1)
-        val preBitmap =
-            Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
-        var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(outputBitmap)
-        canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#1132cd32"))
-        saveBitmapToFile(outputBitmap, file1, status)
-    } else if (index - 30 < 25) {
-        val realWidth = 1080 - widthGap * 5 + widthGap * (index - 45 + 1)
-        val realHeight = 1920 - heightGap * 5 + heightGap * (index - 45 + 1)
-        val preBitmap =
-            Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
-        var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(outputBitmap)
-        canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#1132cd32"))
-        saveBitmapToFile(outputBitmap, file1, status)
-    } else {
-        val realWidth = 1080 + widthGap * 5 - widthGap * (index - 55 + 1)
-        val realHeight = 1920 + heightGap * 5 - heightGap * (index - 55 + 1)
-        val preBitmap =
-            Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
-        var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(outputBitmap)
-        canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#1132cd32"))
-        saveBitmapToFile(outputBitmap, file1, status)
-    }
+    val widthGap = (pBitmap.width * 0.05f) / 30f
+    val heightGap = (pBitmap.height * 0.05f) / 30f
+
+    val realWidth = 1080 +  widthGap * (index - 30 + 1)
+    val realHeight = 1920 + heightGap * (index - 30 + 1)
+    val preBitmap =
+        Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
+    var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(outputBitmap)
+    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
+    canvas.drawColor(Color.parseColor("#1132cd32"))
+    saveBitmapToFile(outputBitmap, file1, status)
 }
 
 
