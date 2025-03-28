@@ -61,6 +61,7 @@ private suspend fun fang1Large30(
     preBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
 
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
+    canvasDrawText(canvas, paint, file1)
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
@@ -119,5 +120,6 @@ private suspend fun fangan1Small30(
         isAntiAlias = true
     }
     canvas.drawCircle(centerX, centerY, currentRadius, newPaint)
+    canvasDrawText(canvas, paint, handleFile)
     saveBitmapToFile(outputBitmap, handleFile, status)
 }

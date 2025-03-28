@@ -60,6 +60,7 @@ private suspend fun fang1Large30(
     preBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
 
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
+    canvasDrawText(canvas, paint, file1)
     saveBitmapToFile(outputBitmap, file1, status)
 }
 

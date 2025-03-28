@@ -61,6 +61,7 @@ private suspend fun fang1Large30(
     preBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
 
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
+    canvasDrawText(canvas, paint, file1)
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
@@ -102,5 +103,6 @@ private suspend fun fangan1Small30(
             Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
         canvas.drawBitmap(realBitmap, 1080 - realWidth * progress, (1920 - realHeight) / 2f, paint)
     }
+    canvasDrawText(canvas, paint, handleFile)
     saveBitmapToFile(outputBitmap, handleFile, status)
 }
