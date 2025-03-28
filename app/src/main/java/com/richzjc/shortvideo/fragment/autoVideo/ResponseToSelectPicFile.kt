@@ -31,10 +31,18 @@ suspend fun responseToSelectPicFile(picDuration: Long): List<File> {
     val fileTotalsList = ArrayList<String>()
     val excludeList = ArrayList<String>()
     val lastTotalList = ArrayList<String>()
-    lastTotalList.addAll(lastTotal.split(","))
+
+    lastTotal.split(",")?.forEach {
+        if (!TextUtils.isEmpty(it?.trim()) && it.trim().endsWith("png"))
+            lastTotalList.add(it)
+    }
+
     var selectTotalList = ArrayList<String>()
-    selectTotalList.addAll(selectTotal.split(","))
-    fileList.forEach {
+    selectTotal.split(",")?.forEach {
+        if (!TextUtils.isEmpty(it?.trim()) && it.trim().endsWith("png"))
+            selectTotalList.add(it)
+    }
+    allPicList.forEach {
         fileTotalsList.add(it.name)
     }
     fileTotalsList.forEach {
@@ -61,7 +69,8 @@ suspend fun responseToSelectPicFile(picDuration: Long): List<File> {
         }
         selectTotalList?.remove(returnFile.name)
         excludeList?.remove(returnFile.name)
-        lastTotalList?.add(returnFile.name)
+        if (!lastTotalList.contains(returnFile.name))
+            lastTotalList?.add(returnFile.name)
         fileList.add(returnFile)
     }
 

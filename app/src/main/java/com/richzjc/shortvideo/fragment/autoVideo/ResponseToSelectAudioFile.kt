@@ -2,6 +2,7 @@ package com.richzjc.shortvideo.fragment.autoVideo
 
 import android.media.MediaMetadataRetriever
 import android.os.Environment
+import android.text.TextUtils
 import android.util.Log
 import android.widget.TextView
 import com.richzjc.shortvideo.UtilsContextManager
@@ -32,12 +33,20 @@ fun responseToSelectAudioFile(status: TextView?): File? {
     val fileTotalsList = ArrayList<String>()
     val excludeList = ArrayList<String>()
     val lastTotalList = ArrayList<String>()
-    lastTotalList.addAll(lastTotal.split(","))
+    lastTotal.split(",")?.forEach {
+        if (!TextUtils.isEmpty(it?.trim()) && it.trim().endsWith("mp4"))
+            lastTotalList.add(it)
+    }
     var selectTotalList = ArrayList<String>()
-    selectTotalList.addAll(selectTotal.split(","))
+    selectTotal.split(",")?.forEach {
+        if (!TextUtils.isEmpty(it?.trim()) && it.trim().endsWith("mp4"))
+            selectTotalList.add(it)
+    }
+
     fileList.forEach {
         fileTotalsList.add(it.name)
     }
+
     fileTotalsList.forEach {
         if (!lastTotalList.contains(it))
             excludeList.add(it)
@@ -60,7 +69,8 @@ fun responseToSelectAudioFile(status: TextView?): File? {
     }
 
     selectTotalList?.remove(returnFile.name)
-    lastTotalList?.add(returnFile.name)
+    if (!lastTotalList.contains(returnFile.name))
+        lastTotalList?.add(returnFile.name)
 
     SharedPrefsUtil.saveString(
         UtilsContextManager.getInstance().application,
