@@ -1,7 +1,6 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -34,16 +33,13 @@ suspend fun fangan1(
 ) {
     delay(30)
 
-    val originSize = handleFile.listFiles().size
-
+    var lastBitMap: Bitmap? = null
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
-                fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
+                lastBitMap = fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
-                val bfile = File(handleFile, "${originSize + 30}.png")
-                var pbitmap = BitmapFactory.decodeFile(bfile.absolutePath)
-                fang1Large30(pbitmap, paint, handleFile, status, it)
+                fang1Large30(lastBitMap!!, paint, handleFile, status, it)
             }
         }
     }
@@ -76,7 +72,7 @@ private suspend fun fangan1Small30(
     handleFile: File,
     status: TextView?,
     index: Int
-) {
+): Bitmap? {
     delay(30)
     paint.alpha = 255
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
@@ -103,20 +99,27 @@ private suspend fun fangan1Small30(
         val realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth, realHeight, true)
         canvas.drawBitmap(realBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
+    var lastBitmap: Bitmap? = null
+    if (index >= 29) {
+        var resultBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+        val resultCanvas = Canvas(resultBitmap)
+        resultCanvas.drawBitmap(outputBitmap, 0f, 0f, paint)
+    }
     canvasDrawText(canvas, paint, handleFile)
     saveBitmapToFile(outputBitmap, handleFile, status)
+    return lastBitmap
 }
 
 fun canvasDrawText(
     canvas: Canvas,
     paint: Paint,
-    handleFile : File
+    handleFile: File
 ) {
     val lastIndex = audioFile!!.name.lastIndexOf(".")
     val fileName = audioFile!!.name.substring(0, lastIndex)
 
     //TODO 绘制阴影
-    canvas.drawColor(Color.parseColor("#22000000"))
+    canvas.drawColor(Color.parseColor("#11000000"))
     //TODO 绘制标题
     paint.setTypeface(Typeface.DEFAULT_BOLD)
     paint.alpha = 255
