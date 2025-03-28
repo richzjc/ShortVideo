@@ -50,7 +50,7 @@ suspend fun responseToHandlePic(
         paint.alpha = 255
 
         var picStartIndex = 0
-        var lastRandow = -1
+        val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5)
         while (file1.listFiles().size < totalPicCount) {
             if (picStartIndex >= picList.size)
                 picStartIndex = 0
@@ -70,14 +70,18 @@ suspend fun responseToHandlePic(
                 preBitmap = outputBitmap
             }
 
-            var random = (0 until 5).random()
-            while (true){
-                if(lastRandow == random)
-                    random = (0 until 5).random()
-                else
-                    break
+            if(fangAnList.size <= 0){
+                fangAnList.add(0)
+                fangAnList.add(1)
+                fangAnList.add(2)
+                fangAnList.add(3)
+                fangAnList.add(4)
+                fangAnList.add(5)
             }
-            lastRandow = random
+
+            var index = (0 until fangAnList.size).random()
+            val random = fangAnList.get(index)
+            fangAnList.remove(random)
             //TODO 这一行是测试代码
             fangan6(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
@@ -96,6 +100,9 @@ suspend fun responseToHandlePic(
 //            }else if(random == 4){
 //                AutoFragment.updateStatusText("执行方案5", status)
 //                fangan5(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 5){
+//                AutoFragment.updateStatusText("执行方案6", status)
+//                fangan6(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 //            }
             picStartIndex += 1
         }
