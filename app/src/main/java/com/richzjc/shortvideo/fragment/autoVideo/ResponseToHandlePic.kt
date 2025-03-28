@@ -18,6 +18,7 @@ import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan5
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan6
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan7
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan8
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan9
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -52,7 +53,7 @@ suspend fun responseToHandlePic(
         paint.alpha = 255
 
         var picStartIndex = 0
-        val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5, 6, 7)
+        val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5, 6, 7, 8)
         while (file1.listFiles().size < totalPicCount) {
             if (picStartIndex >= picList.size)
                 picStartIndex = 0
@@ -81,13 +82,14 @@ suspend fun responseToHandlePic(
                 fangAnList.add(5)
                 fangAnList.add(6)
                 fangAnList.add(7)
+                fangAnList.add(8)
             }
 
             var index = (0 until fangAnList.size).random()
             val random = fangAnList.get(index)
             fangAnList.remove(random)
             //TODO 这一行是测试代码
-            fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
 //            if (random == 0) {
 //                AutoFragment.updateStatusText("执行方案1", status)
@@ -113,7 +115,10 @@ suspend fun responseToHandlePic(
 //            }else if(random == 7){
 //                AutoFragment.updateStatusText("执行方案8", status)
 //                fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-//            }
+//            }else if(random == 8){
+//                AutoFragment.updateStatusText("执行方案9", status)
+//                fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//             }
             picStartIndex += 1
         }
     } catch (exception: Exception) {

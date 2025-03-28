@@ -90,6 +90,7 @@ class AutoFragment : Fragment() {
         select_pic.background = btnDrawable
         openAssit.background = btnDrawable
         select_audio.background = btnDrawable
+        select_audio.visibility = View.GONE
 
         openAssit.setOnClickListener {
             if (!isAccessibilityServiceEnabled(requireContext())) {

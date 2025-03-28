@@ -78,23 +78,42 @@ private suspend fun fangan1Small30(
 
     var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val blurCanvas = Canvas(blurBitmap)
-    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
+    blurCanvas.drawBitmap(preBitmap, 0f, 0f, paint)
     blurBitmap = blur(blurBitmap)
     canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 
-    paint.alpha = 255
-    var progress = (index + 1) / 45f
-    var realWidth = 1080 - (1080 * 0.2f) * progress
-    var realHeight = 1920 - (1920 * 0.2f) * progress
-    val realBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
-    canvas.drawBitmap(realBitmap, -progress * realWidth, (1920 - realHeight) / 2, paint)
+    var progress = (index + 1) / 30f
 
-    progress = (index + 1) / 30f
-    realWidth = 1080 - (1080 * 0.2f) + (1080 * 0.2f) * progress
-    realHeight = 1920 - (1920 * 0.2f) + (1920 * 0.2f) * progress
+
+    var realWidth = (1080 / 2f) * progress
+    var realHeight = (1920 / 2f) * progress
     if (realWidth > 0 && realHeight > 0) {
-        val realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
-        canvas.drawBitmap(realBitmap, 1080 - realWidth * progress, (1920 - realHeight) / 2f, paint)
+        var w = (1080 / 2f)
+        var h = (1920 / 2f)
+        val realBitmap =
+            Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
+        canvas.drawBitmap(realBitmap, (w - realWidth) / 2, (h - realHeight) / 2, paint)
+        canvas.drawBitmap(realBitmap, w + (w - realWidth) / 2, (h - realHeight) / 2, paint)
+        canvas.drawBitmap(realBitmap, (w - realWidth) / 2, h + (h - realHeight) / 2, paint)
+        canvas.drawBitmap(realBitmap, w + (w - realWidth) / 2, h + (h - realHeight) / 2, paint)
+    }
+
+    realWidth = (1080) * progress
+    realHeight = (1920) * progress
+    if (realWidth > 0 && realHeight > 0) {
+        var w = 1080
+        var h = 1920
+        val realBitmap =
+            Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
+        canvas.drawBitmap(realBitmap, (w - realWidth) / 2, (h - realHeight) / 2, paint)
+    }
+
+    if (index < 10) {
+        val alpha = 255 - 25.5 * (index + 1)
+        if (alpha >= 0) {
+            paint.alpha = alpha.toInt()
+            canvas.drawBitmap(preBitmap, 0f, 0f, paint)
+        }
     }
     saveBitmapToFile(outputBitmap, handleFile, status)
 }
