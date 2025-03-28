@@ -1,6 +1,7 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -32,14 +33,15 @@ suspend fun fangan1(
     paint: Paint
 ) {
     delay(30)
-
-    var lastBitMap: Bitmap? = null
+    val originSize = handleFile.listFiles().size
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
-                lastBitMap = fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
+                fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
-                fang1Large30(lastBitMap!!, paint, handleFile, status, it)
+                val bfile = File(handleFile, "${originSize + 30}.png")
+                var pbitmap = BitmapFactory.decodeFile(bfile.absolutePath)
+                fang1Large30(pbitmap, paint, handleFile, status, it)
             }
         }
     }
@@ -61,7 +63,6 @@ private suspend fun fang1Large30(
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-    canvasDrawText(canvas, paint, file1)
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
@@ -72,7 +73,7 @@ private suspend fun fangan1Small30(
     handleFile: File,
     status: TextView?,
     index: Int
-): Bitmap? {
+) {
     delay(30)
     paint.alpha = 255
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
@@ -99,46 +100,8 @@ private suspend fun fangan1Small30(
         val realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth, realHeight, true)
         canvas.drawBitmap(realBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
-    var lastBitmap: Bitmap? = null
-    if (index >= 29) {
-        var resultBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        val resultCanvas = Canvas(resultBitmap)
-        resultCanvas.drawBitmap(outputBitmap, 0f, 0f, paint)
-    }
-    canvasDrawText(canvas, paint, handleFile)
+
     saveBitmapToFile(outputBitmap, handleFile, status)
-    return lastBitmap
-}
-
-fun canvasDrawText(
-    canvas: Canvas,
-    paint: Paint,
-    handleFile: File
-) {
-    val lastIndex = audioFile!!.name.lastIndexOf(".")
-    val fileName = audioFile!!.name.substring(0, lastIndex)
-
-    //TODO 绘制阴影
-    canvas.drawColor(Color.parseColor("#11000000"))
-    //TODO 绘制标题
-    paint.setTypeface(Typeface.DEFAULT_BOLD)
-    paint.alpha = 255
-    paint.color = Color.WHITE
-    val realText = "<<${fileName}>>"
-    paint.textSize = 70f
-    val rect1 = Rect()
-    paint.getTextBounds(realText, 0, realText.length, rect1)
-    canvas.drawText(realText, (1080 - abs(rect1.right - rect1.left)) / 2f, 200f, paint)
-    val realText1 = "经典歌曲 / 超级好听"
-    paint.textSize = 40f
-    val rect2 = Rect()
-    paint.getTextBounds(realText1, 0, realText1.length, rect2)
-    canvas.drawText(
-        realText1,
-        (1080 - abs(rect2.right - rect2.left)) / 2f,
-        200f + abs(rect1.bottom - rect1.top) + 10f,
-        paint
-    )
 }
 
 fun saveBitmapToFile(outputBitmap: Bitmap, file: File, status: TextView?) {
