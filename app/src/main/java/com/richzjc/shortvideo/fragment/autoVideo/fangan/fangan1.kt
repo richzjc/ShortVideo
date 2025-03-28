@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.widget.TextView
 import com.richzjc.shortvideo.fragment.AutoFragment
+import com.richzjc.shortvideo.fragment.AutoFragment.Companion.audioFile
 import kotlinx.coroutines.delay
 import org.opencv.android.Utils
 import org.opencv.core.CvType
@@ -107,11 +108,11 @@ private suspend fun fangan1Small30(
 fun canvasDrawText(
     canvas: Canvas,
     paint: Paint,
-    fileName: String,
-    index: Int,
-    everyCount: Int,
-    outerIndex: Int,
+    handleFile : File
 ) {
+    val lastIndex = audioFile!!.name.lastIndexOf(".")
+    val fileName = audioFile!!.name.substring(0, lastIndex)
+
     //TODO 绘制阴影
     canvas.drawColor(Color.parseColor("#22000000"))
     //TODO 绘制标题

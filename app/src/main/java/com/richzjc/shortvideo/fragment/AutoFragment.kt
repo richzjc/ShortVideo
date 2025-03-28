@@ -166,13 +166,10 @@ class AutoFragment : Fragment() {
             //TODO 第三步，处理图片
             if (!isStartFlag) return
             updateStatusText("开始处理图片文件", status)
-            val lastIndex = audioFile!!.name.lastIndexOf(".")
-            val fileName = audioFile!!.name.substring(0, lastIndex)
             responseToHandlePic(
                 UtilsContextManager.getInstance().application,
                 picList!!,
                 audioFileDuration,
-                fileName,
                 status
             )
             //TODO 第四步，将处理图片，生成视频

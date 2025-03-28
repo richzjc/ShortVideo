@@ -115,5 +115,6 @@ private suspend fun fangan1Small30(
             canvas.drawBitmap(preBitmap, 0f, 0f, paint)
         }
     }
+    canvasDrawText(canvas, paint, handleFile)
     saveBitmapToFile(outputBitmap, handleFile, status)
 }

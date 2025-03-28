@@ -26,7 +26,6 @@ suspend fun responseToHandlePic(
     context: Context,
     picList: List<File>,
     audioFileDuration: Long,
-    fileName: String,
     status: TextView?
 ) {
     try {
