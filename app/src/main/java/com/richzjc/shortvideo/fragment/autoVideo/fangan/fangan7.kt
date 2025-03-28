@@ -61,7 +61,7 @@ private suspend fun fang1Large30(
     val preBitmap1 = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
 
     canvas.drawBitmap(preBitmap1, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
-
+    canvas.drawColor(Color.parseColor("#11000000"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
@@ -108,7 +108,7 @@ private suspend fun fangan1Small30(
         val resultCanvas = Canvas(lastBitmap)
         resultCanvas.drawBitmap(outputBitmap, 0f, 0f, paint)
     }
-
+    canvas.drawColor(Color.parseColor("#11000000"))
     saveBitmapToFile(outputBitmap, handleFile, status)
     return lastBitmap
 }

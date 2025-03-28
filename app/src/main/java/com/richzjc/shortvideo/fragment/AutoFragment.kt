@@ -1,30 +1,21 @@
 package com.richzjc.shortvideo.fragment
 
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityManager
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.faqun.service.AutoAccessibilityService
-import com.huantansheng.easyphotos.EasyPhotos
-import com.huantansheng.easyphotos.models.album.entity.Photo
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.UtilsContextManager
-import com.richzjc.shortvideo.dialog.selectPicFromCameraOrPic
 import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToHandlePic
@@ -152,7 +143,7 @@ class AutoFragment : Fragment() {
             if (audioFileDuration <= 0)
                 return
 
-            audioFileDuration = 3000L
+//            audioFileDuration = 3000L
 
             if (!isStartFlag) return
             updateStatusText("音频时长为：${audioFileDuration}秒", status)

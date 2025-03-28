@@ -2,6 +2,7 @@ package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.widget.TextView
@@ -65,6 +66,7 @@ private suspend fun fang1Large30(
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
+    canvas.drawColor(Color.parseColor("#11000000"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
@@ -118,5 +120,6 @@ private suspend fun fangan1Small30(
             canvas.drawBitmap(bitmap, innerIndex * widthGap, startY, paint)
         }
     }
+    canvas.drawColor(Color.parseColor("#11000000"))
     saveBitmapToFile(outputBitmap, handleFile, status)
 }
