@@ -4,7 +4,9 @@ import android.media.MediaMetadataRetriever
 import android.os.Environment
 import android.util.Log
 import android.widget.TextView
+import com.richzjc.shortvideo.UtilsContextManager
 import com.richzjc.shortvideo.fragment.AutoFragment
+import com.richzjc.shortvideo.util.SharedPrefsUtil
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -16,14 +18,63 @@ fun responseToSelectAudioFile(status: TextView?): File? {
     if (!file.exists())
         return null
 
+
     val fileList = file.listFiles()
     AutoFragment.updateStatusText("音频文件数为:${fileList.size}", status)
     val size = fileList.size
     if (size <= 0)
         return null
 
-    val randomIndex = (0 until size).random()
-    return fileList.get(randomIndex)
+    val lastTotal =
+        SharedPrefsUtil.getString(UtilsContextManager.getInstance().application, "lastTotal")
+    val selectTotal =
+        SharedPrefsUtil.getString(UtilsContextManager.getInstance().application, "selectTotal")
+    val fileTotalsList = ArrayList<String>()
+    val excludeList = ArrayList<String>()
+    val lastTotalList = ArrayList<String>()
+    lastTotalList.addAll(lastTotal.split(","))
+    var selectTotalList = ArrayList<String>()
+    selectTotalList.addAll(selectTotal.split(","))
+    fileList.forEach {
+        fileTotalsList.add(it.name)
+    }
+    fileTotalsList.forEach {
+        if (!lastTotalList.contains(it))
+            excludeList.add(it)
+    }
+
+
+    var returnFile: File? = null
+    while (returnFile == null || !returnFile.exists()) {
+        if (excludeList.size > 0) {
+            val randomIndex = (0 until excludeList.size).random()
+            returnFile = File(file, excludeList[randomIndex])
+        } else {
+            if (selectTotalList.isEmpty()) {
+                selectTotalList = ArrayList()
+                selectTotalList.addAll(fileTotalsList)
+            }
+            val randomIndex = (0 until selectTotalList.size).random()
+            returnFile = File(file, selectTotalList[randomIndex])
+        }
+    }
+
+    (selectTotalList as ArrayList)?.remove(returnFile.name)
+    (lastTotalList as ArrayList)?.add(returnFile.name)
+
+    SharedPrefsUtil.saveString(
+        UtilsContextManager.getInstance().application,
+        "lastTotal",
+        lastTotalList.joinToString(",")
+    )
+
+    SharedPrefsUtil.saveString(
+        UtilsContextManager.getInstance().application,
+        "selectTotal",
+        selectTotalList.joinToString(",")
+    )
+
+    return returnFile
 }
 
 suspend fun responseToGetAudioFileDuration(file: File): Long {

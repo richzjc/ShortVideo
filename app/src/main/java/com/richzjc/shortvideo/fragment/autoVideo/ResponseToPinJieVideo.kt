@@ -20,7 +20,7 @@ suspend fun responseToPinJieVideo(context: Context, pianTouFile: File, statusTV 
         outputFile.delete()
     }
 
-    val cmd = "-i ${inputFile.absolutePath} -i ${pianTouFile.absolutePath} -b:v 5000k -filter_complex [1:v]scale=1000:563:flags=lanczos,colorkey=0x000000:0.3:0.2[ckout];[0:v][ckout]overlay=shortest=1:x=40:y=1000,unsharp=5:5:1.0:5:5:0.5[out] -map [out] -c:v libx264 -crf 18 -preset slower -profile:v high -movflags +faststart ${outputFile.absolutePath}"
+    val cmd = "-i ${inputFile.absolutePath} -i ${pianTouFile.absolutePath} -b:v 5000k -filter_complex [1:v]scale=1080:1920:flags=lanczos,colorkey=0x000000:0.3:0.2[ckout];[0:v][ckout]overlay=shortest=1:x=0:y=0,unsharp=5:5:1.0:5:5:0.5[out] -map [out] -c:v libx264 -crf 18 -preset slower -profile:v high -movflags +faststart ${outputFile.absolutePath}"
     val result = suspendCoroutine { continuation ->
         // 执行FFmpeg命令
         FFmpegKit.executeAsync(
