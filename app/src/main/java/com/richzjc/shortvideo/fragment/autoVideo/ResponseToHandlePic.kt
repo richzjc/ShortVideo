@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.TextView
 import com.richzjc.shortvideo.fragment.AutoFragment
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan1
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan10
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan2
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan3
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan4
@@ -52,7 +53,7 @@ suspend fun responseToHandlePic(
         paint.alpha = 255
 
         var picStartIndex = 0
-        val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5, 6, 7, 8)
+        val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
         while (file1.listFiles().size < totalPicCount) {
             if (picStartIndex >= picList.size)
                 picStartIndex = 0
@@ -82,42 +83,46 @@ suspend fun responseToHandlePic(
                 fangAnList.add(6)
                 fangAnList.add(7)
                 fangAnList.add(8)
+                fangAnList.add(9)
             }
 
             var index = (0 until fangAnList.size).random()
             val random = fangAnList.get(index)
             fangAnList.remove(random)
             //TODO 这一行是测试代码
-//            fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            fangan10(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
-            if (random == 0) {
-                AutoFragment.updateStatusText("执行方案1", status)
-                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 1){
-                AutoFragment.updateStatusText("执行方案2", status)
-                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 2){
-                AutoFragment.updateStatusText("执行方案3", status)
-                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 3){
-                AutoFragment.updateStatusText("执行方案4", status)
-                fangan4(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 4){
-                AutoFragment.updateStatusText("执行方案5", status)
-                fangan5(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 5){
-                AutoFragment.updateStatusText("执行方案6", status)
-                fangan6(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 6){
-                AutoFragment.updateStatusText("执行方案7", status)
-                fangan7(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 7){
-                AutoFragment.updateStatusText("执行方案8", status)
-                fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 8){
-                AutoFragment.updateStatusText("执行方案9", status)
-                fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-             }
+//            if (random == 0) {
+//                AutoFragment.updateStatusText("执行方案1", status)
+//                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 1){
+//                AutoFragment.updateStatusText("执行方案2", status)
+//                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 2){
+//                AutoFragment.updateStatusText("执行方案3", status)
+//                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 3){
+//                AutoFragment.updateStatusText("执行方案4", status)
+//                fangan4(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 4){
+//                AutoFragment.updateStatusText("执行方案5", status)
+//                fangan5(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 5){
+//                AutoFragment.updateStatusText("执行方案6", status)
+//                fangan6(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 6){
+//                AutoFragment.updateStatusText("执行方案7", status)
+//                fangan7(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 7){
+//                AutoFragment.updateStatusText("执行方案8", status)
+//                fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 8){
+//                AutoFragment.updateStatusText("执行方案9", status)
+//                fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//             }else if(random == 9){
+//                AutoFragment.updateStatusText("执行方案10", status)
+//                fangan10(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }
             picStartIndex += 1
         }
     } catch (exception: Exception) {
