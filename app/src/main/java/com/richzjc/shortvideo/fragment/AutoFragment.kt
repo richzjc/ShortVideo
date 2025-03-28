@@ -1,23 +1,30 @@
 package com.richzjc.shortvideo.fragment
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityManager
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.faqun.service.AutoAccessibilityService
+import com.huantansheng.easyphotos.EasyPhotos
+import com.huantansheng.easyphotos.models.album.entity.Photo
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.UtilsContextManager
+import com.richzjc.shortvideo.dialog.selectPicFromCameraOrPic
 import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToHandlePic
@@ -79,10 +86,10 @@ class AutoFragment : Fragment() {
         val select_pic = view.findViewById<Button>(R.id.select_pic)
         status = view.findViewById(R.id.status)
         val openAssit = view.findViewById<Button>(R.id.open_assit)
-        val openFloat = view.findViewById<Button>(R.id.open_float)
+        val select_audio = view.findViewById<Button>(R.id.select_audio)
         select_pic.background = btnDrawable
         openAssit.background = btnDrawable
-        openFloat.background = btnDrawable
+        select_audio.background = btnDrawable
 
         openAssit.setOnClickListener {
             if (!isAccessibilityServiceEnabled(requireContext())) {
@@ -92,22 +99,11 @@ class AutoFragment : Fragment() {
             }
         }
 
-        openFloat.setOnClickListener {
-            if (!Settings.canDrawOverlays(context)) {
-                val drawOverlaysSettingsIntent =
-                    Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                drawOverlaysSettingsIntent.setData(Uri.parse("package:" + context?.getPackageName()))
-                this.startActivity(drawOverlaysSettingsIntent)
-            } else {
-                MToastHelper.showToast("已经开启悬浮窗")
-            }
+        select_audio.setOnClickListener {
+
         }
 
         select_pic?.setOnClickListener {
-//            if (!Settings.canDrawOverlays(context)) {
-//                MToastHelper.showToast("请开启悬浮窗权限")
-//                return@setOnClickListener
-//            }
 //            if (!isAccessibilityServiceEnabled(requireContext())) {
 //                MToastHelper.showToast("请开启辅助功能权限")
 //                return@setOnClickListener

@@ -29,10 +29,11 @@ suspend fun fangan8(
     paint: Paint
 ) {
     delay(30)
+    val originSize = handleFile.listFiles().size
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
-                fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
+                fangan1Small30(originSize, preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
                 fang1Large30(paint, handleFile, status, it)
             }
@@ -64,6 +65,7 @@ private suspend fun fang1Large30(
 }
 
 private suspend fun fangan1Small30(
+    originSize: Int,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
     paint: Paint,
@@ -82,18 +84,22 @@ private suspend fun fangan1Small30(
     blurBitmap = blur(blurBitmap)
     canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 
-    paint.alpha = 255
-    var progress = (index + 1) / 45f
-    var realWidth = 1080 - (1080 * 0.2f) * progress
-    var realHeight = 1920 - (1920 * 0.2f) * progress
-    val realBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
-    canvas.drawBitmap(realBitmap, -progress * realWidth, (1920 - realHeight) / 2, paint)
+    if (originSize > 0) {
+        paint.alpha = 255
+        var progress = (index + 1) / 45f
+        var realWidth = 1080 - (1080 * 0.2f) * progress
+        var realHeight = 1920 - (1920 * 0.2f) * progress
+        val realBitmap =
+            Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
+        canvas.drawBitmap(realBitmap, -progress * realWidth, (1920 - realHeight) / 2, paint)
+    }
 
-    progress = (index + 1) / 30f
-    realWidth = 1080 - (1080 * 0.2f) + (1080 * 0.2f) * progress
-    realHeight = 1920 - (1920 * 0.2f) + (1920 * 0.2f) * progress
+    var progress = (index + 1) / 30f
+    var realWidth = 1080 - (1080 * 0.2f) + (1080 * 0.2f) * progress
+    var realHeight = 1920 - (1920 * 0.2f) + (1920 * 0.2f) * progress
     if (realWidth > 0 && realHeight > 0) {
-        val realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
+        val realBitmap =
+            Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
         canvas.drawBitmap(realBitmap, 1080 - realWidth * progress, (1920 - realHeight) / 2f, paint)
     }
     saveBitmapToFile(outputBitmap, handleFile, status)
