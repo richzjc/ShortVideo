@@ -1,6 +1,7 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.BitmapShader
 import android.graphics.Camera
 import android.graphics.Canvas
@@ -34,14 +35,13 @@ suspend fun fangan6(
             if (it < 30) {
                 fangan1Small30(originSize, preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
-                fang1Large30(curBitmap, paint, handleFile, status, it)
+                fang1Large30(paint, handleFile, status, it)
             }
         }
     }
 }
 
 private suspend fun fang1Large30(
-    pBitmap: Bitmap,
     paint: Paint,
     file1: File,
     status: TextView?,
@@ -49,23 +49,23 @@ private suspend fun fang1Large30(
 ) {
     delay(30)
     paint.alpha = 255
-    val widthGap = (pBitmap.width * 0.1f) / 30f
-    val heightGap = (pBitmap.height * 0.1f) / 30f
-
-    val realWidth = pBitmap.width * 1.1f - widthGap * (index - 30 + 1)
-    val realHeight = pBitmap.height * 1.1f - heightGap * (index - 30 + 1)
-    val preBitmap = Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
-
+    val bfile = File(file1, "${file1.listFiles().size}.png")
+    var preBitmap = BitmapFactory.decodeFile(bfile.absolutePath)
 
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
-    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
+    val gap = 0.05f / 30f
+    val realWidth = preBitmap.width * (1 + gap)
+    val realHeight = preBitmap.height * (1 + gap)
+
+    preBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
+
+    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
-
 private suspend fun fangan1Small30(
-    originSize : Int,
+    originSize: Int,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
     paint: Paint,
@@ -84,7 +84,7 @@ private suspend fun fangan1Small30(
     blurBitmap = blur(blurBitmap)
     canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 
-    if(originSize > 0){
+    if (originSize > 0) {
         // 绘制背景
         canvas.drawBitmap(preBitmap, 0f, 0f, paint)
 
@@ -104,7 +104,7 @@ private suspend fun fangan1Small30(
     val shader = BitmapShader(curBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
     val matrix = Matrix().apply {
         // 将前景图居中缩放
-        val scale = maxRadius * 2f / min(curBitmap.width, curBitmap.height)
+        val scale = maxRadius * 2f / curBitmap.height
         setScale(scale, scale)
         postTranslate(
             centerX - curBitmap.width * scale / 2,
