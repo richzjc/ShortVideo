@@ -62,14 +62,13 @@ private suspend fun fang1Large30(
 
     canvas.drawBitmap(preBitmap1, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
 
-    var lastBitmap: Bitmap? = null
     var resultBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val resultCanvas = Canvas(resultBitmap)
     resultCanvas.drawBitmap(outputBitmap, 0f, 0f, paint)
 
     canvasDrawText(canvas, paint, file1)
     saveBitmapToFile(outputBitmap, file1, status)
-    return lastBitmap!!
+    return resultBitmap!!
 }
 
 private suspend fun fangan1Small30(
