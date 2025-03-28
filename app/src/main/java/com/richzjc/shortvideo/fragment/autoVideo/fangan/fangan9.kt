@@ -34,13 +34,14 @@ suspend fun fangan9(
             if (it < 30) {
                 fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
-                fang1Large30(paint, handleFile, status, it)
+                fang1Large30(curBitmap, paint, handleFile, status, it)
             }
         }
     }
 }
 
 private suspend fun fang1Large30(
+    preBitmap: Bitmap,
     paint: Paint,
     file1: File,
     status: TextView?,
@@ -48,25 +49,20 @@ private suspend fun fang1Large30(
 ) {
     delay(30)
     paint.alpha = 255
-    val bfile = File(file1, "${file1.listFiles().size}.png")
-    var preBitmap = BitmapFactory.decodeFile(bfile.absolutePath)
 
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
     val gap = 0.05f / 30f
-    val realWidth = preBitmap.width * (1 + gap)
-    val realHeight = preBitmap.height * (1 + gap)
+    val realWidth = preBitmap.width * (1 + gap * (index - 30 + 1))
+    val realHeight = preBitmap.height * (1 + gap * (index - 30 + 1))
 
-    var preBitmap1 = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
+    val preBitmap1 = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
 
     canvas.drawBitmap(preBitmap1, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
-
-    var resultBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val resultCanvas = Canvas(resultBitmap)
-    resultCanvas.drawBitmap(outputBitmap, 0f, 0f, paint)
-    canvas.drawColor(Color.parseColor("#11000000"))
+    canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
+
 
 private suspend fun fangan1Small30(
     preBitmap: Bitmap,
@@ -120,6 +116,6 @@ private suspend fun fangan1Small30(
             canvas.drawBitmap(preBitmap, 0f, 0f, paint)
         }
     }
-    canvas.drawColor(Color.parseColor("#11000000"))
+    canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
 }

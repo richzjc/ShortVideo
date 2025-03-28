@@ -39,9 +39,7 @@ suspend fun fangan1(
             if (it < 30) {
                 fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
-                val bfile = File(handleFile, "${originSize + 30}.png")
-                var pbitmap = BitmapFactory.decodeFile(bfile.absolutePath)
-                fang1Large30(pbitmap, paint, handleFile, status, it)
+                fang1Large30(curBitmap, paint, handleFile, status, it)
             }
         }
     }
@@ -57,13 +55,13 @@ private suspend fun fang1Large30(
     delay(30)
     paint.alpha = 255
 
-    val realWidth = pBitmap.width * (1 + 0.01f * (index - 30))
-    val realHeight = pBitmap.height * (1 + 0.01f * (index - 30))
+    val realWidth = pBitmap.width * (1 + 0.01f * (index - 30 + 1))
+    val realHeight = pBitmap.height * (1 + 0.01f * (index - 30 + 1))
     val preBitmap = Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-    canvas.drawColor(Color.parseColor("#11000000"))
+    canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
@@ -95,13 +93,13 @@ private suspend fun fangan1Small30(
     paint.alpha = 255
     val widthGap = 1080 / 30f
     val heightGap = 1920 / 30f
-    val realWidth = (widthGap * index).toInt()
-    val realHeight = (heightGap * index).toInt()
+    val realWidth = (widthGap * (index + 1)).toInt()
+    val realHeight = (heightGap * (index + 1)).toInt()
     if (realWidth > 0 && realHeight > 0) {
         val realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth, realHeight, true)
         canvas.drawBitmap(realBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
-    canvas.drawColor(Color.parseColor("#11000000"))
+    canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
 }
 

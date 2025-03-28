@@ -52,7 +52,7 @@ private suspend fun fang1Large30(
         var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(outputBitmap)
         canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#11000000"))
+        canvas.drawColor(Color.parseColor("#1132cd32"))
         saveBitmapToFile(outputBitmap, file1, status)
     } else if (index - 30 < 15) {
         val realWidth = 1080 + widthGap * 5 - widthGap * (index - 35 + 1)
@@ -62,7 +62,7 @@ private suspend fun fang1Large30(
         var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(outputBitmap)
         canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#11000000"))
+        canvas.drawColor(Color.parseColor("#1132cd32"))
         saveBitmapToFile(outputBitmap, file1, status)
     } else if (index - 30 < 25) {
         val realWidth = 1080 - widthGap * 5 + widthGap * (index - 45 + 1)
@@ -72,7 +72,7 @@ private suspend fun fang1Large30(
         var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(outputBitmap)
         canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#11000000"))
+        canvas.drawColor(Color.parseColor("#1132cd32"))
         saveBitmapToFile(outputBitmap, file1, status)
     } else {
         val realWidth = 1080 + widthGap * 5 - widthGap * (index - 55 + 1)
@@ -82,7 +82,7 @@ private suspend fun fang1Large30(
         var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(outputBitmap)
         canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-        canvas.drawColor(Color.parseColor("#11000000"))
+        canvas.drawColor(Color.parseColor("#1132cd32"))
         saveBitmapToFile(outputBitmap, file1, status)
     }
 }
@@ -119,6 +119,6 @@ private suspend fun fangan1Small30(
 
     paint.alpha = 255
     canvas.drawBitmap(curBitmap, 0f, (1920 - (index + 1) * heightGap), paint)
-    canvas.drawColor(Color.parseColor("#11000000"))
+    canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
 }
