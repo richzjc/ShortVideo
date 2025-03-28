@@ -20,7 +20,7 @@ import kotlin.math.min
 /**
  * 透明度变换
  */
-suspend fun fangan8(
+suspend fun fangan9(
     handleFile: File,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
@@ -78,7 +78,7 @@ private suspend fun fangan1Small30(
 
     var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val blurCanvas = Canvas(blurBitmap)
-    blurCanvas.drawBitmap(preBitmap, 0f, 0f, paint)
+    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
     blurBitmap = blur(blurBitmap)
     canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 
