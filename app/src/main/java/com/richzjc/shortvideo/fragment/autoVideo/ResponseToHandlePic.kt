@@ -17,6 +17,7 @@ import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan4
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan5
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan6
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan7
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan8
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -51,7 +52,7 @@ suspend fun responseToHandlePic(
         paint.alpha = 255
 
         var picStartIndex = 0
-        val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5, 6)
+        val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5, 6, 7)
         while (file1.listFiles().size < totalPicCount) {
             if (picStartIndex >= picList.size)
                 picStartIndex = 0
@@ -71,7 +72,7 @@ suspend fun responseToHandlePic(
                 preBitmap = outputBitmap
             }
 
-            if(fangAnList.size <= 0){
+            if (fangAnList.size <= 0) {
                 fangAnList.add(0)
                 fangAnList.add(1)
                 fangAnList.add(2)
@@ -79,13 +80,14 @@ suspend fun responseToHandlePic(
                 fangAnList.add(4)
                 fangAnList.add(5)
                 fangAnList.add(6)
+                fangAnList.add(7)
             }
 
             var index = (0 until fangAnList.size).random()
             val random = fangAnList.get(index)
             fangAnList.remove(random)
             //TODO 这一行是测试代码
-            fangan7(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
 //            if (random == 0) {
 //                AutoFragment.updateStatusText("执行方案1", status)
@@ -108,6 +110,9 @@ suspend fun responseToHandlePic(
 //            }else if(random == 6){
 //                AutoFragment.updateStatusText("执行方案7", status)
 //                fangan7(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 7){
+//                AutoFragment.updateStatusText("执行方案8", status)
+//                fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 //            }
             picStartIndex += 1
         }
