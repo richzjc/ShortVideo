@@ -59,8 +59,8 @@ fun responseToSelectAudioFile(status: TextView?): File? {
         }
     }
 
-    (selectTotalList as ArrayList)?.remove(returnFile.name)
-    (lastTotalList as ArrayList)?.add(returnFile.name)
+    selectTotalList?.remove(returnFile.name)
+    lastTotalList?.add(returnFile.name)
 
     SharedPrefsUtil.saveString(
         UtilsContextManager.getInstance().application,
