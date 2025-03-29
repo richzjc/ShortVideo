@@ -1,12 +1,14 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.widget.TextView
+import com.richzjc.shortvideo.R
+import com.richzjc.shortvideo.UtilsContextManager
 import com.richzjc.shortvideo.fragment.AutoFragment
-import com.richzjc.shortvideo.fragment.AutoFragment.Companion.bgBitmap
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateCos
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateSin
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculatex2
@@ -34,7 +36,7 @@ suspend fun fangan1(
     paint: Paint
 ) {
     delay(30)
-    (0 until 60)?.forEach {
+    (0 until 90)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
                 fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
@@ -55,8 +57,8 @@ private suspend fun fang1Large30(
     delay(30)
     paint.alpha = 255
 
-    val realWidth = pBitmap.width * (1 + 0.01f * (index - 30 + 1))
-    val realHeight = pBitmap.height * (1 + 0.01f * (index - 30 + 1))
+    val realWidth = pBitmap.width * (1 + 0.01f * (index - 60 + 1))
+    val realHeight = pBitmap.height * (1 + 0.01f * (index - 60 + 1))
     val preBitmap = Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
@@ -78,10 +80,14 @@ private suspend fun fangan1Small30(
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
 
-
+    var bgBitmap = BitmapFactory.decodeResource(
+        UtilsContextManager.getInstance().application.resources,
+        R.mipmap.imgnew1
+    )
+    bgBitmap = Bitmap.createScaledBitmap(bgBitmap, 1080, 1920, true)
     canvas.drawBitmap(bgBitmap!!, 0f, 0f, paint)
 
-    val preAlpha = 255 - calculateCos(index + 1, 30, 255f)
+    val preAlpha = 255 - calculateCos(index + 1, 5, 255f)
     if (preAlpha > 0) {
         paint.alpha = preAlpha.toInt()
         canvas.drawBitmap(preBitmap, 0f, 0f, paint)

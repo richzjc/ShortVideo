@@ -144,7 +144,6 @@ class AutoFragment : Fragment() {
         var audioFile: File? = null
         var audioFileDuration: Long = 0L
         var picList: List<File>? = null
-        var bgBitmap : Bitmap? = null
 
         fun updateStatusText(statusText: String?, statusTV: TextView?) {
             if (Looper.myLooper() != Looper.getMainLooper())
@@ -167,7 +166,7 @@ class AutoFragment : Fragment() {
             if (audioFileDuration <= 0)
                 return
 
-            audioFileDuration = 2000L
+            audioFileDuration = 3000L
 
             if (!isStartFlag) return
             updateStatusText("音频时长为：${audioFileDuration}秒", status)
@@ -181,15 +180,12 @@ class AutoFragment : Fragment() {
             //TODO 第三步，处理图片
             if (!isStartFlag) return
             updateStatusText("开始处理图片文件", status)
-            bgBitmap = BitmapFactory.decodeResource(UtilsContextManager.getInstance().application.resources, R.mipmap.imgnew1)
-            bgBitmap = blur(bgBitmap!!)
             responseToHandlePic(
                 UtilsContextManager.getInstance().application,
                 picList!!,
                 audioFileDuration,
                 status
             )
-            bgBitmap = null
             //TODO 第四步，将处理图片，生成视频
             if (!isStartFlag) return
             val genNoVideoFlag =
