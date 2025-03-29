@@ -6,14 +6,20 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.widget.TextView
 import com.richzjc.shortvideo.fragment.AutoFragment
+import com.richzjc.shortvideo.fragment.AutoFragment.Companion.bgBitmap
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateCos
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateSin
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculatex2
 import kotlinx.coroutines.delay
 import org.opencv.android.Utils
 import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.math.cos
 
 
 /**
@@ -28,7 +34,6 @@ suspend fun fangan1(
     paint: Paint
 ) {
     delay(30)
-    val originSize = handleFile.listFiles().size
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
@@ -73,26 +78,30 @@ private suspend fun fangan1Small30(
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
 
-    var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val blurCanvas = Canvas(blurBitmap)
-    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
-    blurBitmap = blur(blurBitmap)
-    canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
 
-    val preAlpha = (255 - (255 / 15f) * index)
+    canvas.drawBitmap(bgBitmap!!, 0f, 0f, paint)
+
+    val preAlpha = 255 - calculateCos(index + 1, 30, 255f)
     if (preAlpha > 0) {
         paint.alpha = preAlpha.toInt()
         canvas.drawBitmap(preBitmap, 0f, 0f, paint)
     }
 
     paint.alpha = 255
-    val widthGap = 1080 / 30f
-    val heightGap = 1920 / 30f
-    val realWidth = (widthGap * (index + 1)).toInt()
-    val realHeight = (heightGap * (index + 1)).toInt()
+    val realWidth = calculateSin(index + 1, 30, 1080f).toInt()
+    val realHeight = calculateSin(index + 1, 30, 1920f).toInt()
     if (realWidth > 0 && realHeight > 0) {
-        val realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth, realHeight, true)
-        canvas.drawBitmap(realBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
+        var realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth, realHeight, true)
+        var radius = 99 - calculatex2(index + 1, 30, 99f).toInt()
+        if (radius % 2 == 0)
+            radius -= 1
+
+        if (radius <= 0)
+            radius = 1
+
+
+        val blurBitmap = blur(realBitmap, radius)
+        canvas.drawBitmap(blurBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
     canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
@@ -121,12 +130,28 @@ fun saveBitmapToFile(outputBitmap: Bitmap, file: File, status: TextView?) {
 }
 
 // 高斯模糊工具类
-fun blur(bitmap: Bitmap, radius: Int = 87): Bitmap {
+fun blur(bitmap: Bitmap, radius: Int = 199): Bitmap {
     val srcMat = Mat(bitmap.height, bitmap.width, CvType.CV_8UC4)
     Utils.bitmapToMat(bitmap, srcMat)
 
     Imgproc.GaussianBlur(srcMat, srcMat, Size(radius.toDouble(), radius.toDouble()), 0.0)
 
+    val resultBitmap = Bitmap.createBitmap(srcMat.cols(), srcMat.rows(), Bitmap.Config.ARGB_8888)
+    Utils.matToBitmap(srcMat, resultBitmap)
+    srcMat.release()
+    return resultBitmap
+}
+
+
+fun blurPartial(bitmap: Bitmap, rect: Rect, radius: Int = 87): Bitmap {
+    val srcMat = Mat(bitmap.height, bitmap.width, CvType.CV_8UC4)
+    Utils.bitmapToMat(bitmap, srcMat)
+
+    // 局部模糊处理
+    val roiMat = srcMat.submat(rect)
+    Imgproc.GaussianBlur(roiMat, roiMat, Size(radius.toDouble(), radius.toDouble()), 0.0)
+
+    // 混合处理（可选羽化边缘）
     val resultBitmap = Bitmap.createBitmap(srcMat.cols(), srcMat.rows(), Bitmap.Config.ARGB_8888)
     Utils.matToBitmap(srcMat, resultBitmap)
     srcMat.release()

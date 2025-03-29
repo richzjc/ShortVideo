@@ -91,6 +91,11 @@ private suspend fun fangan1Small30(
     if (realWidth > 0 && realHeight > 0) {
         var w = (1080 / 2f)
         var h = (1920 / 2f)
+        var alpha = 255 - (255/40f)*(index + 1)
+        if(alpha < 0)
+            alpha = 0f
+        paint.alpha = alpha.toInt()
+
         val realBitmap =
             Bitmap.createScaledBitmap(curBitmap, realWidth.toInt(), realHeight.toInt(), true)
         canvas.drawBitmap(realBitmap, (w - realWidth) / 2, (h - realHeight) / 2, paint)
@@ -101,6 +106,7 @@ private suspend fun fangan1Small30(
 
     realWidth = (1080) * progress
     realHeight = (1920) * progress
+    paint.alpha = 255
     if (realWidth > 0 && realHeight > 0) {
         var w = 1080
         var h = 1920

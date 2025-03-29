@@ -90,39 +90,39 @@ suspend fun responseToHandlePic(
             val random = fangAnList.get(index)
             fangAnList.remove(random)
             //TODO 这一行是测试代码
-//            fangan10(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
-            if (random == 0) {
-                AutoFragment.updateStatusText("执行方案1", status)
-                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 1){
-                AutoFragment.updateStatusText("执行方案2", status)
-                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 2){
-                AutoFragment.updateStatusText("执行方案3", status)
-                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 3){
-                AutoFragment.updateStatusText("执行方案4", status)
-                fangan4(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 4){
-                AutoFragment.updateStatusText("执行方案5", status)
-                fangan5(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 5){
-                AutoFragment.updateStatusText("执行方案6", status)
-                fangan6(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 6){
-                AutoFragment.updateStatusText("执行方案7", status)
-                fangan7(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 7){
-                AutoFragment.updateStatusText("执行方案8", status)
-                fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }else if(random == 8){
-                AutoFragment.updateStatusText("执行方案9", status)
-                fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-             }else if(random == 9){
-                AutoFragment.updateStatusText("执行方案10", status)
-                fangan10(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-            }
+//            if (random == 0) {
+//                AutoFragment.updateStatusText("执行方案1", status)
+//                fangan1(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 1){
+//                AutoFragment.updateStatusText("执行方案2", status)
+//                fangan2(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 2){
+//                AutoFragment.updateStatusText("执行方案3", status)
+//                fangan3(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 3){
+//                AutoFragment.updateStatusText("执行方案4", status)
+//                fangan4(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 4){
+//                AutoFragment.updateStatusText("执行方案5", status)
+//                fangan5(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 5){
+//                AutoFragment.updateStatusText("执行方案6", status)
+//                fangan6(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 6){
+//                AutoFragment.updateStatusText("执行方案7", status)
+//                fangan7(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 7){
+//                AutoFragment.updateStatusText("执行方案8", status)
+//                fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }else if(random == 8){
+//                AutoFragment.updateStatusText("执行方案9", status)
+//                fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//             }else if(random == 9){
+//                AutoFragment.updateStatusText("执行方案10", status)
+//                fangan10(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+//            }
             picStartIndex += 1
         }
     } catch (exception: Exception) {

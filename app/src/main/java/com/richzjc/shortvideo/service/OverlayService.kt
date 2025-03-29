@@ -44,17 +44,20 @@ class OverlayService : Service() {
 
 
         // 5. 绑定返回按钮事件
-        val btnBack: TextView = floatView!!.findViewById(R.id.back)
-        btnBack.setOnClickListener { v: View? ->
+        val startBtn: TextView = floatView!!.findViewById(R.id.start)
+        startBtn.setOnClickListener { v: View? ->
             isStartFlag = false
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-            // 移除悬浮窗并停止服务
-            if (windowManager != null && floatView != null) {
-                windowManager?.removeView(floatView)
-            }
-            stopSelf()
+            params.width = WindowManager.LayoutParams.MATCH_PARENT
+            params.height = WindowManager.LayoutParams.MATCH_PARENT
+            windowManager?.updateViewLayout(floatView, params)
+        }
+
+        val stopBtn: TextView = floatView!!.findViewById(R.id.stop)
+        stopBtn.setOnClickListener { v: View? ->
+            isStartFlag = false
+            params.width = WindowManager.LayoutParams.WRAP_CONTENT
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT
+            windowManager?.updateViewLayout(floatView, params)
         }
 
         // 6. 添加视图到窗口

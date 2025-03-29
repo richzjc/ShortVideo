@@ -3,6 +3,9 @@ package com.richzjc.shortvideo.fragment
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,6 +20,7 @@ import androidx.fragment.app.Fragment
 import com.faqun.service.AutoAccessibilityService
 import com.richzjc.shortvideo.R
 import com.richzjc.shortvideo.UtilsContextManager
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.blur
 import com.richzjc.shortvideo.fragment.autoVideo.genHandleVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToGetAudioFileDuration
 import com.richzjc.shortvideo.fragment.autoVideo.responseToHandlePic
@@ -24,6 +28,7 @@ import com.richzjc.shortvideo.fragment.autoVideo.responseToMergeAudio
 import com.richzjc.shortvideo.fragment.autoVideo.responseToPinJieVideo
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectAudioFile
 import com.richzjc.shortvideo.fragment.autoVideo.responseToSelectPicFile
+import com.richzjc.shortvideo.service.OverlayService
 import com.richzjc.shortvideo.util.MToastHelper
 import com.richzjc.shortvideo.util.ResourceUtils
 import com.richzjc.shortvideo.util.ScreenUtils
@@ -78,12 +83,23 @@ class AutoFragment : Fragment() {
         val select_pic = view.findViewById<Button>(R.id.select_pic)
         status = view.findViewById(R.id.status)
         val openAssit = view.findViewById<Button>(R.id.open_assit)
-        val select_audio = view.findViewById<Button>(R.id.select_audio)
+        val start_wx = view.findViewById<Button>(R.id.start_wx)
+        val open_float = view.findViewById<Button>(R.id.open_float)
         select_pic.background = btnDrawable
         openAssit.background = btnDrawable
-        select_audio.background = btnDrawable
-        select_audio.visibility = View.GONE
+        open_float.background = btnDrawable
+        start_wx.background = btnDrawable
 
+        open_float.setOnClickListener {
+            if (!Settings.canDrawOverlays(context)) {
+                val drawOverlaysSettingsIntent =
+                    Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                drawOverlaysSettingsIntent.setData(Uri.parse("package:" + context?.getPackageName()))
+                this.startActivity(drawOverlaysSettingsIntent)
+            } else {
+                context?.startService(Intent(context, OverlayService::class.java))
+            }
+        }
         openAssit.setOnClickListener {
             if (!isAccessibilityServiceEnabled(requireContext())) {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -92,15 +108,21 @@ class AutoFragment : Fragment() {
             }
         }
 
-        select_audio.setOnClickListener {
-
+        start_wx.setOnClickListener {
+            if (isStartFlag) {
+                val intent = Intent()
+                intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                UtilsContextManager.getInstance().application.startActivity(intent)
+                AutoAccessibilityService.instance?.startAccessibilityService()
+            }
         }
 
         select_pic?.setOnClickListener {
-            if (!isAccessibilityServiceEnabled(requireContext())) {
-                MToastHelper.showToast("请开启辅助功能权限")
-                return@setOnClickListener
-            }
+//            if (!isAccessibilityServiceEnabled(requireContext())) {
+//                MToastHelper.showToast("请开启辅助功能权限")
+//                return@setOnClickListener
+//            }
 
             MToastHelper.showToast("先到图片编辑页面获取读写权限")
             isStartFlag = !isStartFlag
@@ -116,13 +138,13 @@ class AutoFragment : Fragment() {
         }
     }
 
-
     companion object {
         var isStartFlag = false
         var status: TextView? = null
         var audioFile: File? = null
         var audioFileDuration: Long = 0L
         var picList: List<File>? = null
+        var bgBitmap : Bitmap? = null
 
         fun updateStatusText(statusText: String?, statusTV: TextView?) {
             if (Looper.myLooper() != Looper.getMainLooper())
@@ -140,9 +162,12 @@ class AutoFragment : Fragment() {
             audioFile = responseToSelectAudioFile(status)
             audioFile ?: return
             if (!isStartFlag) return
+
             audioFileDuration = responseToGetAudioFileDuration(audioFile!!)
             if (audioFileDuration <= 0)
                 return
+
+            audioFileDuration = 2000L
 
             if (!isStartFlag) return
             updateStatusText("音频时长为：${audioFileDuration}秒", status)
@@ -156,12 +181,15 @@ class AutoFragment : Fragment() {
             //TODO 第三步，处理图片
             if (!isStartFlag) return
             updateStatusText("开始处理图片文件", status)
+            bgBitmap = BitmapFactory.decodeResource(UtilsContextManager.getInstance().application.resources, R.mipmap.imgnew1)
+            bgBitmap = blur(bgBitmap!!)
             responseToHandlePic(
                 UtilsContextManager.getInstance().application,
                 picList!!,
                 audioFileDuration,
                 status
             )
+            bgBitmap = null
             //TODO 第四步，将处理图片，生成视频
             if (!isStartFlag) return
             val genNoVideoFlag =
@@ -187,13 +215,13 @@ class AutoFragment : Fragment() {
             if (!mergeAudioVideoFlag)
                 return
 
-            //TODO 第七步，启动微信
-            if (!isStartFlag) return
-            val intent = Intent()
-            intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            UtilsContextManager.getInstance().application.startActivity(intent)
-            AutoAccessibilityService.instance?.startAccessibilityService()
+//            //TODO 第七步，启动微信
+//            if (!isStartFlag) return
+//            val intent = Intent()
+//            intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//            UtilsContextManager.getInstance().application.startActivity(intent)
+//            AutoAccessibilityService.instance?.startAccessibilityService()
         }
     }
 }
