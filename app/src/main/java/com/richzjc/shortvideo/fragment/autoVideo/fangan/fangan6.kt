@@ -12,6 +12,8 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Shader
 import android.widget.TextView
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateSin
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculatex2
 import kotlinx.coroutines.delay
 import java.io.File
 import kotlin.math.max
@@ -29,11 +31,12 @@ suspend fun fangan6(
     paint: Paint
 ) {
     delay(30)
+    val blurBg :Bitmap = blur(curBitmap)
     val originSize = handleFile.listFiles().size
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
-                fangan1Small30(originSize, preBitmap, curBitmap, paint, handleFile, status, it)
+                fangan1Small30(blurBg,originSize, preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
                 fang1Large30(curBitmap, paint, handleFile, status, it)
             }
@@ -65,6 +68,7 @@ private suspend fun fang1Large30(
 }
 
 private suspend fun fangan1Small30(
+    blurBg : Bitmap,
     originSize: Int,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
@@ -78,11 +82,8 @@ private suspend fun fangan1Small30(
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
 
-    var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val blurCanvas = Canvas(blurBitmap)
-    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
-    blurBitmap = blur(blurBitmap)
-    canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
+    var blurBitmap = Bitmap.createScaledBitmap(blurBg, 1080, 1920, true)
+    canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
     if (originSize > 0) {
         // 绘制背景
@@ -90,18 +91,28 @@ private suspend fun fangan1Small30(
 
     }
 
-    val progress = (index + 1) / 30f
 
     val centerX = 1080 / 2f
     val centerY = 1920 / 2f
     val maxRadius = 1920 / 2f
 
     // 计算当前半径
-    val currentRadius = maxRadius * progress
+    val currentRadius  = calculateSin(index + 1, 30, maxRadius)
 
+    val degrees = calculateSin(index + 1, 30, 360f)
+
+    // 绘制动态图
+    var radius = 99 - calculatex2(index + 1, 30, 99f).toInt()
+    if (radius % 2 == 0)
+        radius -= 1
+
+    if (radius <= 0)
+        radius = 1
+
+    val rbitmap = blur(curBitmap, radius)
 
     // 创建BitmapShader并设置缩放矩阵
-    val shader = BitmapShader(curBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+    val shader = BitmapShader(rbitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
     val matrix = Matrix().apply {
         // 将前景图居中缩放
         val scale = maxRadius * 2f / curBitmap.height
@@ -110,6 +121,8 @@ private suspend fun fangan1Small30(
             centerX - curBitmap.width * scale / 2,
             centerY - curBitmap.height * scale / 2
         )
+
+        postRotate(degrees, curBitmap.width * scale / 2, curBitmap.height * scale / 2)
     }
     shader.setLocalMatrix(matrix)
 

@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.widget.TextView
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateSin
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculatex2
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -21,6 +23,7 @@ suspend fun fangan3(
     paint: Paint
 ) {
     delay(30)
+    val blurBg :Bitmap = blur(curBitmap)
     val preBitmapList = ArrayList<Bitmap>()
     val height = preBitmap.height / 4
     val bitmap1 = Bitmap.createBitmap(preBitmap, 0, 0, preBitmap.width, height, null, false)
@@ -38,7 +41,7 @@ suspend fun fangan3(
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
-                fangan1Small30(preBitmapList, curBitmap, paint, handleFile, status, it)
+                fangan1Small30(blurBg,preBitmapList, curBitmap, paint, handleFile, status, it)
             } else {
                 fang1Large30(curBitmap, paint, handleFile, status, it)
             }
@@ -71,6 +74,7 @@ private suspend fun fang1Large30(
 
 
 private suspend fun fangan1Small30(
+    blurBg : Bitmap,
     preBitmapList: List<Bitmap>,
     curBitmap: Bitmap,
     paint: Paint,
@@ -82,11 +86,8 @@ private suspend fun fangan1Small30(
     paint.alpha = 255
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
-    var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val blurCanvas = Canvas(blurBitmap)
-    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
-    blurBitmap = blur(blurBitmap)
-    canvas.drawBitmap(blurBitmap, 0f, 0f, paint)
+    var blurBitmap = Bitmap.createScaledBitmap(blurBg, 1080, 1920, true)
+    canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
 
     if (index < 15) {
@@ -94,7 +95,7 @@ private suspend fun fangan1Small30(
         if (alpha > 255)
             alpha = 255f
         paint.alpha = alpha.toInt()
-    }else{
+    } else {
         paint.alpha = 255
     }
 
@@ -109,17 +110,24 @@ private suspend fun fangan1Small30(
 
     val widthGap = 1080 / 30f
     val heightGap = 1920 / 4f
-    var realAlpha = 255 - (255 / 30f) * (index)
-    if (realAlpha < 0)
-        realAlpha = 0f
-    paint.alpha = realAlpha.toInt()
+    paint.alpha = 255
+    var blurValue: Int
+    if (index < 5) {
+        blurValue = calculatex2(index + 1, 5, 99f).toInt()
+    } else {
+        blurValue = 99
+    }
+    if (blurValue % 2 == 0)
+        blurValue += 1
+
     preBitmapList.forEachIndexed { innerIndex, bitmap ->
+        val bmp = blur(bitmap, blurValue)
         if (innerIndex % 2 == 0) {
             val startX = (index + 1) * widthGap
-            canvas.drawBitmap(bitmap, startX, innerIndex * heightGap, paint)
+            canvas.drawBitmap(bmp, startX, innerIndex * heightGap, paint)
         } else {
             val startX = -(index + 1) * widthGap
-            canvas.drawBitmap(bitmap, startX, innerIndex * heightGap, paint)
+            canvas.drawBitmap(bmp, startX, innerIndex * heightGap, paint)
         }
     }
     canvas.drawColor(Color.parseColor("#1132cd32"))

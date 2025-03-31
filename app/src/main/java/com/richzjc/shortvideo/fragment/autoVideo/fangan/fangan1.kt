@@ -1,13 +1,10 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.widget.TextView
-import com.richzjc.shortvideo.R
-import com.richzjc.shortvideo.UtilsContextManager
 import com.richzjc.shortvideo.fragment.AutoFragment
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateCos
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateSin
@@ -21,7 +18,6 @@ import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.cos
 
 
 /**
@@ -36,10 +32,11 @@ suspend fun fangan1(
     paint: Paint
 ) {
     delay(30)
+    val blurBg :Bitmap = blur(curBitmap)
     (0 until 60)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 30) {
-                fangan1Small30(preBitmap, curBitmap, paint, handleFile, status, it)
+                fangan1Small30(blurBg, preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
                 fang1Large30(curBitmap, paint, handleFile, status, it)
             }
@@ -68,6 +65,7 @@ private suspend fun fang1Large30(
 }
 
 private suspend fun fangan1Small30(
+    blurBg : Bitmap,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
     paint: Paint,
@@ -81,10 +79,7 @@ private suspend fun fangan1Small30(
     val canvas = Canvas(outputBitmap)
 
 
-    var blurBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-    val blurCanvas = Canvas(blurBitmap)
-    blurCanvas.drawBitmap(curBitmap, 0f, 0f, paint)
-    blurBitmap = blur(blurBitmap)
+    var blurBitmap = Bitmap.createScaledBitmap(blurBg, 1080, 1920, true)
     canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
     if (index < 5) {
