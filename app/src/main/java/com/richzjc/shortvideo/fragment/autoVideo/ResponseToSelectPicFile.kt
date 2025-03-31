@@ -52,7 +52,7 @@ suspend fun responseToSelectPicFile(picDuration: Long): List<File> {
 
 
 
-    while (fileList.size < picCount) {
+    while (fileList.size < picCount && fileList.size < fileTotalsList.size) {
         var returnFile: File? = null
         while (returnFile == null || !returnFile.exists()) {
             if (excludeList.size > 0) {

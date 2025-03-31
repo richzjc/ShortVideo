@@ -117,10 +117,10 @@ class AutoFragment : Fragment() {
         }
 
         select_pic?.setOnClickListener {
-            if (!isAccessibilityServiceEnabled(requireContext())) {
-                MToastHelper.showToast("请开启辅助功能权限")
-                return@setOnClickListener
-            }
+//            if (!isAccessibilityServiceEnabled(requireContext())) {
+//                MToastHelper.showToast("请开启辅助功能权限")
+//                return@setOnClickListener
+//            }
 
             MToastHelper.showToast("先到图片编辑页面获取读写权限")
             isStartFlag = !isStartFlag
@@ -164,6 +164,7 @@ class AutoFragment : Fragment() {
             if (audioFileDuration <= 0)
                 return
 
+            audioFileDuration = 4000L
 
             if (!isStartFlag) return
             updateStatusText("音频时长为：${audioFileDuration}秒", status)
@@ -208,13 +209,13 @@ class AutoFragment : Fragment() {
             if (!mergeAudioVideoFlag)
                 return
 
-            //TODO 第七步，启动微信
-            if (!isStartFlag) return
-            val intent = Intent()
-            intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            UtilsContextManager.getInstance().application.startActivity(intent)
-            AutoAccessibilityService.instance?.startAccessibilityService()
+//            //TODO 第七步，启动微信
+//            if (!isStartFlag) return
+//            val intent = Intent()
+//            intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//            UtilsContextManager.getInstance().application.startActivity(intent)
+//            AutoAccessibilityService.instance?.startAccessibilityService()
         }
     }
 }
