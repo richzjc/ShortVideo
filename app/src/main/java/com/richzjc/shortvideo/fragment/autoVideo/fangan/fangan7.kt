@@ -12,7 +12,10 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Shader
 import android.widget.TextView
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateCos
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateSin
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculatex2
+import com.richzjc.shortvideo.fragment.videoCreate.getRoundedCornerBitmap
 import kotlinx.coroutines.delay
 import java.io.File
 import kotlin.math.max
@@ -30,11 +33,11 @@ suspend fun fangan7(
     paint: Paint
 ) {
     delay(30)
-    val blurBg :Bitmap = blur(curBitmap)
-    (0 until 60)?.forEach {
+    val blurBg: Bitmap = blur(curBitmap)
+    (0 until 120)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
-            if (it < 30) {
-                fangan1Small30(blurBg,preBitmap, curBitmap, paint, handleFile, status, it)
+            if (it < 60) {
+                fangan1Small30(blurBg, preBitmap, curBitmap, paint, handleFile, status, it)
             } else {
                 fang1Large30(curBitmap, paint, handleFile, status, it)
             }
@@ -52,29 +55,26 @@ private suspend fun fang1Large30(
     delay(30)
     paint.alpha = 255
 
+    val realWidth = 1080 + 108 - calculateCos(index + 1 , 60, 108f).toInt()
+    val realHeight = 1920 + 192 - calculateCos(index + 1, 60, 192f).toInt()
+    val preBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
-    val gap = 0.05f / 30f
-    val realWidth = preBitmap.width * (1 + gap * (index - 30 + 1))
-    val realHeight = preBitmap.height * (1 + gap * (index - 30 + 1))
-
-    val preBitmap1 = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
-
-    canvas.drawBitmap(preBitmap1, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
+    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
 
 private suspend fun fangan1Small30(
-    blurBg : Bitmap,
+    blurBg: Bitmap,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
     paint: Paint,
     handleFile: File,
     status: TextView?,
     index: Int
-){
+) {
     delay(30)
     paint.alpha = 255
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
@@ -84,27 +84,28 @@ private suspend fun fangan1Small30(
     canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
     paint.alpha = 255
-    val widthGap = 1080 / 30f
-    val heightGap = 1920 / 30f
-    val realWidth = (widthGap * index).toInt()
-    val realHeight = (heightGap * index).toInt()
+    val realWidth = calculateSin(index + 1, 60, 1080f).toInt()
+    val realHeight = calculateSin(index + 1, 60, 1920f).toInt()
+
     if (realWidth > 0 && realHeight > 0) {
         val realBitmap = Bitmap.createScaledBitmap(curBitmap, realWidth, realHeight, true)
-        canvas.drawBitmap(realBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
+        var radius = 55 - calculatex2(index + 1, 60, 55f).toInt()
+        if (radius % 2 == 0)
+            radius -= 1
+
+        if (radius <= 0)
+            radius = 1
+
+        val blurBitmap = blur(realBitmap, radius)
+        val roundRadius =
+            realWidth / 2 - calculatex2(index + 1, 60, realWidth.toFloat() / 2).toInt()
+        val roundBitmap = getRoundedCornerBitmap(blurBitmap, roundRadius.toFloat())
+        canvas.drawBitmap(roundBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
 
-    if (index < 20) {
-        val progress = (index + 1) / 20f
-        var blurValue = calculatex2(index + 1, 30, 199f).toInt() + 30
-        if (blurValue % 2 == 0)
-            blurValue += 1
+    canvas.drawBitmap(preBitmap, -realWidth.toFloat(), 0f, paint)
+    canvas.drawBitmap(preBitmap, realWidth.toFloat(), 0f, paint)
 
-        val pmp = blur(preBitmap, blurValue)
-        val realWidth = 1080 - (1080 * 0.1f) * progress
-        val realHeight = 1920 - (1920 * 0.1f) * progress
-        canvas.drawBitmap(pmp, -progress * realWidth, (1920 - realHeight)/2, paint)
-        canvas.drawBitmap(pmp, progress * realWidth, (1920 - realHeight)/2, paint)
-    }
     canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
 }
