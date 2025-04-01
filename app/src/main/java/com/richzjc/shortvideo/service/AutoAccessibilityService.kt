@@ -33,16 +33,7 @@ class AutoAccessibilityService : AccessibilityService() {
             curClassName = event?.className?.toString()
         }
     }
-
-    private fun logId(rootInActiveWindow: AccessibilityNodeInfo?) {
-        rootInActiveWindow ?: return
-        Log.e("short", "className = ${rootInActiveWindow.className.toString()}")
-        if (rootInActiveWindow.childCount > 0) {
-            (0 until rootInActiveWindow.childCount)?.forEach {
-                logId(rootInActiveWindow.getChild(it))
-            }
-        }
-    }
+    
 
     override fun onInterrupt() {
     }

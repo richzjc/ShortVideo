@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -142,6 +143,13 @@ class AutoFragment : Fragment() {
         var audioFile: File? = null
         var audioFileDuration: Long = 0L
         var picList: List<File>? = null
+
+        fun getAudioFileName(): String? {
+            val fileName = audioFile?.name
+            if (!TextUtils.isEmpty(fileName))
+                return fileName!!.substring(0, fileName!!.lastIndexOf("."))
+            return fileName
+        }
 
         fun updateStatusText(statusText: String?, statusTV: TextView?) {
             if (Looper.myLooper() != Looper.getMainLooper())
