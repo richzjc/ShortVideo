@@ -62,12 +62,12 @@ private suspend fun fang1Large30(
     delay(30)
     paint.alpha = 255
 
-    val realWidth = 1080 + 108 - calculateCos(index + 1, 60, 108f).toInt()
+    val realWidth = 1080 + 108 - calculateCos(index + 1 , 60, 108f).toInt()
     val realHeight = 1920 + 192 - calculateCos(index + 1, 60, 192f).toInt()
     val preBitmap = Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
-    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, -(1920 - realHeight).toFloat(), paint)
+    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
