@@ -12,6 +12,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Shader
 import android.widget.TextView
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateCos
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculateSin
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter.calculatex2
 import kotlinx.coroutines.delay
@@ -31,12 +32,19 @@ suspend fun fangan6(
     paint: Paint
 ) {
     delay(30)
-    val blurBg :Bitmap = blur(curBitmap)
-    val originSize = handleFile.listFiles().size
-    (0 until 60)?.forEach {
+    val blurBg: Bitmap = blur(curBitmap)
+    (0 until 120)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
-            if (it < 30) {
-                fangan1Small30(blurBg,originSize, preBitmap, curBitmap, paint, handleFile, status, it)
+            if (it < 60) {
+                fangan1Small30(
+                    blurBg,
+                    preBitmap,
+                    curBitmap,
+                    paint,
+                    handleFile,
+                    status,
+                    it
+                )
             } else {
                 fang1Large30(curBitmap, paint, handleFile, status, it)
             }
@@ -54,22 +62,18 @@ private suspend fun fang1Large30(
     delay(30)
     paint.alpha = 255
 
+    val realWidth = 1080 + 108 - calculateCos(index + 1 , 60, 108f).toInt()
+    val realHeight = 1920 + 192 - calculateCos(index + 1, 60, 192f).toInt()
+    val preBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
-    val gap = 0.05f / 30f
-    val realWidth = preBitmap.width * (1 + gap * (index - 30 + 1))
-    val realHeight = preBitmap.height * (1 + gap * (index - 30 + 1))
-
-    val preBitmap1 = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
-
-    canvas.drawBitmap(preBitmap1, (1080 - realWidth) / 2f, (1920 - realHeight), paint)
+    canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
 private suspend fun fangan1Small30(
-    blurBg : Bitmap,
-    originSize: Int,
+    blurBg: Bitmap,
     preBitmap: Bitmap,
     curBitmap: Bitmap,
     paint: Paint,
@@ -85,11 +89,11 @@ private suspend fun fangan1Small30(
     var blurBitmap = Bitmap.createScaledBitmap(blurBg, 1080, 1920, true)
     canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
-    if (originSize > 0) {
-        // 绘制背景
-        canvas.drawBitmap(preBitmap, 0f, 0f, paint)
-
-    }
+    val realWidth = 1080 + calculateSin(index + 1, 60, 108f).toInt()
+    val realHeight = 1920 + calculateSin(index + 1, 60, 192f).toInt()
+    var realBitmap = Bitmap.createScaledBitmap(preBitmap, realWidth, realHeight, true)
+    // 绘制背景
+    canvas.drawBitmap(realBitmap, 0f, 0f, paint)
 
 
     val centerX = 1080 / 2f
@@ -97,12 +101,12 @@ private suspend fun fangan1Small30(
     val maxRadius = 1920 / 2f
 
     // 计算当前半径
-    val currentRadius  = calculateSin(index + 1, 30, maxRadius)
+    val currentRadius = calculateSin(index + 1, 60, maxRadius)
 
-    val degrees = calculateSin(index + 1, 30, 360f)
+    val degrees = calculateSin(index + 1, 60, 360f)
 
     // 绘制动态图
-    var radius = 99 - calculatex2(index + 1, 30, 99f).toInt()
+    var radius = 99 - calculatex2(index + 1, 60, 99f).toInt()
     if (radius % 2 == 0)
         radius -= 1
 
