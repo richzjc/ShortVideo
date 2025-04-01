@@ -90,7 +90,7 @@ suspend fun responseToHandlePic(
             val random = fangAnList.get(index)
             fangAnList.remove(random)
             //TODO 这一行是测试代码
-            fangan7(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+            fangan8(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
 //            if (random == 0) {
 //                AutoFragment.updateStatusText("执行方案1", status)
