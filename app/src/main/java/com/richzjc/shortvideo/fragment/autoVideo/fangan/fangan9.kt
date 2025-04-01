@@ -85,36 +85,6 @@ private suspend fun fangan1Small30(
     var blurBitmap = Bitmap.createScaledBitmap(blurBg, 1080, 1920, true)
     canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
-    val bitmap0 =
-        Bitmap.createBitmap(preBitmap, 0, 0, preBitmap.width / 2, preBitmap.height / 2, null, true)
-    val bitmap1 = Bitmap.createBitmap(
-        preBitmap,
-        preBitmap.width / 2,
-        0,
-        preBitmap.width / 2,
-        preBitmap.height / 2,
-        null,
-        true
-    )
-    val bitmap2 = Bitmap.createBitmap(
-        preBitmap,
-        0,
-        preBitmap.height / 2,
-        preBitmap.width / 2,
-        preBitmap.height / 2,
-        null,
-        true
-    )
-    val bitmap3 = Bitmap.createBitmap(
-        preBitmap,
-        preBitmap.width / 2,
-        preBitmap.height / 2,
-        preBitmap.width / 2,
-        preBitmap.height / 2,
-        null,
-        true
-    )
-
     paint.alpha = 255
     val realWidth = calculateSin(index + 1, 60, 1080f).toInt()
     val realHeight = calculateSin(index + 1, 60, 1920f).toInt()
@@ -136,23 +106,67 @@ private suspend fun fangan1Small30(
     }
 
     if (index < 45) {
+        val bitmap0 =
+            Bitmap.createBitmap(
+                preBitmap,
+                0,
+                0,
+                preBitmap.width / 2,
+                preBitmap.height / 2,
+                null,
+                true
+            )
+        val bitmap1 = Bitmap.createBitmap(
+            preBitmap,
+            preBitmap.width / 2,
+            0,
+            preBitmap.width / 2,
+            preBitmap.height / 2,
+            null,
+            true
+        )
+        val bitmap2 = Bitmap.createBitmap(
+            preBitmap,
+            0,
+            preBitmap.height / 2,
+            preBitmap.width / 2,
+            preBitmap.height / 2,
+            null,
+            true
+        )
+        val bitmap3 = Bitmap.createBitmap(
+            preBitmap,
+            preBitmap.width / 2,
+            preBitmap.height / 2,
+            preBitmap.width / 2,
+            preBitmap.height / 2,
+            null,
+            true
+        )
+
         val realWidth = calculateCos((index + 1), 45, preBitmap.width / 2f)
         val realHeight = calculateCos((index + 1), 45, preBitmap.height / 2f)
-        val roundRadius = calculatex2(index + 1, 45, ScreenUtils.dip2px(20f).toFloat()).toInt()
-        var roundBitmap0 = getRoundedCornerBitmap(bitmap0, roundRadius.toFloat())
-        var roundBitmap1 = getRoundedCornerBitmap(bitmap1, roundRadius.toFloat())
-        var roundBitmap2 = getRoundedCornerBitmap(bitmap2, roundRadius.toFloat())
-        var roundBitmap3 = getRoundedCornerBitmap(bitmap3, roundRadius.toFloat())
+        if (realWidth > 0 && realHeight > 0) {
+            val roundRadius = calculatex2(index + 1, 45, ScreenUtils.dip2px(20f).toFloat()).toInt()
+            var roundBitmap0 = getRoundedCornerBitmap(bitmap0, roundRadius.toFloat())
+            var roundBitmap1 = getRoundedCornerBitmap(bitmap1, roundRadius.toFloat())
+            var roundBitmap2 = getRoundedCornerBitmap(bitmap2, roundRadius.toFloat())
+            var roundBitmap3 = getRoundedCornerBitmap(bitmap3, roundRadius.toFloat())
 
-        roundBitmap0 = Bitmap.createScaledBitmap(roundBitmap0, realWidth.toInt(), realHeight.toInt(), true)
-        roundBitmap1 = Bitmap.createScaledBitmap(roundBitmap1, realWidth.toInt(), realHeight.toInt(), true)
-        roundBitmap2 = Bitmap.createScaledBitmap(roundBitmap2, realWidth.toInt(), realHeight.toInt(), true)
-        roundBitmap3 = Bitmap.createScaledBitmap(roundBitmap3, realWidth.toInt(), realHeight.toInt(), true)
+            roundBitmap0 =
+                Bitmap.createScaledBitmap(roundBitmap0, realWidth.toInt(), realHeight.toInt(), true)
+            roundBitmap1 =
+                Bitmap.createScaledBitmap(roundBitmap1, realWidth.toInt(), realHeight.toInt(), true)
+            roundBitmap2 =
+                Bitmap.createScaledBitmap(roundBitmap2, realWidth.toInt(), realHeight.toInt(), true)
+            roundBitmap3 =
+                Bitmap.createScaledBitmap(roundBitmap3, realWidth.toInt(), realHeight.toInt(), true)
 
-        canvas.drawBitmap(roundBitmap0, 0f, 0f, paint)
-        canvas.drawBitmap(roundBitmap1, 1080 - realWidth, 0f, paint)
-        canvas.drawBitmap(roundBitmap2, 0f, 1920 - realHeight, paint)
-        canvas.drawBitmap(roundBitmap3, 1080 - realWidth, 1920 - realHeight, paint)
+            canvas.drawBitmap(roundBitmap0, 0f, 0f, paint)
+            canvas.drawBitmap(roundBitmap1, 1080 - realWidth, 0f, paint)
+            canvas.drawBitmap(roundBitmap2, 0f, 1920 - realHeight, paint)
+            canvas.drawBitmap(roundBitmap3, 1080 - realWidth, 1920 - realHeight, paint)
+        }
     }
 
     canvas.drawColor(Color.parseColor("#1132cd32"))

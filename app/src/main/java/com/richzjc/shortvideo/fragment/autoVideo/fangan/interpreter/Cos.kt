@@ -7,7 +7,11 @@ import kotlin.math.sin
 fun calculateSin(frame: Int, totalFrames: Int, maxValue : Float): Float {
     val progress = frame.toFloat() / totalFrames
     val sineValue = sin(progress * Math.PI / 2).toFloat() // 0 → π/2区间
-    return (sineValue * maxValue)
+    val value = (sineValue * maxValue)
+    if(value < 1)
+        return 0f
+    else
+        return value
 }
 
 
@@ -15,7 +19,11 @@ fun calculateSin(frame: Int, totalFrames: Int, maxValue : Float): Float {
 fun calculateCos(frame: Int, totalFrames: Int, maxValue : Float): Float {
     val progress = frame.toFloat() / totalFrames
     val sineValue = cos(progress * Math.PI / 2).toFloat() // 0 → π/2区间
-    return (sineValue * maxValue)
+    val value = (sineValue * maxValue)
+    if(value < 1)
+        return 0f
+    else
+        return value
 }
 
 
@@ -23,6 +31,10 @@ fun calculateCos(frame: Int, totalFrames: Int, maxValue : Float): Float {
 fun calculatex2(frame: Int, totalFrames: Int, maxValue :Float): Float {
     val progress = frame.toFloat() / totalFrames // 归一化到[0,1]
     val quadraticValue = progress * progress     // 应用二次函数
-    return (quadraticValue * maxValue)       // 映射到0-255
+    val value = (quadraticValue * maxValue)       // 映射到0-255
+    if(value < 1)
+        return 0f
+    else
+        return value
 }
 

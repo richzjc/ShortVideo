@@ -84,7 +84,7 @@ private suspend fun fangan1Small30(
     canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
     if (index < 5) {
-        val preAlpha = 255 - calculateCos(index + 1, 5, 255f)
+        val preAlpha = calculateCos(index + 1, 5, 255f)
         if (preAlpha > 0) {
             paint.alpha = preAlpha.toInt()
             canvas.drawBitmap(preBitmap, 0f, 0f, paint)
