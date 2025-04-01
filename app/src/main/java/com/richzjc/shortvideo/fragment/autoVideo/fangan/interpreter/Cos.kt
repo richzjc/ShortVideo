@@ -1,5 +1,6 @@
 package com.richzjc.shortvideo.fragment.autoVideo.fangan.interpreter
 
+import kotlin.math.cos
 import kotlin.math.sin
 
 //先快， 后慢
@@ -13,7 +14,7 @@ fun calculateSin(frame: Int, totalFrames: Int, maxValue : Float): Float {
 //先慢，后快
 fun calculateCos(frame: Int, totalFrames: Int, maxValue : Float): Float {
     val progress = frame.toFloat() / totalFrames
-    val sineValue = sin(progress * Math.PI / 2).toFloat() // 0 → π/2区间
+    val sineValue = cos(progress * Math.PI / 2).toFloat() // 0 → π/2区间
     return (sineValue * maxValue)
 }
 
