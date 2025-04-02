@@ -26,25 +26,20 @@ suspend fun fangan5(
     paint: Paint
 ) {
     delay(30)
-    val blurBg :Bitmap = blur(curBitmap)
+    val blurBg: Bitmap = blur(curBitmap)
     val preBitmapList = ArrayList<Bitmap>()
-    val width = preBitmap.width / 4
+    val width = preBitmap.width / 2
     val bitmap1 = Bitmap.createBitmap(preBitmap, 0, 0, width, preBitmap.height, null, false)
     val bitmap2 = Bitmap.createBitmap(preBitmap, width, 0, width, preBitmap.height, null, false)
-    val bitmap3 =
-        Bitmap.createBitmap(preBitmap, width * 2, 0, width, preBitmap.height, null, false)
-    val bitmap4 =
-        Bitmap.createBitmap(preBitmap, width * 3, 0, width, preBitmap.height, null, false)
 
     preBitmapList.add(bitmap1)
     preBitmapList.add(bitmap2)
-    preBitmapList.add(bitmap3)
-    preBitmapList.add(bitmap4)
+
 
     (0 until 120)?.forEach {
         if (handleFile.listFiles().size < totalCount) {
             if (it < 60) {
-                fangan1Small30(blurBg,preBitmapList, curBitmap, paint, handleFile, status, it)
+                fangan1Small30(blurBg, preBitmapList, curBitmap, paint, handleFile, status, it)
             } else {
                 fang1Large30(curBitmap, paint, handleFile, status, it)
             }
@@ -62,8 +57,8 @@ private suspend fun fang1Large30(
     delay(30)
     paint.alpha = 255
 
-    val realWidth = 1080 + 108 - calculateCos(index -60  + 1 , 60, 108f).toInt()
-    val realHeight = 1920 + 192 - calculateCos(index -60  + 1, 60, 192f).toInt()
+    val realWidth = 1080 + 108 - calculateCos(index - 60 + 1, 60, 108f).toInt()
+    val realHeight = 1920 + 192 - calculateCos(index - 60 + 1, 60, 192f).toInt()
     val preBitmap = Bitmap.createScaledBitmap(pBitmap, realWidth.toInt(), realHeight.toInt(), true)
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
@@ -73,9 +68,8 @@ private suspend fun fang1Large30(
 }
 
 
-
 private suspend fun fangan1Small30(
-    blurBg : Bitmap,
+    blurBg: Bitmap,
     preBitmapList: List<Bitmap>,
     curBitmap: Bitmap,
     paint: Paint,
@@ -104,7 +98,7 @@ private suspend fun fangan1Small30(
     }
 
     paint.alpha = 255
-    val widthGap = 1080/4f
+    val widthGap = 1080 / 4f
     paint.alpha = 255
     var blurValue: Int
     if (index < 5) {
@@ -121,10 +115,10 @@ private suspend fun fangan1Small30(
     preBitmapList.forEachIndexed { innerIndex, bitmap ->
         val bmp = blur(bitmap, blurValue)
         val roundBitmap = getRoundedCornerBitmap(bmp, roundRadius.toFloat())
-        if(innerIndex%2 == 0){
+        if (innerIndex % 2 == 0) {
             val startY = calculateSin(index + 1, 60, 1920f)
             canvas.drawBitmap(roundBitmap, innerIndex * widthGap, startY, paint)
-        }else{
+        } else {
             val startY = -calculateSin(index + 1, 60, 1920f)
             canvas.drawBitmap(roundBitmap, innerIndex * widthGap, startY, paint)
         }
