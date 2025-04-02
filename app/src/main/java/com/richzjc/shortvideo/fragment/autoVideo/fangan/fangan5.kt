@@ -98,7 +98,7 @@ private suspend fun fangan1Small30(
     }
 
     paint.alpha = 255
-    val widthGap = 1080 / 4f
+    val widthGap = 1080 / 2f
     paint.alpha = 255
     var blurValue: Int
     if (index < 5) {

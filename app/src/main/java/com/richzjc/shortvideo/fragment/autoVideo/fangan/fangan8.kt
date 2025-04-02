@@ -87,13 +87,15 @@ private suspend fun fangan1Small30(
 
     paint.alpha = 255
     val rate = 1 - calculateSin((index + 1), 90, 0.1f)
-    val maxRadius = ScreenUtils.dip2px(20f)
-    val roundRadius = maxRadius - calculatex2(index + 1, 60, maxRadius.toFloat()).toInt()
-    val roundBitmap = getRoundedCornerBitmap(preBitmap, roundRadius.toFloat())
+
 
     var progress = (index + 1) / 90f
     var realWidth = 1080 * rate
     var realHeight = 1920 * rate
+    var bitmap  = Bitmap.createScaledBitmap(preBitmap, realWidth.toInt(), realHeight.toInt(), true)
+    val maxRadius = ScreenUtils.dip2px(20f)
+    val roundRadius = maxRadius - calculatex2(index + 1, 60, maxRadius.toFloat()).toInt()
+    var roundBitmap = getRoundedCornerBitmap(bitmap, roundRadius.toFloat())
     canvas.drawBitmap(roundBitmap, -realWidth *progress, (1920 - realHeight) / 2f, paint)
 
     realWidth = 1080 - 108 + 1080 * calculateSin((index + 1), 60, 0.1f)
@@ -113,7 +115,7 @@ private suspend fun fangan1Small30(
         val maxRadius = ScreenUtils.dip2px(20f)
         val roundRadius = maxRadius - calculatex2(index + 1, 60, maxRadius.toFloat()).toInt()
         val roundBitmap = getRoundedCornerBitmap(blurBitmap, roundRadius.toFloat())
-        canvas.drawBitmap(roundBitmap, 1080 - xLocate.toFloat(), (1920 - realHeight) / 2f, paint)
+        canvas.drawBitmap(roundBitmap, xLocate.toFloat(), (1920 - realHeight) / 2f, paint)
     }
     canvas.drawColor(Color.parseColor("#1132cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
