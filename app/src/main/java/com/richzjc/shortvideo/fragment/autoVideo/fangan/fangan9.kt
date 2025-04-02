@@ -144,8 +144,8 @@ private suspend fun fangan1Small30(
             true
         )
 
-        val realWidth = calculateCos((index + 1), 45, preBitmap.width / 2f)
-        val realHeight = calculateCos((index + 1), 45, preBitmap.height / 2f)
+        val realWidth = calculateCos((index + 1), 45, preBitmap.width / 2f).toInt()
+        val realHeight = calculateCos((index + 1), 45, preBitmap.height / 2f).toInt()
         if (realWidth > 0 && realHeight > 0) {
             val roundRadius = calculatex2(index + 1, 45, ScreenUtils.dip2px(20f).toFloat()).toInt()
             var roundBitmap0 = getRoundedCornerBitmap(bitmap0, roundRadius.toFloat())
@@ -154,18 +154,18 @@ private suspend fun fangan1Small30(
             var roundBitmap3 = getRoundedCornerBitmap(bitmap3, roundRadius.toFloat())
 
             roundBitmap0 =
-                Bitmap.createScaledBitmap(roundBitmap0, realWidth.toInt(), realHeight.toInt(), true)
+                Bitmap.createScaledBitmap(roundBitmap0, realWidth, realHeight, true)
             roundBitmap1 =
-                Bitmap.createScaledBitmap(roundBitmap1, realWidth.toInt(), realHeight.toInt(), true)
+                Bitmap.createScaledBitmap(roundBitmap1, realWidth, realHeight, true)
             roundBitmap2 =
-                Bitmap.createScaledBitmap(roundBitmap2, realWidth.toInt(), realHeight.toInt(), true)
+                Bitmap.createScaledBitmap(roundBitmap2, realWidth, realHeight, true)
             roundBitmap3 =
-                Bitmap.createScaledBitmap(roundBitmap3, realWidth.toInt(), realHeight.toInt(), true)
+                Bitmap.createScaledBitmap(roundBitmap3, realWidth, realHeight, true)
 
             canvas.drawBitmap(roundBitmap0, 0f, 0f, paint)
-            canvas.drawBitmap(roundBitmap1, 1080 - realWidth, 0f, paint)
-            canvas.drawBitmap(roundBitmap2, 0f, 1920 - realHeight, paint)
-            canvas.drawBitmap(roundBitmap3, 1080 - realWidth, 1920 - realHeight, paint)
+            canvas.drawBitmap(roundBitmap1, 1080f - realWidth, 0f, paint)
+            canvas.drawBitmap(roundBitmap2, 0f, 1920f - realHeight, paint)
+            canvas.drawBitmap(roundBitmap3, 1080f - realWidth, 1920f - realHeight, paint)
         }
     }
 

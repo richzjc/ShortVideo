@@ -172,7 +172,7 @@ class AutoFragment : Fragment() {
             if (audioFileDuration <= 0)
                 return
 
-//            audioFileDuration = 4000L
+            audioFileDuration = 4000L
 
             if (!isStartFlag) return
             updateStatusText("音频时长为：${audioFileDuration}秒", status)
