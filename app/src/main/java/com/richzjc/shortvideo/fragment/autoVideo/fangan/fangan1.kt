@@ -61,7 +61,7 @@ private suspend fun fang1Large30(
     var outputBitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(outputBitmap)
     canvas.drawBitmap(preBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
-    canvas.drawColor(Color.parseColor("#1132cd32"))
+    canvas.drawColor(Color.parseColor("#0a32cd32"))
     saveBitmapToFile(outputBitmap, file1, status)
 }
 
@@ -110,7 +110,7 @@ private suspend fun fangan1Small30(
         val roundBitmap = getRoundedCornerBitmap(blurBitmap, roundRadius.toFloat())
         canvas.drawBitmap(roundBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
-    canvas.drawColor(Color.parseColor("#1132cd32"))
+    canvas.drawColor(Color.parseColor("#0a32cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
 }
 
