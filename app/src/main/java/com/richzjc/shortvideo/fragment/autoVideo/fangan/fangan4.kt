@@ -73,13 +73,15 @@ private suspend fun fangan1Small30(
     var blurBitmap = Bitmap.createScaledBitmap(blurBg, 1080, 1920, true)
     canvas.drawBitmap(blurBitmap!!, 0f, 0f, paint)
 
-    val startHeight = calculateSin(index + 1, 60, 1920f)
     paint.alpha = 255
 
+    val realWidth = 1080  - calculateSin(index + 1, 60, 1080f).toInt()
+    val realHeight = 1920 - calculateSin(index + 1, 60, 1920f).toInt()
+    val pbmp = Bitmap.createScaledBitmap(preBitmap, realWidth, realHeight, true)
     canvas.drawBitmap(
-        preBitmap,
+        pbmp,
+        (1080 - realWidth)/2f,
         0f,
-        -startHeight,
         paint
     )
 
@@ -92,7 +94,12 @@ private suspend fun fangan1Small30(
         radius = 1
 
     val pmp = blur(curBitmap, radius)
-    canvas.drawBitmap(pmp, 0f, (1920 - startHeight), paint)
+    if(index < 50) {
+        val startHeight = calculateSin((index + 1), 50, 1920f)
+        canvas.drawBitmap(pmp, 0f, (1920 - startHeight), paint)
+    }else{
+        canvas.drawBitmap(pmp, 0f, 0f, paint)
+    }
 //    canvas.drawColor(Color.parseColor("#0a32cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)
 }

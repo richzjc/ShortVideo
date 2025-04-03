@@ -102,9 +102,12 @@ private suspend fun fangan1Small30(
         val roundBitmap = getRoundedCornerBitmap(blurBitmap, roundRadius.toFloat())
         canvas.drawBitmap(roundBitmap, (1080 - realWidth) / 2f, (1920 - realHeight) / 2f, paint)
     }
+    val bitmap0 = Bitmap.createBitmap(preBitmap, 0, 0, preBitmap.width/2, preBitmap.height, null, true)
+    val bitmap1 = Bitmap.createBitmap(preBitmap, preBitmap.width/2, 0, preBitmap.width/2, preBitmap.height, null, true)
+    val startx = calculateSin((index + 1), 60, preBitmap.width/2f)
 
-    canvas.drawBitmap(preBitmap, -realWidth.toFloat(), 0f, paint)
-    canvas.drawBitmap(preBitmap, realWidth.toFloat(), 0f, paint)
+    canvas.drawBitmap(bitmap0, -startx, 0f, paint)
+    canvas.drawBitmap(bitmap1, preBitmap.width/2 + startx, 0f, paint)
 
 //    canvas.drawColor(Color.parseColor("#0a32cd32"))
     saveBitmapToFile(outputBitmap, handleFile, status)

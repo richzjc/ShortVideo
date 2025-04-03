@@ -10,6 +10,7 @@ import android.graphics.PorterDuffXfermode
 import android.util.Log
 import android.widget.TextView
 import com.richzjc.shortvideo.fragment.AutoFragment
+import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan0
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan1
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan10
 import com.richzjc.shortvideo.fragment.autoVideo.fangan.fangan2
@@ -90,6 +91,8 @@ suspend fun responseToHandlePic(
             fangAnList.remove(random)
             //TODO 这一行是测试代码
 //            fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
+
+            fangan0(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
             if (random == 0) {
                 AutoFragment.updateStatusText("执行方案1", status)
