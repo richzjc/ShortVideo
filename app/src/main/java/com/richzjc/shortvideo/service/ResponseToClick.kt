@@ -17,6 +17,10 @@ import com.richzjc.shortvideo.fragment.AutoFragment
 import com.richzjc.shortvideo.util.requestData
 import kotlinx.coroutines.delay
 
+private val locate1 = mutableListOf(
+    "946,2308,946,2308,1"
+)
+
 private val locateList = mutableListOf(
     "946,2308",
     "367,1190",
