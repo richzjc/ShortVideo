@@ -55,6 +55,13 @@ suspend fun responseToHandlePic(
 
         var picStartIndex = 0
         val fangAnList = mutableListOf(0, 1, 2, 3, 4, 5, 6, 7, 8)
+
+        var curBitmap = BitmapFactory.decodeFile(picList.get(picStartIndex).absolutePath)
+        curBitmap = Bitmap.createScaledBitmap(curBitmap, 1080, 1920, true)
+        AutoFragment.updateStatusText("执行方案0", status)
+        fangan0(file1, curBitmap, status, totalPicCount, paint)
+        picStartIndex += 1
+
         while (file1.listFiles().size < totalPicCount) {
             if (picStartIndex >= picList.size)
                 picStartIndex = 0
@@ -91,8 +98,6 @@ suspend fun responseToHandlePic(
             fangAnList.remove(random)
             //TODO 这一行是测试代码
 //            fangan9(file1, preBitmap, curBitmap, status, totalPicCount, paint)
-
-            fangan0(file1, preBitmap, curBitmap, status, totalPicCount, paint)
 
             if (random == 0) {
                 AutoFragment.updateStatusText("执行方案1", status)

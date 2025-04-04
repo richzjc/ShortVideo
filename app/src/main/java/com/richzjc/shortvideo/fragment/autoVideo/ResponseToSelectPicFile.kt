@@ -66,9 +66,13 @@ suspend fun responseToSelectPicFile(picDuration: Long): List<File> {
                 val randomIndex = (0 until selectTotalList.size).random()
                 returnFile = File(file, selectTotalList[randomIndex])
             }
+
+            if(returnFile != null){
+                selectTotalList?.remove(returnFile.name)
+                excludeList?.remove(returnFile.name)
+            }
         }
-        selectTotalList?.remove(returnFile.name)
-        excludeList?.remove(returnFile.name)
+
         if (!lastTotalList.contains(returnFile.name))
             lastTotalList?.add(returnFile.name)
         fileList.add(returnFile)

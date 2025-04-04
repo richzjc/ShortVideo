@@ -26,7 +26,6 @@ import java.io.FileOutputStream
  */
 suspend fun fangan0(
     handleFile: File,
-    preBitmap: Bitmap,
     curBitmap: Bitmap,
     status: TextView?,
     totalCount: Int,
