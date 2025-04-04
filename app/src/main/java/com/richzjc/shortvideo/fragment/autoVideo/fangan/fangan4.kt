@@ -77,14 +77,15 @@ private suspend fun fangan1Small30(
 
     val realWidth = 1080  - calculateSin(index + 1, 60, 1080f).toInt()
     val realHeight = 1920 - calculateSin(index + 1, 60, 1920f).toInt()
-    val pbmp = Bitmap.createScaledBitmap(preBitmap, realWidth, realHeight, true)
-    canvas.drawBitmap(
-        pbmp,
-        (1080 - realWidth)/2f,
-        0f,
-        paint
-    )
-
+    if(realWidth > 0  && realHeight > 0) {
+        val pbmp = Bitmap.createScaledBitmap(preBitmap, realWidth, realHeight, true)
+        canvas.drawBitmap(
+            pbmp,
+            (1080 - realWidth) / 2f,
+            0f,
+            paint
+        )
+    }
     paint.alpha = 255
     var radius = 55 - calculatex2(index + 1, 60, 55f).toInt()
     if (radius % 2 == 0)

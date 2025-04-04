@@ -16,37 +16,42 @@ import com.richzjc.shortvideo.UtilsContextManager
 import com.richzjc.shortvideo.fragment.AutoFragment
 import com.richzjc.shortvideo.util.requestData
 import kotlinx.coroutines.delay
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 private val locate1 = mutableListOf(
-    "946,2308,946,2308,1"
+    "946,2308,946,2308,1",
+    "367,1190, 367, 1190, 1",
+    "309, 911, 309, 911, 1",
+    "108, 2241, 108, 2241, 1"
 )
 
-private val locateList = mutableListOf(
-    "946,2308",
-    "367,1190",
-    "309,911",
-    "108,2241",
-    "536,200",
-    "484,485",
-    "214,310",
-    "885,2310",
-    "971,2177",
-    "294,2231",
-    "605,1528",
-    "886,2041",
-    "340,1938",
-    "549,2101",
-    "290,966",//点击封面
-    "975,2064",
-    "542,200",
-    "428,644",
-    "215,316",
-    "939,2328",
-    "948,2319",
-    "552,1655",
-    "566,2167",
-    "335,210"
-)
+//private val locateList = mutableListOf(
+//    "367,1190",
+//    "309,911",
+//    "108,2241",
+//    "536,200",
+//    "484,485",
+//    "214,310",
+//    "885,2310",
+//    "971,2177",
+//    "294,2231",
+//    "605,1528",
+//    "886,2041",
+//    "340,1938",
+//    "549,2101",
+//    "290,966",//点击封面
+//    "975,2064",
+//    "542,200",
+//    "428,644",
+//    "215,316",
+//    "939,2328",
+//    "948,2319",
+//    "552,1655",
+//    "566,2167",
+//    "335,210"
+//)
 
 private val locateList2 = mutableListOf(
     "982,2307",
@@ -64,18 +69,47 @@ private val IS_SEARCH_ACTIVITY = 3
 
 fun AccessibilityService.responseToClick() {
     requestData {
-        locateList.forEachIndexed { index, it ->
-            delay(3000L)
-            val arr = it.split(",")
-            val isLast = index == locateList.size - 1
-            if (isLast) {
-                simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_SEARCH_ACTIVITY)
-            } else {
-                simulateClick(arr[0].toFloat(), arr[1].toFloat(), IS_NORMAL)
+        var resultFlag = true
+        locate1.forEachIndexed { index, it ->
+            if(resultFlag) {
+                delay(3000L)
+                val arr = it.split(",")
+                resultFlag = suspendCoroutine {
+                    simulateClickNew(
+                        arr[0].toFloat(),
+                        arr[1].toFloat(),
+                        arr[2].toFloat(),
+                        arr[3].toFloat(),
+                        arr[4].toLong(),
+                        it
+                    )
+                }
             }
         }
     }
 }
+
+private fun AccessibilityService.simulateClickNew(x: Float, y: Float, endx : Float, endY  : Float, duration : Long, continuation: Continuation<Boolean>) {
+    val path = Path()
+    path.moveTo(x, y) // 移动到点击的起点（通常是点击位置）
+    path.lineTo(endx, endY) // 再次画线到点击位置，形成一个点（实际上不需要移动，但为了完整性）
+    val stroke = StrokeDescription(path, 0, duration) // 创建笔画描述，0为延迟时间，1为持续时间（毫秒）
+    val gesture = GestureDescription.Builder().addStroke(stroke).build() // 创建手势描述并构建手势对象
+    dispatchGesture(gesture, object : GestureResultCallback() {
+        // 派发手势并监听结果回调
+        override fun onCompleted(gesture: GestureDescription) {
+            super.onCompleted(gesture) // 完成时的回调（可选）
+            continuation.resume(true)
+        }
+
+        override fun onCancelled(gesture: GestureDescription) {
+            super.onCancelled(gesture) // 取消时的回调（可选）
+            continuation.resume(false)
+        }
+    }, null)
+}
+
+
 
 
 private suspend fun AccessibilityService.responseToClickSearch() {
