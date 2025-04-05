@@ -4,6 +4,7 @@ import com.richzjc.shortvideo.fragment.AutoFragment;
 import com.richzjc.shortvideo.fragment.EditPicFragment;
 import com.richzjc.shortvideo.fragment.PicVideoFragment;
 import com.richzjc.shortvideo.fragment.VideoCreateFragment;
+import com.richzjc.shortvideo.fragment.WallPagerFragment;
 import com.richzjc.shortvideo.model.MainTabItemEntity;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class MainActFragmentModel {
         if (tabItemEntities == null)
             tabItemEntities = new ArrayList<>();
 
+        tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "壁纸",  WallPagerFragment.class, "wallPager"));
         tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "自动化", AutoFragment.class, "autoCreate"));
         tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "图片编辑", EditPicFragment.class, "editPic"));
         tabItemEntities.add(new MainTabItemEntity(R.drawable.tab_drawable_news, "视频制作", VideoCreateFragment.class, "videoCreate"));

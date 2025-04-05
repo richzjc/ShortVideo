@@ -143,240 +143,6 @@ class EditPicFragment : Fragment() {
     }
 
 
-    fun applyFilmEffect(originalBitmap: Bitmap): Bitmap {
-        // Step 1: 初始化矩阵
-        val srcMat = Mat()
-        Utils.bitmapToMat(originalBitmap, srcMat)
-        Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
-
-        // Step 2: 电影感滤镜（C1暖色系）
-        val hslMat = Mat()
-        Imgproc.cvtColor(srcMat, hslMat, Imgproc.COLOR_BGR2HLS)
-
-        // 调整饱和度和明度
-        val channels = ArrayList<Mat>().apply { Core.split(hslMat, this) }
-        Core.multiply(channels[2], Scalar(1.2), channels[2]) // 明度+20%
-        Core.multiply(channels[1], Scalar(0.9), channels[1]) // 饱和度-10%
-        Core.merge(channels, hslMat)
-        Imgproc.cvtColor(hslMat, srcMat, Imgproc.COLOR_HLS2BGR)
-
-        // Step 3: 曲线工具高光压缩（修正参数类型）
-        val lut = Mat(256, 1, CvType.CV_8UC3).apply {
-            for (i in 0 until 256) {
-                val adjusted = when {
-                    i > 200 -> (i * 0.85 + 30).toInt() // 高光压缩
-                    else -> i
-                }
-                // 修正：使用 doubleArray 传递多通道值 [1,6](@ref)
-                put(i, 0, adjusted.toDouble(), adjusted.toDouble(), adjusted.toDouble())
-            }
-        }
-        Core.LUT(srcMat, lut, srcMat)
-
-        // Step 4: 颗粒生成（修正参数类型）
-        val noise = Mat(srcMat.size(), CvType.CV_8UC3)
-        Core.randn(noise, 0.0, 15.0) // 使用 double 类型参数 [5,6](@ref)
-        Core.addWeighted(srcMat, 0.85, noise, 0.15, 0.0, srcMat)
-
-        // Step 5: 转换回Bitmap
-        val resultBitmap = Bitmap.createBitmap(originalBitmap.width, originalBitmap.height,
-            Bitmap.Config.ARGB_8888)
-        Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_BGR2RGBA)
-        Utils.matToBitmap(srcMat, resultBitmap)
-
-        srcMat.release()
-        hslMat.release()
-        return resultBitmap
-    }
-
-    private fun adjustImageHierarchy(originalBitmap: Bitmap): Bitmap {
-        // Step 1: 初始化 OpenCV 矩阵
-        val srcMat = Mat()
-        Utils.bitmapToMat(originalBitmap, srcMat)
-        Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
-
-        // Step 2: 转换为 HSV 色彩空间
-        val hsvMat = Mat()
-        Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV)
-
-        // Step 3: 分离 HSV 通道
-        val hsvChannels = ArrayList<Mat>()
-        Core.split(hsvMat, hsvChannels)
-        val valueChannel = hsvChannels[2]
-
-        // --- 层次感控制算法 ---
-        // 3.1 降低对比度（-15~-25对应线性压缩）
-        valueChannel.convertTo(valueChannel, CvType.CV_32F)
-        Core.multiply(valueChannel, Scalar(0.8), valueChannel) // 对比度降低20%
-
-        // 3.2 提升阴影（伽马校正）
-        val shadowMask = Mat()
-        Core.inRange(valueChannel, Scalar(0.0), Scalar(50.0), shadowMask) // 阴影区域（V < 50）
-        val temp = Mat() // 创建临时矩阵存储伽马校正结果
-        Core.pow(valueChannel, 0.85, temp) // 伽马校正（γ=0.85对应阴影提升+20）
-        temp.copyTo(valueChannel, shadowMask) // 仅对阴影区域应用校正[8](@ref)
-
-        // 3.3 抑制高光（像素截断）
-        val highlightMask = Mat()
-        Core.inRange(valueChannel, Scalar(200.0), Scalar(255.0), highlightMask)
-        Core.subtract(valueChannel, Scalar(10.0), valueChannel, highlightMask)
-
-        // --- 数据归一化与合并 ---
-        valueChannel.convertTo(valueChannel, CvType.CV_8UC1)
-        hsvChannels[2] = valueChannel
-        Core.merge(hsvChannels, hsvMat)
-
-        // Step 4: 转换回 BGR
-        Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR)
-
-        // Step 5: 转换回 Bitmap
-        val resultBitmap = Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(srcMat, resultBitmap)
-
-        // 释放内存
-        srcMat.release()
-        hsvMat.release()
-        hsvChannels.forEach { it.release() }
-
-        return resultBitmap
-    }
-
-    fun adjustBaohedu(originalBitmap: Bitmap): Bitmap {
-        // Step 1: 初始化 OpenCV 矩阵
-        val srcMat = Mat()
-        Utils.bitmapToMat(originalBitmap, srcMat)
-        Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR) // 转换到BGR格式
-
-        // Step 2: 转换为 HSV 色彩空间
-        val hsvMat = Mat()
-        Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV)
-
-        // Step 3: 分离 HSV 通道
-        val hsvChannels = ArrayList<Mat>()
-        Core.split(hsvMat, hsvChannels)
-        val saturationChannel = hsvChannels[1]
-
-        // Step 4: 降低饱和度至 -30%
-        saturationChannel.convertTo(saturationChannel, CvType.CV_32F)
-        Core.multiply(saturationChannel, Scalar(0.7), saturationChannel) // 0.7 = 1 - 0.3
-        saturationChannel.convertTo(saturationChannel, CvType.CV_8UC1)
-
-        // Step 5: 合并通道并转回 BGR
-        hsvChannels[1] = saturationChannel
-        Core.merge(hsvChannels, hsvMat)
-        Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR)
-
-        // Step 6: 转换回 Bitmap
-        val resultBitmap = Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(srcMat, resultBitmap)
-
-        // 释放内存
-        srcMat.release()
-        hsvMat.release()
-        hsvChannels.forEach { it.release() }
-        return resultBitmap
-    }
-
-    fun adjustSheDiao(originalBitmap: Bitmap, hueShift: Int = 8): Bitmap {
-        // Step 1: 初始化 OpenCV 矩阵
-        val srcMat = Mat()
-        Utils.bitmapToMat(originalBitmap, srcMat)
-        Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
-
-        // Step 2: 转换为 HSV 色彩空间
-        val hsvMat = Mat()
-        Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV_FULL) // 使用全范围HSV(0-255)
-
-        // Step 3: 分离通道并调整色相
-        val channels = ArrayList<Mat>()
-        Core.split(hsvMat, channels)
-        val hueChannel = channels[0]
-
-        // 色相右移 +8 度（参数可调节 5-10）
-        Core.add(hueChannel, Scalar(hueShift.toDouble()), hueChannel)
-        hueChannel.convertTo(hueChannel, CvType.CV_8UC1)
-
-        // Step 4: 补充淡紫色中和（BGR通道混合）
-        val purpleMix = Mat(srcMat.size(), srcMat.type(), Scalar(60.0, 30.0, 150.0)) // 淡紫色基准值
-        Core.addWeighted(srcMat, 0.7, purpleMix, 0.3, 0.0, srcMat) // 混合比例 7:3
-
-        // Step 5: 合并HSV通道并转换回BGR
-        channels[0] = hueChannel
-        Core.merge(channels, hsvMat)
-        Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR_FULL)
-
-        // Step 6: 转换回Bitmap
-        val resultBitmap = Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(srcMat, resultBitmap)
-
-        // 释放内存
-        srcMat.release()
-        hsvMat.release()
-        channels.forEach { it.release() }
-
-        return resultBitmap
-    }
-
-
-    fun adjustShewen(originalBitmap: Bitmap): Bitmap {
-        // Step 1: 初始化 OpenCV 矩阵
-        val srcMat = Mat()
-        Utils.bitmapToMat(originalBitmap, srcMat)
-        Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
-
-        // Step 2: 分离 BGR 通道
-        val channels = ArrayList<Mat>()
-        Core.split(srcMat, channels)
-        val blueChannel = channels[0]
-        val greenChannel = channels[1]
-        val redChannel = channels[2]
-
-        // Step 3: 调整色温至-50（青蓝色调）
-        // 红色通道降低25%（-50对应约1/2色温偏移量）
-        redChannel.convertTo(redChannel, CvType.CV_32F)
-        Core.multiply(redChannel, Scalar(0.75), redChannel)
-
-        // 蓝色通道增强12%
-        blueChannel.convertTo(blueChannel, CvType.CV_32F)
-        Core.multiply(blueChannel, Scalar(1.12), blueChannel)
-
-        // 绿色通道微调8%增强青色感
-        greenChannel.convertTo(greenChannel, CvType.CV_32F)
-        Core.multiply(greenChannel, Scalar(1.08), greenChannel)
-
-        // 转换回8位无符号整数
-        redChannel.convertTo(redChannel, CvType.CV_8UC1)
-        blueChannel.convertTo(blueChannel, CvType.CV_8UC1)
-        greenChannel.convertTo(greenChannel, CvType.CV_8UC1)
-
-        // Step 4: 合并通道
-        channels[0] = blueChannel
-        channels[1] = greenChannel
-        channels[2] = redChannel
-        Core.merge(channels, srcMat)
-
-        // Step 5: 色相微调强化青蓝色
-        val hsvMat = Mat()
-        Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV)
-
-        // 色相偏移至青蓝区域（Hue 180-200）
-        Core.add(hsvMat, Scalar(10.0, 0.0, 0.0), hsvMat)
-        Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR)
-
-        // Step 6: 转换回Bitmap
-        val resultBitmap = Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(srcMat, resultBitmap)
-
-        // 释放内存
-        srcMat.release()
-        hsvMat.release()
-        channels.forEach { it.release() }
-
-        return resultBitmap
-    }
-
-
-
     private fun saveBitmap(resultBitmap: Bitmap) {
         try {
             val height = resultBitmap.height
@@ -431,4 +197,243 @@ class EditPicFragment : Fragment() {
             }
         }
     }
+}
+
+
+fun applyFilmEffect(originalBitmap: Bitmap): Bitmap {
+    // Step 1: 初始化矩阵
+    val srcMat = Mat()
+    Utils.bitmapToMat(originalBitmap, srcMat)
+    Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
+
+    // Step 2: 电影感滤镜（C1暖色系）
+    val hslMat = Mat()
+    Imgproc.cvtColor(srcMat, hslMat, Imgproc.COLOR_BGR2HLS)
+
+    // 调整饱和度和明度
+    val channels = ArrayList<Mat>().apply { Core.split(hslMat, this) }
+    Core.multiply(channels[2], Scalar(1.2), channels[2]) // 明度+20%
+    Core.multiply(channels[1], Scalar(0.9), channels[1]) // 饱和度-10%
+    Core.merge(channels, hslMat)
+    Imgproc.cvtColor(hslMat, srcMat, Imgproc.COLOR_HLS2BGR)
+
+    // Step 3: 曲线工具高光压缩（修正参数类型）
+    val lut = Mat(256, 1, CvType.CV_8UC3).apply {
+        for (i in 0 until 256) {
+            val adjusted = when {
+                i > 200 -> (i * 0.85 + 30).toInt() // 高光压缩
+                else -> i
+            }
+            // 修正：使用 doubleArray 传递多通道值 [1,6](@ref)
+            put(i, 0, adjusted.toDouble(), adjusted.toDouble(), adjusted.toDouble())
+        }
+    }
+    Core.LUT(srcMat, lut, srcMat)
+
+    // Step 4: 颗粒生成（修正参数类型）
+    val noise = Mat(srcMat.size(), CvType.CV_8UC3)
+    Core.randn(noise, 0.0, 15.0) // 使用 double 类型参数 [5,6](@ref)
+    Core.addWeighted(srcMat, 0.85, noise, 0.15, 0.0, srcMat)
+
+    // Step 5: 转换回Bitmap
+    val resultBitmap = Bitmap.createBitmap(
+        originalBitmap.width, originalBitmap.height,
+        Bitmap.Config.ARGB_8888
+    )
+    Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_BGR2RGBA)
+    Utils.matToBitmap(srcMat, resultBitmap)
+
+    srcMat.release()
+    hslMat.release()
+    return resultBitmap
+}
+
+fun adjustImageHierarchy(originalBitmap: Bitmap): Bitmap {
+    // Step 1: 初始化 OpenCV 矩阵
+    val srcMat = Mat()
+    Utils.bitmapToMat(originalBitmap, srcMat)
+    Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
+
+    // Step 2: 转换为 HSV 色彩空间
+    val hsvMat = Mat()
+    Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV)
+
+    // Step 3: 分离 HSV 通道
+    val hsvChannels = ArrayList<Mat>()
+    Core.split(hsvMat, hsvChannels)
+    val valueChannel = hsvChannels[2]
+
+    // --- 层次感控制算法 ---
+    // 3.1 降低对比度（-15~-25对应线性压缩）
+    valueChannel.convertTo(valueChannel, CvType.CV_32F)
+    Core.multiply(valueChannel, Scalar(0.8), valueChannel) // 对比度降低20%
+
+    // 3.2 提升阴影（伽马校正）
+    val shadowMask = Mat()
+    Core.inRange(valueChannel, Scalar(0.0), Scalar(50.0), shadowMask) // 阴影区域（V < 50）
+    val temp = Mat() // 创建临时矩阵存储伽马校正结果
+    Core.pow(valueChannel, 0.85, temp) // 伽马校正（γ=0.85对应阴影提升+20）
+    temp.copyTo(valueChannel, shadowMask) // 仅对阴影区域应用校正[8](@ref)
+
+    // 3.3 抑制高光（像素截断）
+    val highlightMask = Mat()
+    Core.inRange(valueChannel, Scalar(200.0), Scalar(255.0), highlightMask)
+    Core.subtract(valueChannel, Scalar(10.0), valueChannel, highlightMask)
+
+    // --- 数据归一化与合并 ---
+    valueChannel.convertTo(valueChannel, CvType.CV_8UC1)
+    hsvChannels[2] = valueChannel
+    Core.merge(hsvChannels, hsvMat)
+
+    // Step 4: 转换回 BGR
+    Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR)
+
+    // Step 5: 转换回 Bitmap
+    val resultBitmap =
+        Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
+    Utils.matToBitmap(srcMat, resultBitmap)
+
+    // 释放内存
+    srcMat.release()
+    hsvMat.release()
+    hsvChannels.forEach { it.release() }
+
+    return resultBitmap
+}
+
+fun adjustBaohedu(originalBitmap: Bitmap): Bitmap {
+    // Step 1: 初始化 OpenCV 矩阵
+    val srcMat = Mat()
+    Utils.bitmapToMat(originalBitmap, srcMat)
+    Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR) // 转换到BGR格式
+
+    // Step 2: 转换为 HSV 色彩空间
+    val hsvMat = Mat()
+    Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV)
+
+    // Step 3: 分离 HSV 通道
+    val hsvChannels = ArrayList<Mat>()
+    Core.split(hsvMat, hsvChannels)
+    val saturationChannel = hsvChannels[1]
+
+    // Step 4: 降低饱和度至 -30%
+    saturationChannel.convertTo(saturationChannel, CvType.CV_32F)
+    Core.multiply(saturationChannel, Scalar(0.7), saturationChannel) // 0.7 = 1 - 0.3
+    saturationChannel.convertTo(saturationChannel, CvType.CV_8UC1)
+
+    // Step 5: 合并通道并转回 BGR
+    hsvChannels[1] = saturationChannel
+    Core.merge(hsvChannels, hsvMat)
+    Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR)
+
+    // Step 6: 转换回 Bitmap
+    val resultBitmap =
+        Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
+    Utils.matToBitmap(srcMat, resultBitmap)
+
+    // 释放内存
+    srcMat.release()
+    hsvMat.release()
+    hsvChannels.forEach { it.release() }
+    return resultBitmap
+}
+
+fun adjustSheDiao(originalBitmap: Bitmap, hueShift: Int = 8): Bitmap {
+    // Step 1: 初始化 OpenCV 矩阵
+    val srcMat = Mat()
+    Utils.bitmapToMat(originalBitmap, srcMat)
+    Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
+
+    // Step 2: 转换为 HSV 色彩空间
+    val hsvMat = Mat()
+    Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV_FULL) // 使用全范围HSV(0-255)
+
+    // Step 3: 分离通道并调整色相
+    val channels = ArrayList<Mat>()
+    Core.split(hsvMat, channels)
+    val hueChannel = channels[0]
+
+    // 色相右移 +8 度（参数可调节 5-10）
+    Core.add(hueChannel, Scalar(hueShift.toDouble()), hueChannel)
+    hueChannel.convertTo(hueChannel, CvType.CV_8UC1)
+
+    // Step 4: 补充淡紫色中和（BGR通道混合）
+    val purpleMix = Mat(srcMat.size(), srcMat.type(), Scalar(60.0, 30.0, 150.0)) // 淡紫色基准值
+    Core.addWeighted(srcMat, 0.7, purpleMix, 0.3, 0.0, srcMat) // 混合比例 7:3
+
+    // Step 5: 合并HSV通道并转换回BGR
+    channels[0] = hueChannel
+    Core.merge(channels, hsvMat)
+    Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR_FULL)
+
+    // Step 6: 转换回Bitmap
+    val resultBitmap =
+        Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
+    Utils.matToBitmap(srcMat, resultBitmap)
+
+    // 释放内存
+    srcMat.release()
+    hsvMat.release()
+    channels.forEach { it.release() }
+
+    return resultBitmap
+}
+
+
+fun adjustShewen(originalBitmap: Bitmap): Bitmap {
+    // Step 1: 初始化 OpenCV 矩阵
+    val srcMat = Mat()
+    Utils.bitmapToMat(originalBitmap, srcMat)
+    Imgproc.cvtColor(srcMat, srcMat, Imgproc.COLOR_RGBA2BGR)
+
+    // Step 2: 分离 BGR 通道
+    val channels = ArrayList<Mat>()
+    Core.split(srcMat, channels)
+    val blueChannel = channels[0]
+    val greenChannel = channels[1]
+    val redChannel = channels[2]
+
+    // Step 3: 调整色温至-50（青蓝色调）
+    // 红色通道降低25%（-50对应约1/2色温偏移量）
+    redChannel.convertTo(redChannel, CvType.CV_32F)
+    Core.multiply(redChannel, Scalar(0.75), redChannel)
+
+    // 蓝色通道增强12%
+    blueChannel.convertTo(blueChannel, CvType.CV_32F)
+    Core.multiply(blueChannel, Scalar(1.12), blueChannel)
+
+    // 绿色通道微调8%增强青色感
+    greenChannel.convertTo(greenChannel, CvType.CV_32F)
+    Core.multiply(greenChannel, Scalar(1.08), greenChannel)
+
+    // 转换回8位无符号整数
+    redChannel.convertTo(redChannel, CvType.CV_8UC1)
+    blueChannel.convertTo(blueChannel, CvType.CV_8UC1)
+    greenChannel.convertTo(greenChannel, CvType.CV_8UC1)
+
+    // Step 4: 合并通道
+    channels[0] = blueChannel
+    channels[1] = greenChannel
+    channels[2] = redChannel
+    Core.merge(channels, srcMat)
+
+    // Step 5: 色相微调强化青蓝色
+    val hsvMat = Mat()
+    Imgproc.cvtColor(srcMat, hsvMat, Imgproc.COLOR_BGR2HSV)
+
+    // 色相偏移至青蓝区域（Hue 180-200）
+    Core.add(hsvMat, Scalar(10.0, 0.0, 0.0), hsvMat)
+    Imgproc.cvtColor(hsvMat, srcMat, Imgproc.COLOR_HSV2BGR)
+
+    // Step 6: 转换回Bitmap
+    val resultBitmap =
+        Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
+    Utils.matToBitmap(srcMat, resultBitmap)
+
+    // 释放内存
+    srcMat.release()
+    hsvMat.release()
+    channels.forEach { it.release() }
+
+    return resultBitmap
 }
