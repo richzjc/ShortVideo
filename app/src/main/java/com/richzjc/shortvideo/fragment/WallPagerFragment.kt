@@ -15,6 +15,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -64,7 +66,7 @@ class WallPagerFragment : Fragment() {
         val setWallPager = view.findViewById<View>(R.id.set_wallpager)
         val selectPicView = view.findViewById<View>(R.id.select_pic)
         val edit = view.findViewById<EditText>(R.id.edit)
-        edit?.text = Editable.Factory.getInstance().newEditable(SharedPrefsUtil.getString(context, "target"))
+        edit?.text = SpannableStringBuilder(SharedPrefsUtil.getString(context, "target"))
         selectPicView.background = btnDrawable
         setWallPager.background = btnDrawable
         selectPicView.setOnClickListener {
@@ -105,7 +107,7 @@ class WallPagerFragment : Fragment() {
                 paint
             )
             val edit = view?.findViewById<EditText>(R.id.edit)
-            SharedPrefsUtil.getString(context, edit?.text?.toString()?.trim() ?: "")
+            SharedPrefsUtil.saveString(context, "target", edit?.text?.toString()?.trim() ?: "")
             if (!TextUtils.isEmpty(edit?.text?.trim())) {
                 paint.color = Color.parseColor("#ffffff")
                 paint.textSize = 80f
