@@ -147,6 +147,7 @@ class WallPagerFragment : Fragment() {
                 val wallpaperManager = WallpaperManager.getInstance(context)
                 // 关键参数：FLAG_LOCK 表示设置锁屏壁纸
                 wallpaperManager.setBitmap(outputBitmap, null, true, WallpaperManager.FLAG_LOCK)
+                wallpaperManager.setBitmap(outputBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                 MToastHelper.showToast("设置成功")
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -1,2 +1,0 @@
-ninja: Entering directory `/Users/zhangjianchuan/project/android/ShortVideo/opencv/.cxx/Debug/315c5c6c/armeabi-v7a'
-ninja: no work to do.
