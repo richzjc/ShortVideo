@@ -132,7 +132,7 @@ class WallPagerFragment : Fragment() {
                     val rect2 = Rect()
                     paint.getTextBounds(it, 0, it.length, rect2)
 
-                    start += (abs(rect2.bottom - rect2.top) + ScreenUtils.dip2px(20f))
+                    start += (abs(rect2.bottom - rect2.top) + ScreenUtils.dip2px(10f))
                     canvas.drawText(
                         it,
                         (ScreenUtils.getScreenWidth() - abs(rect2.right - rect2.left)) / 2f,
